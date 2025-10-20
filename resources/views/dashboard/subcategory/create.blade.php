@@ -50,7 +50,7 @@
                                     <label for="inputEmail3" class="col-sm-2 col-form-label"></label>
                                     <div class="col-sm-10">
                                         <button type="submit" class="btn btn-primary">Save</button>
-                                        <a href="{{ route('indexcategory') }}" class="btn btn-secondary">Back</a>
+                                        <a href="{{ route('indexsubcategory') }}" class="btn btn-secondary">Back</a>
                                     </div>
                                 </div>
                             </form><!-- End Horizontal Form -->

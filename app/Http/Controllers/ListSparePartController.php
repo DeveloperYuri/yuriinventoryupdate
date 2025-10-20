@@ -73,12 +73,12 @@ class ListSparePartController extends Controller
     {
         $request->validate([
             'name' => 'required|string',
-            'price' => 'required|integer',
+            // 'price' => 'required|integer',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240'
         ], [
             'name' => 'Nama Spare Part wajib diisi',
             'price.required' => 'Harga Spare Part wajib diisi',
-            'price.integer' => 'Harga Spare Part harus berupa angka',
+            // 'price.integer' => 'Harga Spare Part harus berupa angka',
             'image.required'   => 'File gambar harus diisi',
             'image.image'   => 'File harus berupa gambar',
             'image.mimes'   => 'File harus JPG, JPEG, PNG, atau GIF',
