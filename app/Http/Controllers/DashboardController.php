@@ -18,21 +18,6 @@ class DashboardController extends Controller
         return view('dashboard.index', $data);
     }
 
-    public function listatk()
-    {
-        return view('dashboard.atk.listatk');
-    }
-
-    public function atkin()
-    {
-        return view('dashboard.atk.atkin');
-    }
-
-    public function atkout()
-    {
-        return view('dashboard.atk.atkout');
-    }
-
     public function profile()
     {
 

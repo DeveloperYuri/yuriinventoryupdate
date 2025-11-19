@@ -83,12 +83,13 @@
 <body>
 
     <div class="header">
-        <img src="https://www.baby-dee.co.id/assets/img/logobaru.png" alt="Logo Perusahaan">
+         <img src="{{ public_path('assets/img/logobaru.png') }}" 
+         alt="Logo Perusahaan" 
+         style="width:80px; height:auto; display:block; margin:0 auto 10px auto;">
 
         <h1>PT. Joenoes Ikamulya</h1>
         <p>Jl. Pulogadung No.43, RW.9, Jatinegara, Kec. Cakung</p>
         <p>Kota Jakarta Timur, Daerah Khusus Ibukota Jakarta 13930</p>
-        {{-- <p>Telp: (021) 12345678 | Email: info@contohjaya.com</p> --}}
     </div>
 
     <hr>
@@ -161,6 +162,11 @@
     <div class="footer">
         <div class="left">
             <p style="text-align: center">Pemohon</p>
+            <br><br>
+            <p style="text-decoration: underline;text-align: center">( ____________ )</p>
+        </div>
+        <div class="left" style="margin-left: 40px">
+            <p style="text-align: center">Mengetahui</p>
             <br><br>
             <p style="text-decoration: underline;text-align: center">( ____________ )</p>
         </div>

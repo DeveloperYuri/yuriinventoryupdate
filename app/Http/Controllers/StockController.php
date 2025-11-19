@@ -30,18 +30,10 @@ class StockController extends Controller
             $query->whereDate('created_at', '<=', $request->end_date);
         }
 
-        // $transactions = $query->paginate(10);
         $transactions = $query->paginate(10)->withQueryString();
-
 
         return view('dashboard.sparepartin.listsparepartin', compact('transactions'));
     }
-
-    // public function stockInIndex()
-    // {
-    //     $transactions = StockTransactionModel::with('sparePart')->where('type', 'in')->orderByDesc('created_at', 'desc')->paginate(10);
-    //     return view('dashboard.sparepartin.listsparepartin', compact('transactions'));
-    // }
 
     public function stockInForm()
     {
@@ -85,18 +77,10 @@ class StockController extends Controller
             $query->whereDate('created_at', '<=', $request->end_date);
         }
 
-        // $transactions = $query->paginate(10);
         $transactions = $query->paginate(10)->withQueryString();
-
 
         return view('dashboard.sparepartout.listsparepartout', compact('transactions'));
     }
-
-    // public function stockOutIndex()
-    // {
-    //     $transactions = StockTransactionModel::with('sparePart')->where('type', 'out')->orderByDesc('created_at', 'desc')->paginate(10);
-    //     return view('dashboard.sparepartout.listsparepartout', compact('transactions'));
-    // }
 
     public function stockOutForm()
     {
@@ -123,10 +107,6 @@ class StockController extends Controller
                 ->withErrors(['quantity' => 'Jumlah keluar melebihi stok yang tersedia (Stok: ' . $sparePart->stock . ').'])
                 ->withInput();
         }
-
-        // if ($request->quantity > $sparePart->stock) {
-        //     return back()->withErrors('Jumlah keluar melebihi stok yang tersedia.');
-        // }
 
         StockTransactionModel::create([
             'spare_part_id' => $request->spare_part_id,
@@ -174,9 +154,7 @@ class StockController extends Controller
             $query->whereDate('created_at', '<=', $request->end_date);
         }
 
-        // $transactions = $query->paginate(20);
         $transactions = $query->paginate(20)->withQueryString();
-
 
         return view('dashboard.spareparthistory.history', compact('transactions'));
     }
@@ -209,8 +187,6 @@ class StockController extends Controller
             'stockOutHeader.subcategory'
         ])->where('spare_part_id', $id);
 
-        // $query = StockTransactionModel::where('spare_part_id', $id);
-
         if ($request->start_date) {
             $query->whereDate('created_at', '>=', $request->start_date);
         }
@@ -241,32 +217,6 @@ class StockController extends Controller
 
         return view('dashboard.sparepart.detailsparepart', compact('sparePart', 'transactions', 'totalStock', 'allTransactions'));
     }
-
-    // public function viewHistoryPerItem(Request $request, $id)
-    // {
-    //     $sparePart = ListSparePartModel::findOrFail($id);
-
-    //     $query = StockTransactionModel::where('spare_part_id', $id);
-
-    //     if ($request->start_date) {
-    //         $query->whereDate('created_at', '>=', $request->start_date);
-    //     }
-
-    //     if ($request->end_date) {
-    //         $query->whereDate('created_at', '<=', $request->end_date);
-    //     }
-
-    //     // Perhitungan total dari semua data (tidak terpengaruh pagination)
-    //     $allTransactions = $query->get();
-    //     $totalStock = $allTransactions->reduce(function ($carry, $item) {
-    //         return $carry + ($item->type === 'in' ? $item->quantity : -$item->quantity);
-    //     }, 0);
-
-    //     // Pagination
-    //     $transactions = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
-
-    //     return view('dashboard.sparepart.detailsparepart', compact('sparePart', 'transactions', 'totalStock'));
-    // }
 
     public function exportHistoryPerItemPDF($id, Request $request)
     {

@@ -62,40 +62,6 @@
 
                             <!-- Default Table -->
                             <div class="table-responsive">
-
-                                {{-- <table class="table table-hover align-middle">
-                                    <tr>
-                                        <th class="text-center">No</th>
-                                        <th class="text-center">User</th>
-                                        <th class="text-center">Jumlah</th>
-                                        <th class="text-center">Tanggal</th>
-                                        <th class="text-center">Keterangan</th>
-                                    </tr>
-                                    <tbody>
-
-                                        @foreach ($transactions as $index => $item)
-                                            <tr>
-                                                <td class="text-center">{{ $transactions->firstItem() + $index }}</td>
-                                                <td class="text-center">{{ $item->user ?? '-' }}</td>
-                                                <td class="text-center">{{ $item->quantity }}</td>
-                                                <td class="text-center">{{ $item->created_at->format('d-m-Y') }}</td>
-                                                <td class="text-center">
-                                                    <span
-                                                        class="badge {{ $item->type == 'in' ? 'bg-success' : 'bg-danger' }}">
-                                                        {{ $item->type == 'in' ? 'Masuk' : 'Keluar' }}
-                                                    </span>
-                                                </td>
-
-                                            </tr>
-                                        @endforeach
-
-                                        @if ($transactions->currentPage() === $transactions->lastPage())
-                                            <tr>
-                                                <td colspan="2" class="text-end"><strong>Jumlah Akhir Stok</strong></td>
-                                                <td class="text-center"><strong>{{ $totalStock }}</strong></td>
-                                                <td colspan="3"></td>
-                                            </tr>
-                                        @endif --}}
                                 <table class="table table-hover align-middle">
                                     <tr>
                                         <th class="text-center">No</th>
@@ -106,8 +72,7 @@
                                             <th class="text-center">Total</th>
                                         @endif
                                         <th class="text-center">Lokasi</th>
-                                        <th class="text-center">Category</th>
-                                        <th class="text-center">Sub Category</th>
+                                       
                                         <th class="text-center">Tanggal</th>
                                         <th class="text-center">Keterangan</th>
                                     </tr>
@@ -128,12 +93,9 @@
                                                     </td>
                                                 @endif
 
-                                                <td class="text-center">{{ $item->stockOutHeader->location->name ?? '-' }}
+                                                <td class="text-center">{{ $item->atkKeluar->locations->name ?? '-' }}
                                                 </td>
-                                                <td class="text-center">{{ $item->stockOutHeader->category->name ?? '-' }}
-                                                </td>
-                                                <td class="text-center">
-                                                    {{ $item->stockOutHeader->subcategory->name ?? '-' }}</td>
+                                                
 
                                                 <td class="text-center">{{ $item->created_at->format('d-m-Y') }}</td>
                                                 <td class="text-center">

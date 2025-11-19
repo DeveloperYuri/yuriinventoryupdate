@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Laporan Daftar Sparepart</title>
+    <title>Laporan Daftar ATK</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -70,30 +70,30 @@
          style="width:80px; height:auto; display:block; margin:0 auto 10px auto;">
 
         <h1>PT. Joenoes Ikamulya</h1>
-        <p>Jl. Pulogadung No.43, RW.9, Jatinegara, Kec. Cakung</p>
-        <p>Kota Jakarta Timur, Daerah Khusus Ibukota Jakarta 13930</p>
+        <p>Kawasan Industri Pulogadung No.43, Jakarta Timur, Jakarta 13930</p>
+        {{-- <p>Kota Jakarta Timur, Jakarta 13930</p> --}}
         {{-- <p>Telp: (021) 12345678 | Email: info@contohjaya.com</p> --}}
     </div>
 
     <hr>
 
-    <h3 style="text-align: center;">Laporan Daftar Spare Part</h3>
+    <h3 style="text-align: center;">Laporan Daftar Stok ATK</h3>
 
     <table>
         <thead>
             <tr>
                 <th>No</th>
-                <th>Nama Spare Part</th>
-                <th>Harga (Rp)</th>
+                <th>Nama ATK</th>
+                {{-- <th>Harga (Rp)</th> --}}
                 <th>Stok</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($spareparts as $no => $item)
+            @foreach ($atk as $no => $item)
                 <tr>
                     <td>{{ $no + 1 }}</td>
                     <td>{{ $item->name }}</td>
-                    <td>Rp {{ number_format($item->price, 0, ',', '.') }}</td>
+                    {{-- <td>Rp {{ number_format($item->price, 0, ',', '.') }}</td> --}}
                     <td>{{ $item->stock }}</td>
                 </tr>
             @endforeach

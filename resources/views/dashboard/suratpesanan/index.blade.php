@@ -127,7 +127,7 @@
                                                 <td class="text-center">{{ $sp->category->name ?? '-' }}</td>
                                                 <td class="text-center">{{ $sp->subcategory->name ?? '-' }}</td>
                                                 <td class="text-center">
-                                                    {{ \Carbon\Carbon::parse($sp->tanggal)->format('d-m-Y') }}</td>
+                                                    {{ \Carbon\Carbon::parse($sp->created_at)->format('d-m-Y') }}</td>
 
                                                 <td class="text-center">
                                                     @if ($sp->status == 'draft')

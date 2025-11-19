@@ -14,7 +14,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class SuratpesananController extends Controller
 {
-     public function index(Request $request)
+    public function index(Request $request)
     {
         $data['getRecord'] = SuratPesananHeaderModel::getRecord($request);
 
@@ -24,9 +24,29 @@ class SuratpesananController extends Controller
     public function create()
     {
         $tahun = now()->format('Y');
+        $bulanAngka  = now()->format('m');
+
+        // Konversi bulan ke angka Romawi
+        $romawi = [
+            '01' => 'I',
+            '02' => 'II',
+            '03' => 'III',
+            '04' => 'IV',
+            '05' => 'V',
+            '06' => 'VI',
+            '07' => 'VII',
+            '08' => 'VIII',
+            '09' => 'IX',
+            '10' => 'X',
+            '11' => 'XI',
+            '12' => 'XII',
+        ];
+
+        $bulan = $romawi[$bulanAngka];
 
         // Ambil record terakhir tahun ini
         $last = SuratPesananHeaderModel::whereYear('created_at', $tahun)
+            ->whereMonth('created_at', $bulanAngka )
             ->orderBy('id', 'desc')
             ->first();
 
@@ -38,7 +58,7 @@ class SuratpesananController extends Controller
 
         // Generate nomor baru
         $nextNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
-        $noDokumen = "SP/{$tahun}/{$nextNumber}";
+        $noDokumen = "SP/{$bulan}/{$tahun}/{$nextNumber}";
 
         $locations = LocationsModel::all();
         $categories = CategoryModel::all();
@@ -259,7 +279,7 @@ class SuratpesananController extends Controller
         ]);
     }
 
-     public function submit($id)
+    public function submit($id)
     {
         $header = SuratPesananHeaderModel::findOrFail($id);
         $header->status = 'onprogress';

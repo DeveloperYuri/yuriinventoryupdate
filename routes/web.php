@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\AtkController;
+use App\Http\Controllers\AtkkeluarController;
+use App\Http\Controllers\AtkmasukController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
@@ -8,6 +11,8 @@ use App\Http\Controllers\ListAssetToolsController;
 use App\Http\Controllers\ListSparePartController;
 use App\Http\Controllers\ListSparePartMultipleController;
 use App\Http\Controllers\LocationsController;
+use App\Http\Controllers\RiwayatmesinController;
+use App\Http\Controllers\SatuanController;
 use App\Http\Controllers\StockAssetController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SubCategoryController;
@@ -26,11 +31,6 @@ Route::get('/registration/post', [AuthController::class, 'registerpost'])->name(
 // Dashboard Page
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('indexdashboard');
 
-// ATK
-Route::get('/listatk', [DashboardController::class, 'listatk'])->name('indexatk');
-Route::get('/atkin', [DashboardController::class, 'atkin'])->name('atkin');
-Route::get('/atkout', [DashboardController::class, 'atkout'])->name('atkout');
-
 // Supplier
 Route::get('/supplier', [SupplierController::class, 'index'])->name('indexsupplier');
 Route::get('/createsupplier', [SupplierController::class, 'create'])->name('createsupplier');
@@ -38,6 +38,15 @@ Route::post('/createsupplierpost', [SupplierController::class, 'store'])->name('
 Route::delete('/deletesupplier/{id}', [SupplierController::class, 'destroy'])->name('deletesupplier');
 Route::get('/editsupplier/{id}', [SupplierController::class, 'edit'])->name('editsupplier');
 Route::put('/updatesupplier/{id}', [SupplierController::class, 'update'])->name('updatesupplier');
+
+// Riwayat Mesin
+Route::get('/riwayat-mesin', [RiwayatmesinController::class, 'index'])->name('index.riwayatmesin');
+Route::get('/riwayat-mesin/create', [RiwayatmesinController::class, 'create'])->name('create.riwayatmesin');
+Route::post('/riwayat-mesin/store', [RiwayatmesinController::class, 'store'])->name('store.riwayatmesin');
+Route::delete('/riwayat-mesin/{id}', [RiwayatmesinController::class, 'destroy'])->name('delete.riwayatmesin');
+Route::get('/riwayat-mesin/edit/{id}', [RiwayatmesinController::class, 'edit'])->name('edit.riwayatmesin');
+Route::put('/riwayat-mesin/update/{id}', [RiwayatmesinController::class, 'update'])->name('update.riwayatmesin');
+Route::get('/riwayat-mesin/update/{id}', [RiwayatmesinController::class, 'show'])->name('show.riwayatmesin');
 
 // Users
 Route::get('/users', [UsersController::class, 'index'])->name('indexusers');
@@ -86,6 +95,14 @@ Route::post('/create/subcategory/save', [SubCategoryController::class, 'store'])
 Route::get('/edit/subcategory/{id}', [SubCategoryController::class, 'edit'])->name('editsubcategory');
 Route::put('/update/subcategory/{id}', [SubCategoryController::class, 'update'])->name('updatesubcategory');
 Route::delete('/delete/subcategory/{id}', [SubCategoryController::class, 'destroy'])->name('deletesubcategory');
+
+// Satuan
+Route::get('/satuan', [SatuanController::class, 'index'])->name('index.satuan');
+Route::get('/create/satuan', [SatuanController::class, 'create'])->name('create.satuan');
+Route::post('/create/satuan/save', [SatuanController::class, 'store'])->name('store.satuan');
+Route::get('/edit/satuan/{id}', [SatuanController::class, 'edit'])->name('edit.satuan');
+Route::put('/update/satuan/{id}', [SatuanController::class, 'update'])->name('update.satuan');
+Route::delete('/delete/satuan/{id}', [SatuanController::class, 'destroy'])->name('delete.satuan');
 
 // routes/web.php
 Route::get('/get-subcategories/{category_id}', [SubCategoryController::class, 'getByCategory'])->name('get.subcategories');
@@ -214,3 +231,47 @@ Route::prefix('suratpesanan')->name('suratpesanan.')->group(function () {
     Route::post('{id}/approve', [SuratPesananController::class, 'approve'])->name('approve');
     Route::post('{id}/reject', [SuratPesananController::class, 'reject'])->name('reject');
 });
+
+// ATK
+Route::get('/atk', [AtkController::class, 'index'])->name('atk.index');
+Route::get('/cardlist-atk', [AtkController::class, 'cardindex'])->name('cardlist-atk.index');
+
+Route::get('/atk/create', [AtkController::class, 'create'])->name('atk.create');
+Route::post('/atk/store', [AtkController::class, 'store'])->name('atk.store');
+Route::get('/atk/edit/{id}', [AtkController::class, 'edit'])->name('atk.edit');
+Route::put('/atk/{id}', [AtkController::class, 'update'])->name('atk.update');
+Route::delete('/atk/{id}', [AtkController::class, 'destroy'])->name('atk.destroy');
+Route::get('/atk/search', [AtkController::class, 'search']);
+Route::get('/atk/pdf', [AtkController::class, 'cetakPDF'])->name('atk.cetakpdf');
+Route::get('/export-atk', [AtkController::class, 'exportExcel'])->name('atk.export');
+
+Route::get('/riwayat-atk', [AtkController::class, 'history'])->name('atk.history');
+Route::get('/riwayat-atk/detail/{id}', [AtkController::class, 'viewHistoryPerItem'])->name('atk.detail');
+
+
+// ATK Masuk Banyak Item
+Route::get('/atk-masuk', [AtkmasukController::class, 'index'])->name('atkmasuk.index');
+Route::get('/atk-masuk/create', [AtkmasukController::class, 'create'])->name('atkmasuk.create');
+Route::post('/atk-masuk/store', [AtkmasukController::class, 'storein'])->name('atkmasuk.store');
+Route::get('/atk-masuk/show/{id}', [AtkmasukController::class, 'show'])->name('atkmasuk.show');
+
+// ATK Keluar Banyak Item
+Route::get('/atk-keluar', [AtkkeluarController::class, 'index'])->name('atk-keluar.index');
+Route::get('/atk-keluar/create', [AtkkeluarController::class, 'create'])->name('atk-keluar.create');
+Route::post('/atk-keluar/store', [AtkkeluarController::class, 'store'])->name('atk-keluar.store');
+Route::get('/atk-keluar/show/{id}', [AtkkeluarController::class, 'show'])->name('atk-keluar.show');
+
+
+
+
+// Route::get('export-stock-out', [StockController::class, 'exportStockOutPDF'])->name('export.stock-out');
+
+// Route::get('/spareparthistory', [StockController::class, 'history'])->name('sparepart.history');
+// Route::get('/spareparthistory/pdf', [StockController::class, 'exportHistoryPDF'])->name('sparepart.history.pdf');
+// Route::get('/sparepart/history/{id}', [StockController::class, 'viewHistoryPerItem'])->name('sparepartdetail.history');
+// Route::get('/sparepart/{id}/history/pdf', [StockController::class, 'exportHistoryPerItemPDF'])->name('sparepartdetail.history.pdf');
+// Route::get('/sparepart/{id}/export-excel', [StockController::class, 'exportHistoryPerItemExcel'])->name('sparepartdetail.history.excel');
+// Route::get('/export-history-excel', [StockController::class, 'exportHistoryExcel'])->name('sparepart.history.excel');
+
+// Route::get('/export-stock-in-excel', [StockController::class, 'exportStockInExcel'])->name('stockin.export.excel');
+// Route::get('/export-stock-out-excel', [StockController::class, 'exportStockOutExcel'])->name('stockout.export.excel');
