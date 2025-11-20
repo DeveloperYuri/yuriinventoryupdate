@@ -114,6 +114,7 @@
          </li>
          <!-- End Asset Sidebar -->
 
+         @if (Auth::user()->is_role == 2)
          <!-- Start ATK Sidebar -->
          @php
              $isAtkActive =
@@ -174,6 +175,7 @@
 
              </ul>
          </li>
+         @endif
 
 
          {{-- @php
@@ -233,6 +235,7 @@
          </li>
          <!-- End Supplier Sidebar -->
 
+         @if (Auth::user()->is_role == 2)
          <!-- Start Riwayat Mesin -->
          <li class="nav-item">
              <a class="nav-link {{ request()->routeIs('index.riwayatmesin') ? 'active' : 'collapsed' }}"
@@ -241,6 +244,7 @@
                  <span>Riwayat Mesin</span>
              </a>
          </li>
+         @endif
          <!-- End Riwayat Mesin Sidebar -->
 
          <!-- Start Users Sidebar -->
