@@ -17,6 +17,7 @@ use App\Http\Controllers\StockAssetController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\SuratpesananatkController;
 use App\Http\Controllers\SuratpesananController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\WarehouseController;
@@ -109,8 +110,6 @@ Route::get('/get-subcategories/{category_id}', [SubCategoryController::class, 'g
 
 // Profile
 Route::get('/profile', [DashboardController::class, 'profile'])->name('indexprofile');
-
-
 
 // Login
 Route::post('login_post', [AuthController::class, 'login_post'])->name('loginpost');
@@ -214,7 +213,6 @@ Route::get('/stockoutmultiple/{id}', [ListSparePartMultipleController::class, 's
 Route::get('/spareparts/search', [ListSparePartMultipleController::class, 'search']);
 Route::post('/spare-parts/import', [ListSparePartController::class, 'import'])->name('spare-parts.import');
 
-
 Route::get('/suratpesanan', [SuratpesananController::class, 'index'])->name('suratpesanan.index');
 Route::get('/create/suratpesanan', [SuratpesananController::class, 'create'])->name('suratpesanan.create');
 Route::post('/create/suratpesanan/post', [SuratpesananController::class, 'store'])->name('suratpesanan.store');
@@ -235,7 +233,6 @@ Route::prefix('suratpesanan')->name('suratpesanan.')->group(function () {
 // ATK
 Route::get('/atk', [AtkController::class, 'index'])->name('atk.index');
 Route::get('/cardlist-atk', [AtkController::class, 'cardindex'])->name('cardlist-atk.index');
-
 Route::get('/atk/create', [AtkController::class, 'create'])->name('atk.create');
 Route::post('/atk/store', [AtkController::class, 'store'])->name('atk.store');
 Route::get('/atk/edit/{id}', [AtkController::class, 'edit'])->name('atk.edit');
@@ -244,7 +241,6 @@ Route::delete('/atk/{id}', [AtkController::class, 'destroy'])->name('atk.destroy
 Route::get('/atk/search', [AtkController::class, 'search']);
 Route::get('/atk/pdf', [AtkController::class, 'cetakPDF'])->name('atk.cetakpdf');
 Route::get('/export-atk', [AtkController::class, 'exportExcel'])->name('atk.export');
-
 Route::get('/riwayat-atk', [AtkController::class, 'history'])->name('atk.history');
 Route::get('/riwayat-atk/detail/{id}', [AtkController::class, 'viewHistoryPerItem'])->name('atk.detail');
 
@@ -261,17 +257,20 @@ Route::get('/atk-keluar/create', [AtkkeluarController::class, 'create'])->name('
 Route::post('/atk-keluar/store', [AtkkeluarController::class, 'store'])->name('atk-keluar.store');
 Route::get('/atk-keluar/show/{id}', [AtkkeluarController::class, 'show'])->name('atk-keluar.show');
 
+// Buat Surat Pesanan ATK
+Route::get('/suratpesanan-atk', [SuratpesananatkController::class, 'index'])->name('suratpesanan-atk.index');
+Route::get('/suratpesanan-atk/create', [SuratpesananatkController::class, 'create'])->name('suratpesanan-atk.create');
+Route::post('/suratpesanan-atk/store', [SuratpesananatkController::class, 'store'])->name('suratpesanan-atk.store');
+Route::get('/edit/suratpesanan-atk/{id}', [SuratpesananatkController::class, 'edit'])->name('suratpesanan-atk.edit');
+Route::put('/update/suratpesanan-atk/{id}', [SuratpesananatkController::class, 'update'])->name('suratpesanan-atk.update');
+Route::delete('/suratpesanan-atk/delete/{id}', [SuratpesananatkController::class, 'destroy'])->name('suratpesanan-atk.delete');
+Route::get('/show/suratpesanan-atk/{id}', [SuratpesananatkController::class, 'show'])->name('suratpesanan-atk.show');
+Route::get('/atk/{id}/stock', [SuratpesananatkController::class, 'getStock']);
+Route::get('suratpesanan-atk/{id}/pdf', [SuratpesananatkController::class, 'printPdf'])->name('suratpesanan-atk.pdf');
 
+Route::prefix('suratpesanan-atk')->name('suratpesanan-atk.')->group(function () {
+    Route::post('{id}/submit', [SuratpesananatkController::class, 'submit'])->name('submit');
+    Route::post('{id}/approve', [SuratpesananatkController::class, 'approve'])->name('approve');
+    Route::post('{id}/reject', [SuratpesananatkController::class, 'reject'])->name('reject');
+});
 
-
-// Route::get('export-stock-out', [StockController::class, 'exportStockOutPDF'])->name('export.stock-out');
-
-// Route::get('/spareparthistory', [StockController::class, 'history'])->name('sparepart.history');
-// Route::get('/spareparthistory/pdf', [StockController::class, 'exportHistoryPDF'])->name('sparepart.history.pdf');
-// Route::get('/sparepart/history/{id}', [StockController::class, 'viewHistoryPerItem'])->name('sparepartdetail.history');
-// Route::get('/sparepart/{id}/history/pdf', [StockController::class, 'exportHistoryPerItemPDF'])->name('sparepartdetail.history.pdf');
-// Route::get('/sparepart/{id}/export-excel', [StockController::class, 'exportHistoryPerItemExcel'])->name('sparepartdetail.history.excel');
-// Route::get('/export-history-excel', [StockController::class, 'exportHistoryExcel'])->name('sparepart.history.excel');
-
-// Route::get('/export-stock-in-excel', [StockController::class, 'exportStockInExcel'])->name('stockin.export.excel');
-// Route::get('/export-stock-out-excel', [StockController::class, 'exportStockOutExcel'])->name('stockout.export.excel');

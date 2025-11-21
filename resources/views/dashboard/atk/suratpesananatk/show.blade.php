@@ -12,13 +12,13 @@
 
                             <div class="row mb-4 align-items-center">
                                 <!-- Kiri: Judul / Form Header -->
-                                <div class="col-md-6">
-                                    <h2 class="mt-2">Form Detail Pesanan Barang</h2>
+                                <div class="col-md-8">
+                                    <h2 class="mt-2">Form Detail Pesanan Barang ATK</h2>
                                 </div>
 
                                 <!-- Kanan: Tombol Print PDF -->
-                                <div class="col-md-6 text-end">
-                                    <a href="{{ route('suratpesanan.pdf', $transaction->id) }}" target="_blank"
+                                <div class="col-md-4 text-end">
+                                    <a href="{{ route('suratpesanan-atk.pdf', $transaction->id) }}" target="_blank"
                                         class="btn btn-primary mt-2">
                                         Print PDF
                                     </a>
@@ -41,14 +41,7 @@
                                             <label class="col-sm-4 col-form-label">Di buat oleh</label>
                                             <div class="col-sm-8">
                                                 <input type="text" class="form-control" name="diterima_dari"
-                                                    value="{{ $transaction->name }}" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <label class="col-sm-4 col-form-label">Category</label>
-                                            <div class="col-sm-8">
-                                                <input type="text" class="form-control" name="diterima_dari"
-                                                    value="{{ $transaction->category->name ?? '-' }}" readonly>
+                                                    value="{{ $transaction->dibuat_oleh }}" readonly>
                                             </div>
                                         </div>
                                     </div>
@@ -69,13 +62,6 @@
                                                     value="{{ $transaction->location->name ?? '-' }}" readonly>
                                             </div>
                                         </div>
-                                        <div class="row mb-3">
-                                            <label class="col-sm-4 col-form-label">Sub Category</label>
-                                            <div class="col-sm-8">
-                                                <input type="text" class="form-control" name="diterima_dari"
-                                                    value="{{ $transaction->subcategory->name ?? '-' }}" readonly>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
 
@@ -85,7 +71,7 @@
                                         <table class="table" id="productTable">
                                             <thead>
                                                 <tr>
-                                                    <th>Nama Spare Part</th>
+                                                    <th>Nama ATK</th>
                                                     <th>Qty</th>
                                                     <th>Stock</th>
                                                     <th></th>
@@ -94,7 +80,7 @@
                                             <tbody>
                                                 @foreach ($transaction->details as $item)
                                                     <tr>
-                                                        <td>{{ $item->sparePart->name ?? '-' }}</td>
+                                                        <td>{{ $item->atk->name ?? '-' }}</td>
                                                         <td>{{ $item->qty }}</td>
                                                         <td>{{ $item->stock }}</td>
                                                     </tr>
@@ -111,7 +97,7 @@
                                 </div>
                             </form>
 
-                            <a href="{{ route('suratpesanan.index') }}" class="btn btn-success mt-2">Back</a>
+                            <a href="{{ route('suratpesanan-atk.index') }}" class="btn btn-success mt-2">Back</a>
 
                         </div>
                     </div>

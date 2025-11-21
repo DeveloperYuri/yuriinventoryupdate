@@ -66,49 +66,7 @@ class SuratpesananController extends Controller
 
         return view('dashboard.suratpesanan.create', compact('noDokumen', 'locations', 'categories'));
     }
-
-    // public function store(Request $request)
-    // {
-    //     // Validasi input dasar
-    //     $request->validate([
-    //         'name'        => 'required|string|max:100',
-    //     ], [
-    //         'name.required' => 'Form ini harus diisi',
-    //     ]);
-
-
-    //     // dd($request->all());
-
-    //     // Simpan semua dalam transaksi
-    //     return DB::transaction(function () use ($request) {
-
-    //         // Simpan header surat pesanan
-    //         $header = SuratPesananHeaderModel::create([
-    //             'no_surat_pesanan' => $request->no_surat_pesanan,
-    //             'name'             => $request->name,
-    //             'locations_id'     => $request->locations_id,
-    //             'category_id'      => $request->category_id,
-    //             'subcategory_id'   => $request->subcategory_id,
-    //         ]);
-
-    //         // Loop semua spare part untuk simpan detail
-    //         foreach ($request->product as $i => $spare_part_id) {
-    //             // Ambil nama sparepart dari master (optional)
-    //             $sparePart = \App\Models\ListSparePartModel::find($spare_part_id);
-
-    //             SuratPesananDetailModel::create([
-    //                 'surat_pesanan_header_id' => $header->id,   // wajib ada
-    //                 'spare_part_id'           => $spare_part_id,
-    //                 'qty'                     => $request->demand[$i] ?? 0,
-    //                 'stock'                   => $request->stock[$i] ?? 0,  // ambil dari form
-    //             ]);
-    //         }
-
-    //         return redirect()->route('suratpesanan.index')
-    //             ->with('success', 'Surat pesanan berhasil dicatat.');
-    //     });
-    // }
-
+    
     public function store(Request $request)
     {
         // Validasi input dasar

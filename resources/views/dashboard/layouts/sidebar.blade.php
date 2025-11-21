@@ -114,15 +114,15 @@
          </li>
          <!-- End Asset Sidebar -->
 
-         @if (Auth::user()->is_role == 2)
          <!-- Start ATK Sidebar -->
+         @if (Auth::user()->is_role == 2)
          @php
              $isAtkActive =
                  request()->routeIs('atk.*') ||
                  request()->routeIs('atkmasuk.*') ||
                  request()->routeIs('atk-keluar.*')||
-                 request()->routeIs('riwayat-atk.*');
-                //  request()->routeIs('atk.order.*');
+                 request()->routeIs('riwayat-atk.*')||
+                 request()->routeIs('suratpesanan-atk.*');
          @endphp
 
          <li class="nav-item">
@@ -160,68 +160,22 @@
                  {{-- History --}}
                  <li>
                      <a href="{{ route('atk.history') }}"
-                         class="{{ request()->routeIs('riwayat-atk.*') ? 'active' : '' }}">
+                         class="{{ request()->routeIs('atk.history') ? 'active' : '' }}">
                          <i class="bi bi-circle"></i><span>Riwayat ATK Masuk/Keluar</span>
                      </a>
                  </li>
 
                  {{-- Buat Surat Pesanan --}}
-                 {{-- <li>
-                     <a href="{{ route('atk.order.create') }}"
-                         class="{{ request()->routeIs('atk.order.*') ? 'active' : '' }}">
+                 <li>
+                     <a href="{{ route('suratpesanan-atk.index') }}"
+                         class="{{ request()->routeIs('suratpesanan-atk.*') ? 'active' : '' }}">
                          <i class="bi bi-circle"></i><span>Buat Surat Pesanan ATK</span>
                      </a>
-                 </li> --}}
+                 </li>
 
              </ul>
          </li>
          @endif
-
-
-         {{-- @php
-             $atkActive = request()->routeIs('atk.index.*') || request()->routeIs('atkmasuk.index.*');
-         @endphp
-
-         <li class="nav-item">
-             <a class="nav-link {{ $atkActive ? '' : 'collapsed' }}" data-bs-target="#atk-nav"
-                 data-bs-toggle="collapse" href="#">
-                 <i class="bi bi-journal-check"></i><span>ATK</span><i class="bi bi-chevron-down ms-auto"></i>
-             </a>
-
-             <ul id="atk-nav" class="nav-content collapse {{ $atkActive ? 'show' : '' }}"
-                 data-bs-parent="#sidebar-nav">
-                 <li>
-                     <a href="{{ route('atk.index') }}"
-                         class="{{ request()->routeIs('atk.index.*') ? 'active' : '' }}">
-                         <i class="bi bi-circle"></i><span>Daftar ATK</span>
-                     </a>
-                 </li>
-                 <li>
-                     <a href="{{ route('atkmasuk.index') }}"
-                         class="{{ request()->routeIs('atkmasuk.index.*') ? 'active' : '' }}">
-                         <i class="bi bi-circle"></i><span>ATK - Masuk</span>
-                     </a>
-                 </li>
-                 <li>
-                     <a href="{{ route('atk-keluar.index') }}"
-                         class="{{ request()->routeIs('atk-keluar.index.*') ? 'active' : '' }}">
-                         <i class="bi bi-circle"></i><span>ATK - Keluar</span>
-                     </a>
-                 </li>
-                 <li>
-                     <a href="{{ route('atkmasuk.index') }}"
-                         class="{{ request()->routeIs('atkmasuk.index.*') ? 'active' : '' }}">
-                         <i class="bi bi-circle"></i><span>History - Masuk/Keluar</span>
-                     </a>
-                 </li>
-                 <li>
-                     <a href="{{ route('atkmasuk.index') }}"
-                         class="{{ request()->routeIs('atkmasuk.index.*') ? 'active' : '' }}">
-                         <i class="bi bi-circle"></i><span>Buat Surat Pesanan ATK</span>
-                     </a>
-                 </li>
-             </ul>
-         </li> --}}
 
          <!-- End ATK Sidebar -->
 
