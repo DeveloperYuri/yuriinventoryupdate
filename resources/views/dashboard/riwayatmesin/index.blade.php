@@ -50,7 +50,8 @@
                                     <thead>
                                         <tr>
                                             <th class="text-center" scope="col">Tanggal</th>
-                                            <th class="text-center" scope="col">Nama Mesin</th>
+                                            <th class="text-center" scope="col">Kategori Mesin</th>
+                                            <th class="text-center" scope="col">Sub Kategori Mesin</th>
                                             <th class="text-center" scope="col">Pekerjaan</th>
                                             <th class="text-center" scope="col">PIC</th>
                                             <th class="text-center" scope="col">Status</th>
@@ -66,10 +67,27 @@
                                             <tr>
                                                 <td class="text-center">
                                                     {{ \Carbon\Carbon::parse($data->tanggal)->format('d-m-Y') }}</td>
-                                                <td class="text-center">{{ $data->nama_mesin }}</td>
+                                                <td class="text-center">{{ $data->category->name ?? '-' }}</td>
+                                                <td class="text-center">{{ $data->subcategory->name ?? '-' }}
+                                                </td>
                                                 <td class="text-center">{{ $data->pekerjaan }}</td>
                                                 <td class="text-center">{{ $data->pic }}</td>
-                                                <td class="text-center"><span class="badge bg-success">{{ $data->status }}</span></td>
+                                                <td class="text-center">
+                                                    @php
+                                                        $badgeColor = 'secondary'; // default
+
+                                                        if ($data->status == 'Selesai') {
+                                                            $badgeColor = 'success';
+                                                        } elseif ($data->status == 'Pending') {
+                                                            $badgeColor = 'warning';
+                                                        } elseif ($data->status == 'Rusak') {
+                                                            $badgeColor = 'danger';
+                                                        }
+                                                    @endphp
+
+                                                    <span class="badge bg-{{ $badgeColor }}">{{ $data->status }}</span>
+                                                </td>
+
 
                                                 @if (Auth::user()->is_role == 2)
                                                     <td class="text-center">

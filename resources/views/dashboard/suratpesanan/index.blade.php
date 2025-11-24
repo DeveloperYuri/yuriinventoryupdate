@@ -9,7 +9,6 @@
                     Pesanan</a>
             @endif
 
-            <a href="{{ route('card-list-spare-parts.index') }}" class="btn btn-secondary"><i class="bi bi-card-list"></i></a>
         </div>
 
         <div class="mt-4">
@@ -178,65 +177,6 @@
                                                         </form>
                                                     @endif
                                                 </td>
-
-
-                                                {{-- <td>
-                                                    @if ($sp->status == 'draft')
-                                                        <a href="{{ route('suratpesanan.edit', $sp->id) }}"
-                                                            class="btn btn-sm btn-primary">Edit</a>
-                                                        <form action="{{ route('suratpesanan.delete', $sp->id) }}"
-                                                            method="POST" style="display:inline;">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="button" class="btn btn-sm btn-danger mt-1"
-                                                                onclick="event.stopPropagation(); confirmDelete(this.form)">
-                                                                Hapus
-                                                            </button>
-                                                        </form>
-                                                        <form action="{{ route('suratpesanan.submit', $sp->id) }}"
-                                                            method="POST" style="display:inline;">
-                                                            @csrf
-                                                            <button type="submit"
-                                                                class="btn btn-sm btn-warning">Ajukan</button>
-                                                        </form>
-                                                    @elseif ($sp->status == 'onprogress' && auth()->user()->is_role == 2)
-                                                        <form action="{{ route('suratpesanan.approve', $sp->id) }}"
-                                                            method="POST" style="display:inline;">
-                                                            @csrf
-                                                            <button type="submit"
-                                                                class="btn btn-sm btn-success">Approve</button>
-                                                        </form>
-                                                        <form action="{{ route('suratpesanan.reject', $sp->id) }}"
-                                                            method="POST" style="display:inline;">
-                                                            @csrf
-                                                            <button type="submit"
-                                                                class="btn btn-sm btn-danger">Reject</button>
-                                                        </form>
-                                                    @endif
-                                                </td> --}}
-
-
-
-
-                                                {{-- <td class="text-center">
-                                                    @if (Auth::user()->is_role == 1 || Auth::user()->is_role == 2)
-                                                        <a href="{{ route('spare-parts.edit', $sp->id) }}"
-                                                            class="btn btn-sm btn-warning mt-1">Edit</a>
-                                                    @endif
-
-                                                    @if (Auth::user()->is_role == 2)
-                                                        <form action="{{ route('suratpesanan.delete', $sp->id) }}"
-                                                            method="POST" style="display:inline;">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="button" class="btn btn-sm btn-danger mt-1"
-                                                                onclick="event.stopPropagation(); confirmDelete(this.form)">
-                                                                Hapus
-                                                            </button>
-                                                        </form>
-                                                    @endif
-                                                </td> --}}
-
 
                                             </tr>
                                         @endforeach

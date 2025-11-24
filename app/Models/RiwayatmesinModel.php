@@ -19,6 +19,8 @@ class RiwayatmesinModel extends Model
         'pekerjaan',
         'pic',
         'deskripsi',
+        'category_id',
+        'subcategory_id',
         'status'
     ];
 
@@ -33,5 +35,15 @@ class RiwayatmesinModel extends Model
 
         $return = $return->paginate(10);
         return $return;
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(CategoryModel::class, 'category_id');
+    }
+
+    public function subcategory()
+    {
+        return $this->belongsTo(SubCategoryModel::class, 'subcategory_id');
     }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CategoryModel;
 use App\Models\RiwayatmesinModel;
+use App\Models\SubCategoryModel;
 use Illuminate\Http\Request;
 
 class RiwayatmesinController extends Controller
@@ -15,25 +17,31 @@ class RiwayatmesinController extends Controller
 
     public function create()
     {
-        return view('dashboard.riwayatmesin.create');
+        $categories = CategoryModel::all();
+        $subcategories = SubCategoryModel::all();
+        return view('dashboard.riwayatmesin.create', compact('categories', 'subcategories'));
     }
 
     public function store(Request $request)
     {
         $data = request()->validate([
-            'tanggal' =>'required',
-            'nama_mesin' =>'required',
-            'running_hour' =>'required',
-            'pekerjaan' =>'required',
-            'pic' =>'required',
-            'deskripsi' =>'required',
-            'status' =>'required'
+            'tanggal' => 'required',
+            // 'nama_mesin' => 'required',
+            'category_id' => 'required',
+            'subcategory_id' => 'required',
+            'running_hour' => 'required',
+            'pekerjaan' => 'required',
+            'pic' => 'required',
+            'deskripsi' => 'required',
+            'status' => 'required'
         ]);
 
         $data = new RiwayatmesinModel();
 
         $data->tanggal = trim($request->tanggal);
-        $data->nama_mesin = trim($request->nama_mesin);
+        // $data->nama_mesin = trim($request->nama_mesin);
+        $data->category_id = trim($request->category_id);
+        $data->subcategory_id = trim($request->subcategory_id);
         $data->running_hour = trim($request->running_hour);
         $data->pekerjaan = trim($request->pekerjaan);
         $data->pic = trim($request->pic);
@@ -44,11 +52,18 @@ class RiwayatmesinController extends Controller
         return redirect()->route('index.riwayatmesin')->with('success', 'Tambah Riwayat Mesin Berhasil');
     }
 
-    public function edit(string $id)
+    public function edit($id)
     {
-        $data = RiwayatmesinModel::findOrFail($id);
-        
-        return view('dashboard.riwayatmesin.edit', compact('data'));
+        // Data utama riwayat
+        $data = RiwayatmesinModel::with(['category', 'subcategory'])->findOrFail($id);
+
+        // List Category
+        $categories = CategoryModel::all();
+
+        // List SubCategory sesuai category milik data
+        $subcategories = SubCategoryModel::where('category_id', $data->category_id)->get();
+
+        return view('dashboard.riwayatmesin.edit', compact('data', 'categories', 'subcategories'));
     }
 
     public function update(Request $request, string $id)
@@ -57,7 +72,8 @@ class RiwayatmesinController extends Controller
 
         $data->update([
             'tanggal' => $request->tanggal,
-            'nama_mesin' => $request->nama_mesin,
+            'category_id' => $request->category_id,
+            'subcategory_id' => $request->subcategory_id,
             'running_hour' => $request->running_hour,
             'pekerjaan' => $request->pekerjaan,
             'pic' => $request->pic,
@@ -71,7 +87,7 @@ class RiwayatmesinController extends Controller
     public function show(string $id)
     {
         $data = RiwayatmesinModel::findOrFail($id);
-        
+
         return view('dashboard.riwayatmesin.show', compact('data'));
     }
 
@@ -82,6 +98,4 @@ class RiwayatmesinController extends Controller
 
         return redirect()->route('index.riwayatmesin')->with('success', 'Hapus Riwayat Mesin Berhasil');
     }
-
-
 }

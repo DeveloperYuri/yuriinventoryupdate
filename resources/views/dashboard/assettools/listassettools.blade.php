@@ -5,7 +5,7 @@
 
         <div class="pagetitle d-flex justify-content-between align-items-center">
             @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
-                <a href="{{ route('asset-tools.create') }}" class="btn btn-primary">Add Asset Tools</a>
+                <a href="{{ route('asset-tools.create') }}" class="btn btn-primary">Tambah Asset Tools</a>
             @endif
 
             <a href="{{ route('card-list-asset-tools.index') }}" class="btn btn-secondary"><i class="bi bi-card-list"></i></a>
@@ -87,12 +87,37 @@
                                                 <td class="text-center">{{ $getRecord->firstItem() + $index }}</td>
                                                 <td class="text-center">
                                                     @if ($asset->image)
+                                                        <a href="#" data-bs-toggle="modal"
+                                                            data-bs-target="#imageModal{{ $asset->id }}">
+                                                            <img src="{{ asset('images/' . $asset->image) }}"
+                                                                class="img-thumbnail"
+                                                                style="width: 100px; height: 70px; object-fit: contain;">
+                                                        </a>
+
+                                                        <!-- Modal polos -->
+                                                        <div class="modal fade" id="imageModal{{ $asset->id }}"
+                                                            tabindex="-1" aria-hidden="true">
+                                                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                                <div
+                                                                    class="modal-content bg-transparent border-0 shadow-none">
+                                                                    <div class="modal-body text-center p-0">
+                                                                        <img src="{{ asset('images/' . $asset->image) }}"
+                                                                            class="img-fluid rounded"
+                                                                            style="max-height: 90vh;">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                </td>
+                                                {{-- <td class="text-center">
+                                                    @if ($asset->image)
                                                         <img src="{{ asset('images/' . $asset->image) }}"
                                                             alt="{{ $asset->name }}" width="60">
                                                     @else
                                                         <span class="text-muted">Tidak ada</span>
                                                     @endif
-                                                </td>
+                                                </td> --}}
                                                 <td class="text-center">{{ $asset->name }}</td>
                                                 <td class="text-center">Rp {{ number_format($asset->price, 0, ',', '.') }}
                                                 </td>
