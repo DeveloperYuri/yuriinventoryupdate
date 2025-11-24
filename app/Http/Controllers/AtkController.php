@@ -38,15 +38,15 @@ class AtkController extends Controller
         $request->validate([
             'name' => 'required|string',
             // 'price' => 'required|integer',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240'
+            // 'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240'
         ], [
             'name' => 'Nama Spare Part wajib diisi',
             'price.required' => 'Harga Spare Part wajib diisi',
             'price.integer' => 'Harga Spare Part harus berupa angka',
-            'image.required'   => 'File gambar harus diisi',
-            'image.image'   => 'File harus berupa gambar',
-            'image.mimes'   => 'File harus JPG, JPEG, PNG, atau GIF',
-            'image.max'     => 'Ukuran file maksimal 10MB',
+            // 'image.required'   => 'File gambar harus diisi',
+            // 'image.image'   => 'File harus berupa gambar',
+            // 'image.mimes'   => 'File harus JPG, JPEG, PNG, atau GIF',
+            // 'image.max'     => 'Ukuran file maksimal 10MB',
         ]);
 
         $data = $request->only('name', 'price', 'satuan_id', 'stock');
@@ -65,7 +65,9 @@ class AtkController extends Controller
     public function edit($id)
     {
         $atk = AtkModel::findOrFail($id);
-        return view('dashboard.atk.edit', compact('atk'));
+        $satuans = SatuanModel::all();
+
+        return view('dashboard.atk.edit', compact('atk', 'satuans'));
     }
 
     public function update(Request $request, $id)
@@ -87,7 +89,7 @@ class AtkController extends Controller
         $atk = AtkModel::findOrFail($id);
         $atk->name = $request->name;
         $atk->price = $request->price;
-        $atk->satuan = $request->satuan;
+        $atk->satuan_id = $request->satuan_id;
 
         if ($request->hasFile('image')) {
             if ($atk->image && file_exists(public_path('images/' . $atk->image))) {

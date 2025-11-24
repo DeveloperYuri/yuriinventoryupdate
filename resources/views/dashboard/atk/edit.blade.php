@@ -10,8 +10,7 @@
                         <div class="card-body">
                             <h5 class="card-title">Edit Spare Part</h5>
 
-                            <form method="POST" action="{{ route('atk.update', $atk->id) }}"
-                                enctype="multipart/form-data">
+                            <form method="POST" action="{{ route('atk.update', $atk->id) }}" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
 
@@ -19,8 +18,8 @@
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">IMAGE</label>
                                     <div class="col-sm-10">
                                         @if ($atk->image)
-                                            <img src="{{ asset('images/' . $atk->image) }}"
-                                                alt="{{ $atk->name }}" width="100">
+                                            <img src="{{ asset('images/' . $atk->image) }}" alt="{{ $atk->name }}"
+                                                width="100">
                                         @else
                                             <span class="text-muted">Tidak ada</span>
                                         @endif
@@ -62,6 +61,23 @@
                                 @endif
 
                                 <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">Satuan</label>
+                                    <div class="col-sm-10">
+                                        <select name="satuan_id" class="form-control" required>
+                                            <option value="">-- Pilih Satuan --</option>
+                                            @foreach ($satuans as $satuan)
+                                                <option value="{{ $satuan->id }}"
+                                                    {{ $atk->satuan_id == $satuan->id ? 'selected' : '' }}>
+                                                    {{ $satuan->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+                                {{-- <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Satuan</label>
                                     <div class="col-sm-10">
                                         <select name="satuan" class="form-control" required dusk="atkintoggle"
@@ -77,7 +93,7 @@
                                                 Set</option>
                                         </select>
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <div class="col-sm-10">
                                     <button type="submit" class="btn btn-primary">Save</button>

@@ -24,7 +24,7 @@
                 </div>
             </form>
         </div>
-        
+
         <section class="section">
             <div class="row mt-4">
                 <div class="col-lg-12">
@@ -77,8 +77,8 @@
                                             </div>
                                         </div> --}}
 
-                                        <a href="{{ route('atk.cetakpdf') }}" class="btn btn-success"
-                                            target="_blank">Print PDF</a>
+                                        <a href="{{ route('atk.cetakpdf') }}" class="btn btn-success" target="_blank">Print
+                                            PDF</a>
                                         <a href="{{ route('atk.export') }}" class="btn btn-success">Export Excel</a>
                                     </div>
                                 @endif
@@ -124,6 +124,28 @@
                                             <tr>
                                                 {{-- <td class="text-center">{{ $getRecord->firstItem() + $index }}</td> --}}
                                                 <td class="text-center">
+                                                    <a href="#" data-bs-toggle="modal"
+                                                        data-bs-target="#imageModal{{ $atk->id }}">
+                                                        <img src="{{ asset('images/' . ($atk->image ?? 'default.png')) }}"
+                                                            class="img-thumbnail"
+                                                            style="width: 100px; height: 70px; object-fit: contain;">
+                                                    </a>
+
+                                                    <!-- Modal -->
+                                                    <div class="modal fade" id="imageModal{{ $atk->id }}"
+                                                        tabindex="-1" aria-hidden="true">
+                                                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                            <div class="modal-content bg-transparent border-0 shadow-none">
+                                                                <div class="modal-body text-center p-0">
+                                                                    <img src="{{ asset('images/' . ($atk->image ?? 'default.png')) }}"
+                                                                        class="img-fluid rounded" style="max-height: 90vh;">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+
+                                                {{-- <td class="text-center">
                                                     @if ($atk->image)
                                                         <a href="#" data-bs-toggle="modal"
                                                             data-bs-target="#imageModal{{ $atk->id }}">
@@ -147,9 +169,9 @@
                                                             </div>
                                                         </div>
                                                     @endif
-                                                </td>
+                                                </td> --}}
 
-                                               
+
                                                 <td class="text-center">{{ $atk->name }}</td>
                                                 @if (Auth::user()->is_role == 2)
                                                     <td class="text-center">Rp
@@ -158,7 +180,7 @@
                                                 @endif
 
                                                 <td class="text-center">{{ $atk->stock }}</td>
-                                                <td class="text-center">{{ $atk->satuan->name }}</td>
+                                                <td class="text-center">{{ $atk->satuan->name ?? '-' }}</td>
 
 
                                                 <td class="text-center">
@@ -173,8 +195,8 @@
                                                     @endif
 
                                                     @if (Auth::user()->is_role == 2)
-                                                        <form action="{{ route('atk.destroy', $atk->id) }}"
-                                                            method="POST" style="display:inline;">
+                                                        <form action="{{ route('atk.destroy', $atk->id) }}" method="POST"
+                                                            style="display:inline;">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="button" class="btn btn-sm btn-danger mt-1"
