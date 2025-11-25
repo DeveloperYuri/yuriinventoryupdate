@@ -31,7 +31,8 @@
     <!-- Template Main CSS File -->
     <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/css/jqueryui.css') }}">
-
+    <link rel="stylesheet" href="{{ asset('assets/css/litepicker.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" />
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -65,6 +66,7 @@
     <script src="{{ asset('assets/vendor/php-email-form/validate.js') }}"></script>
     <script src="{{ asset('assets/js/jquery36.js') }}"></script>
     <script src="{{ asset('assets/js/jqueryui.min.js') }}"></script>
+    <script src="{{ asset('assets/js/litepicker.js') }}"></script>
 
     <!-- Template Main JS File -->
     <script src="{{ asset('assets/js/main.js') }}"></script>
@@ -77,6 +79,8 @@
                 '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
+
 
     @stack('scripts')
 

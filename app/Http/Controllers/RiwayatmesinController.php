@@ -86,9 +86,16 @@ class RiwayatmesinController extends Controller
 
     public function show(string $id)
     {
-        $data = RiwayatmesinModel::findOrFail($id);
+        // Data utama riwayat
+        $data = RiwayatmesinModel::with(['category', 'subcategory'])->findOrFail($id);
 
-        return view('dashboard.riwayatmesin.show', compact('data'));
+        // List Category
+        $categories = CategoryModel::all();
+
+        // List SubCategory sesuai category milik data
+        $subcategories = SubCategoryModel::where('category_id', $data->category_id)->get();
+
+        return view('dashboard.riwayatmesin.show', compact('data', 'categories', 'subcategories'));
     }
 
     public function destroy(string $id)

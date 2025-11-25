@@ -20,7 +20,7 @@
                             placeholder="Searching Asset" name="name">
                     </div>
                     <div class="col-auto">
-                        <button type="submit" class="btn btn-dark">Search</button>
+                        <button type="submit" class="btn btn-dark">Cari</button>
                     </div>
                 </div>
             </form>
@@ -35,7 +35,7 @@
 
                             <div class="d-flex justify-content-between align-items-center mb-3">
 
-                                <h5 class="card-title">List Asset Tools</h5>
+                                <h5 class="card-title">Daftar Asset Tools</h5>
 
                                 @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
                                     <div class="d-flex gap-2">

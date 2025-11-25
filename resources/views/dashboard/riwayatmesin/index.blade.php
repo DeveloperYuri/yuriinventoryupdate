@@ -66,7 +66,9 @@
                                         @forelse ($getRecord as $key => $data)
                                             <tr>
                                                 <td class="text-center">
-                                                    {{ \Carbon\Carbon::parse($data->tanggal)->format('d-m-Y') }}</td>
+                                                    {{ \Carbon\Carbon::parse($data->tanggal)->translatedFormat('d F Y') }}
+                                                </td>
+
                                                 <td class="text-center">{{ $data->category->name ?? '-' }}</td>
                                                 <td class="text-center">{{ $data->subcategory->name ?? '-' }}
                                                 </td>

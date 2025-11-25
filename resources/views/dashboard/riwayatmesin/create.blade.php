@@ -14,16 +14,18 @@
                                 {{ csrf_field() }}
 
                                 <div class="row mb-3">
-                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Tanggal<span
-                                            style="color: red">*</span></label>
+                                    <label class="col-sm-2 col-form-label">Tanggal<span style="color:red">*</span></label>
                                     <div class="col-sm-8">
-                                        <input type="date" class="form-control" name="tanggal"
-                                            value="{{ now()->format('Y-m-d') }}">
+                                        <input id="tanggalMulai" name="tanggal" type="text" class="form-control"
+                                            placeholder="Pilih tanggal..." autocomplete="off">
+                                        <input type="hidden" name="tanggal" id="tanggalHidden">
                                     </div>
                                 </div>
 
+
                                 <div class="row mb-3">
-                                    <label class="col-sm-2 col-form-label">Kategori Mesin</label>
+                                    <label class="col-sm-2 col-form-label">Kategori Mesin<span
+                                            style="color: red">*</span></label>
                                     <div class="col-sm-10">
                                         <select id="category_id" name="category_id"
                                             class="form-control @error('category_id') is-invalid @enderror">
@@ -42,7 +44,8 @@
                                 </div>
 
                                 <div class="row mb-3">
-                                    <label class="col-sm-2 col-form-label">Sub Category</label>
+                                    <label class="col-sm-2 col-form-label">Sub Category<span
+                                            style="color: red">*</span></label>
                                     <div class="col-sm-10">
                                         <select id="subcategory_id" name="subcategory_id"
                                             class="form-control @error('subcategory_id') is-invalid @enderror">
@@ -103,15 +106,6 @@
                                     </div>
                                 </div>
 
-
-                                {{-- <div class="row mb-3">
-                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Status<span
-                                            style="color: red">*</span></label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="inputText" name="status" required>
-                                    </div>
-                                </div> --}}
-
                                 <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label"></label>
                                     <div class="col-sm-10">
@@ -134,7 +128,7 @@
     <script>
         $(document).ready(function() {
             console.log("JQUERY READY JALAN");
-            
+
             var oldSubcategoryId = '{{ old('subcategory_id') }}';
 
             $('#category_id').on('change', function() {
@@ -163,6 +157,26 @@
             var oldCategoryId = '{{ old('category_id') }}';
             if (oldCategoryId) {
                 $('#category_id').val(oldCategoryId).trigger('change');
+            }
+        });
+    </script>
+
+    <script>
+        new Litepicker({
+            element: document.getElementById('tanggalMulai'),
+            lang: 'id', // Bahasa Indonesia
+            format: 'DD MMMM YYYY', // 29 November 2025
+            dropdowns: {
+                minYear: 2020,
+                maxYear: new Date().getFullYear() + 5,
+                months: true,
+                years: true
+            },
+            setup: (picker) => {
+                picker.on('selected', (date) => {
+                    const mysql = date.format('YYYY-MM-DD');
+                    document.getElementById('tanggalHidden').value = mysql;
+                });
             }
         });
     </script>

@@ -23,10 +23,39 @@
                                 </div>
 
                                 <div class="row mb-3">
-                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Nama Mesin<span
-                                            style="color: red">*</span></label>
+                                    <label class="col-sm-2 col-form-label">Kategori Mesin</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="inputText" name="nama_mesin" value="{{ $data->nama_mesin}}" required>
+                                        <select name="category_id" id="category_id" class="form-control">
+                                            <option value="">-- Pilih Category --</option>
+                                            @foreach ($categories as $cat)
+                                                <option value="{{ $cat->id }}"
+                                                    {{ $data->category_id == $cat->id ? 'selected' : '' }}>
+                                                    {{ $cat->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('category_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">Sub Category</label>
+                                    <div class="col-sm-10">
+                                        <select name="subcategory_id" id="subcategory_id" class="form-control">
+                                            <option value="">-- Pilih SubCategory --</option>
+                                            @foreach ($subcategories as $sub)
+                                                <option value="{{ $sub->id }}"
+                                                    {{ $data->subcategory_id == $sub->id ? 'selected' : '' }}>
+                                                    {{ $sub->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+
+                                        @error('subcategory_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
 
