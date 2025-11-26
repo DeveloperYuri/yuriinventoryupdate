@@ -10,15 +10,34 @@
                             <h5 class="card-title">Data Riwayat Mesin</h5>
 
                             <!-- Horizontal Form -->
+
+                            @php
+                                // Format asli dari database: "2025-11-25"
+                                $tanggal_db = $data->tanggal;
+
+                                // Format untuk user: "25 November 2025"
+                                $tanggal_display = \Carbon\Carbon::parse($data->tanggal)->translatedFormat('d F Y');
+
+                                // Tanggal Selesai (DB: YYYY-MM-DD)
+                                $tanggal_selesai_db = $data->tanggal_selesai;
+                                $tanggal_selesai_display = $data->tanggal_selesai
+                                    ? \Carbon\Carbon::parse($data->tanggal_selesai)->translatedFormat('d F Y')
+                                    : '';
+                            @endphp
+
                             <form id="myForm" action="{{ route('update.riwayatmesin', $data->id) }}">
                                 {{ csrf_field() }}
 
                                 <div class="row mb-3">
-                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Tanggal<span
-                                            style="color: red">*</span></label>
+                                    <label class="col-sm-2 col-form-label">Tanggal<span style="color:red">*</span></label>
                                     <div class="col-sm-8">
-                                        <input type="date" class="form-control" name="tanggal"
-                                            value="{{ now()->format('Y-m-d') }}">
+
+                                        <!-- Input tampilan -->
+                                        <input id="tanggalMulai" type="text" class="form-control"
+                                            value="{{ $tanggal_display }}" autocomplete="off">
+
+                                        <!-- Input hidden untuk dikirim -->
+                                        <input type="hidden" name="tanggal" id="tanggalHidden" value="{{ $tanggal_db }}">
                                     </div>
                                 </div>
 
@@ -63,7 +82,8 @@
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Running Hour<span
                                             style="color: red">*</span></label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="inputText" name="running_hour" value="{{ $data->running_hour}}" required>
+                                        <input type="text" class="form-control" id="inputText" name="running_hour"
+                                            value="{{ $data->running_hour }}" required>
                                     </div>
                                 </div>
 
@@ -71,7 +91,8 @@
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Pekerjaan<span
                                             style="color: red">*</span></label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="inputText" name="pekerjaan" value="{{ $data->pekerjaan}}" required>
+                                        <input type="text" class="form-control" id="inputText" name="pekerjaan"
+                                            value="{{ $data->pekerjaan }}" required>
                                     </div>
                                 </div>
 
@@ -79,7 +100,8 @@
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">PIC<span
                                             style="color: red">*</span></label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="inputText" name="pic" value="{{ $data->pic}}" required>
+                                        <input type="text" class="form-control" id="inputText" name="pic"
+                                            value="{{ $data->pic }}" required>
                                     </div>
                                 </div>
 
@@ -92,10 +114,26 @@
                                 </div>
 
                                 <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">Tanggal Selesai<span
+                                            style="color:red">*</span></label>
+                                    <div class="col-sm-8">
+
+                                        <!-- Input tampilan -->
+                                        <input id="tanggalSelesai" type="text" class="form-control"
+                                            value="{{ $tanggal_selesai_display }}" autocomplete="off">
+
+                                        <!-- Input hidden untuk dikirim -->
+                                        <input type="hidden" name="tanggal_selesai" id="tanggalSelesaiHidden"
+                                            value="{{ $tanggal_selesai_db }}">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Status<span
                                             style="color: red">*</span></label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="inputText" name="status" value="{{ $data->status}}" required>
+                                        <input type="text" class="form-control" id="inputText" name="status"
+                                            value="{{ $data->status }}" required>
                                     </div>
                                 </div>
 

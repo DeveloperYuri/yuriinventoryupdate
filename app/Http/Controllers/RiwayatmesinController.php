@@ -47,6 +47,7 @@ class RiwayatmesinController extends Controller
         $data->pic = trim($request->pic);
         $data->deskripsi = trim($request->deskripsi);
         $data->status = trim($request->status);
+        $data->tanggal_selesai = trim($request->tanggal_selesai);
         $data->save();
 
         return redirect()->route('index.riwayatmesin')->with('success', 'Tambah Riwayat Mesin Berhasil');
@@ -78,7 +79,8 @@ class RiwayatmesinController extends Controller
             'pekerjaan' => $request->pekerjaan,
             'pic' => $request->pic,
             'deskripsi' => $request->deskripsi,
-            'status' => $request->status
+            'status' => $request->status,
+            'tanggal_selesai' => $request->tanggal_selesai,
         ]);
 
         return redirect()->route('index.riwayatmesin')->with('success', 'Edit Riwayat Mesin Berhasil');

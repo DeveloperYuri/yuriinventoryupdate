@@ -16,6 +16,12 @@
 
                                 // Format untuk user: "25 November 2025"
                                 $tanggal_display = \Carbon\Carbon::parse($data->tanggal)->translatedFormat('d F Y');
+
+                                // Tanggal Selesai (DB: YYYY-MM-DD)
+                                $tanggal_selesai_db = $data->tanggal_selesai;
+                                $tanggal_selesai_display = $data->tanggal_selesai
+                                    ? \Carbon\Carbon::parse($data->tanggal_selesai)->translatedFormat('d F Y')
+                                    : '';
                             @endphp
 
 
@@ -111,6 +117,21 @@
                                 </div>
 
                                 <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">Tanggal Selesai<span
+                                            style="color:red">*</span></label>
+                                    <div class="col-sm-8">
+
+                                        <!-- Input tampilan -->
+                                        <input id="tanggalSelesai" type="text" class="form-control"
+                                            value="{{ $tanggal_selesai_display }}" autocomplete="off">
+
+                                        <!-- Input hidden untuk dikirim -->
+                                        <input type="hidden" name="tanggal_selesai" id="tanggalSelesaiHidden"
+                                            value="{{ $tanggal_selesai_db }}">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
                                     <label class="col-sm-2 col-form-label">Status<span style="color: red">*</span></label>
                                     <div class="col-sm-10">
                                         <select class="form-select" name="status" required>
@@ -118,7 +139,8 @@
 
                                             <option value="Pending" {{ $data->status == 'Pending' ? 'selected' : '' }}>
                                                 Pending</option>
-                                            <option value="Proses" {{ $data->status == 'Proses' ? 'selected' : '' }}>Proses
+                                            <option value="Proses" {{ $data->status == 'Proses' ? 'selected' : '' }}>
+                                                Proses
                                             </option>
                                             <option value="Rusak" {{ $data->status == 'Rusak' ? 'selected' : '' }}>Rusak
                                             </option>
@@ -212,6 +234,24 @@
                 picker.on('selected', (date) => {
                     const mysql = date.format('YYYY-MM-DD');
                     document.getElementById('tanggalHidden').value = mysql;
+                });
+            }
+        });
+
+        new Litepicker({
+            element: document.getElementById('tanggalSelesai'),
+            lang: 'id', // Bahasa Indonesia
+            format: 'DD MMMM YYYY', // 29 November 2025
+            dropdowns: {
+                minYear: 2020,
+                maxYear: new Date().getFullYear() + 5,
+                months: true,
+                years: true
+            },
+            setup: (picker) => {
+                picker.on('selected', (date) => {
+                    const mysql = date.format('YYYY-MM-DD');
+                    document.getElementById('tanggalSelesaiHidden').value = mysql;
                 });
             }
         });

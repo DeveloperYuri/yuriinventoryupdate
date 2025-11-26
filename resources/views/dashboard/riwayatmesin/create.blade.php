@@ -94,6 +94,15 @@
                                 </div>
 
                                 <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">Tanggal Selesai<span style="color:red">*</span></label>
+                                    <div class="col-sm-8">
+                                        <input id="tanggalSelesai" name="tanggal_selesai" type="text" class="form-control"
+                                            placeholder="Pilih tanggal..." autocomplete="off">
+                                        <input type="hidden" name="tanggal_selesai" id="tanggalSelesaiHidden">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
                                     <label class="col-sm-2 col-form-label">Status<span style="color: red">*</span></label>
                                     <div class="col-sm-10">
                                         <select class="form-select" name="status" required>
@@ -176,6 +185,24 @@
                 picker.on('selected', (date) => {
                     const mysql = date.format('YYYY-MM-DD');
                     document.getElementById('tanggalHidden').value = mysql;
+                });
+            }
+        });
+
+        new Litepicker({
+            element: document.getElementById('tanggalSelesai'),
+            lang: 'id', // Bahasa Indonesia
+            format: 'DD MMMM YYYY', // 29 November 2025
+            dropdowns: {
+                minYear: 2020,
+                maxYear: new Date().getFullYear() + 5,
+                months: true,
+                years: true
+            },
+            setup: (picker) => {
+                picker.on('selected', (date) => {
+                    const mysql = date.format('YYYY-MM-DD');
+                    document.getElementById('tanggalSelesaiHidden').value = mysql;
                 });
             }
         });

@@ -21,7 +21,8 @@ class RiwayatmesinModel extends Model
         'deskripsi',
         'category_id',
         'subcategory_id',
-        'status'
+        'status',
+        'tanggal_selesai'
     ];
 
     static public function getRecord($request)
