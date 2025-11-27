@@ -263,7 +263,7 @@
     <script>
         $(function() {
             $("#searchingtitle").autocomplete({
-                source: "{{ route('spare-parts.autocomplete') }}",
+                source: "{{ route('atk.autocomplete') }}",
                 minLength: 2, // mulai search setelah 2 karakter
             });
         });

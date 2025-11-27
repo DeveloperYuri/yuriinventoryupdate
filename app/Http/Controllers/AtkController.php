@@ -212,4 +212,13 @@ class AtkController extends Controller
     {
         return Excel::download(new AtkExport, 'laporan_atk.xlsx');
     }
+
+    public function autocomplete(Request $request)
+    {
+        $query = $request->get('term'); // jQuery UI pakai "term" sebagai key
+        $data = AtkModel::where('name', 'LIKE', "%{$query}%")
+            ->pluck('name'); // ambil hanya kolom name
+
+        return response()->json($data);
+    }
 }

@@ -243,6 +243,7 @@ Route::get('/atk/pdf', [AtkController::class, 'cetakPDF'])->name('atk.cetakpdf')
 Route::get('/export-atk', [AtkController::class, 'exportExcel'])->name('atk.export');
 Route::get('/riwayat-atk', [AtkController::class, 'history'])->name('atk.history');
 Route::get('/riwayat-atk/detail/{id}', [AtkController::class, 'viewHistoryPerItem'])->name('atk.detail');
+Route::get('/atk/autocomplete', [AtkController::class, 'autocomplete'])->name('atk.autocomplete');
 
 
 // ATK Masuk Banyak Item
