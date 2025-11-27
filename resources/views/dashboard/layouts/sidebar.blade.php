@@ -115,7 +115,7 @@
          <!-- End Asset Sidebar -->
 
          <!-- Start ATK Sidebar -->
-         @if (Auth::user()->is_role == 2)
+         @if (Auth::user()->is_role == 1 || Auth::user()->is_role == 2)
          @php
              $isAtkActive =
                  request()->routeIs('atk.*') ||
