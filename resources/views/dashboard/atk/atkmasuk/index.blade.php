@@ -3,7 +3,7 @@
 @section('content')
     <main id="main" class="main">
 
-        @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
+        @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 3)
             <div class="pagetitle">
                 <a href="{{ route('atkmasuk.create') }}" class="btn btn-primary" dusk="createsparepartin">Tambah ATK Masuk</a>
             </div><!-- End Page Title -->

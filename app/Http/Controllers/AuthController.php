@@ -10,25 +10,28 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function login(){
+    public function login()
+    {
         return view('login.index');
     }
 
     public function login_post(Request $request)
     {
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password], true)) {
+
             if (Auth::user()->is_role == 2) {
-                // echo "User";
+                // echo "Super Admin";
                 return redirect()->intended('dashboardsuperadmin');
             } else if (Auth::user()->is_role == 1) {
                 // echo "Admin";
                 return redirect()->intended('dashboardadmin');
-            } 
-            else if (Auth::user()->is_role == 0) {
-                // echo "Super Admin";
+            } else if (Auth::user()->is_role == 0) {
+                // echo "User";
                 return redirect()->intended('dashboardusers');
-            } 
-            else {
+            } else if (Auth::user()->is_role == 3) {
+                // echo "HRD";
+                return redirect()->intended('dashboardhr');;
+            } else {
                 return redirect('login')->with('error', 'No Available Email.. Please Check');
             }
         } else {
@@ -36,11 +39,13 @@ class AuthController extends Controller
         }
     }
 
-    public function register(){
+    public function register()
+    {
         return view('register.index');
     }
 
-    public function registerpost(Request $request){
+    public function registerpost(Request $request)
+    {
 
         // dd($request->all());
         $user = request()->validate([
@@ -68,15 +73,16 @@ class AuthController extends Controller
         return redirect(url('/'));
     }
 
-    public function loginuser(){
+    public function loginuser()
+    {
         return view('user');
     }
-    public function loginsuperadmin(){
+    public function loginsuperadmin()
+    {
         return view('superadmin');
     }
-    public function loginadmin(){
+    public function loginadmin()
+    {
         return view('admin');
     }
-
-
 }

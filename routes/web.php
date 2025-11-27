@@ -128,10 +128,20 @@ Route::group(['middleware' => 'admin'], function () {
 
 });
 
+Route::group(['middleware' => 'hrd'], function () {
+    Route::get('/dashboardhr', [DashboardController::class, 'index'])->name('indexdashboardhr');
+
+});
+
 Route::group(['middleware' => 'users'], function () {
     Route::get('/dashboardusers', [DashboardController::class, 'index'])->name('indexdashboarduser');
 
 });
+
+// Route::group(['middleware' => 'hrd'], function () {
+//     Route::get('/dashboardhr', [DashboardController::class, 'index'])->name('indexdashboardhr');
+
+// });
 
 // Sparepart list In Out
 Route::get('/sparepart', [ListSparePartController::class, 'index'])->name('spare-parts.index');

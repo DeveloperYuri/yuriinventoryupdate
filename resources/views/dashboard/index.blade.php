@@ -21,51 +21,57 @@
                     <div class="row">
 
                         <!-- Spare Part Card -->
-                        <div class="col-xxl-4 col-md-4">
-                            <div class="card info-card sales-card">
-                                <a href="{{ route('spare-parts.index') }}">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Total Spare Part</h5>
+                        @if (Auth::user()->is_role == 0 || Auth::user()->is_role == 1 || Auth::user()->is_role == 2)
+                            <div class="col-xxl-4 col-md-4">
+                                <div class="card info-card sales-card">
+                                    <a href="{{ route('spare-parts.index') }}">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Total Spare Part</h5>
 
-                                        <div class="d-flex align-items-center">
-                                            <div
-                                                class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                                <i class="bi bi-wrench"></i>
-                                            </div>
-                                            <div class="ps-3">
-                                                <h6>{{ $getSparepart }}</h6>
+                                            <div class="d-flex align-items-center">
+                                                <div
+                                                    class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                    <i class="bi bi-wrench"></i>
+                                                </div>
+                                                <div class="ps-3">
+                                                    <h6>{{ $getSparepart }}</h6>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </a>
+                                    </a>
+                                </div>
                             </div>
-                        </div><!-- End Spare Part Card -->
+                        @endif
+                        <!-- End Spare Part Card -->
 
                         <!-- Asset Card -->
-                        <div class="col-xxl-4 col-md-4">
-                            <div class="card info-card sales-card">
-                                <a href="{{ route('asset-tools.index') }}">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Total Asset Tools</h5>
+                        @if (Auth::user()->is_role == 0 || Auth::user()->is_role == 1 || Auth::user()->is_role == 2)
+                            <div class="col-xxl-4 col-md-4">
+                                <div class="card info-card sales-card">
+                                    <a href="{{ route('asset-tools.index') }}">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Total Asset Tools</h5>
 
-                                        <div class="d-flex align-items-center">
-                                            <div
-                                                class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                                <i class="bi bi-tools"></i>
-                                            </div>
-                                            <div class="ps-3">
-                                                <h6>{{ $getAssettools }}</h6>
+                                            <div class="d-flex align-items-center">
+                                                <div
+                                                    class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                    <i class="bi bi-tools"></i>
+                                                </div>
+                                                <div class="ps-3">
+                                                    <h6>{{ $getAssettools }}</h6>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </a>
+                                    </a>
+                                </div>
                             </div>
-                        </div><!-- End Asset Card -->
+                        @endif
+                        <!-- End Asset Card -->
 
                         <!-- Sales Card -->
                         <div class="col-xxl-4 col-md-4">
                             <div class="card info-card sales-card">
-                                <a href="{{ route('indexsupplier')}}">
+                                <a href="{{ route('indexsupplier') }}">
                                     <div class="card-body">
                                         <h5 class="card-title">Total Supplier</h5>
 
