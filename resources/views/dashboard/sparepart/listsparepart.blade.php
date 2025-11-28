@@ -5,7 +5,7 @@
 
         <div class="pagetitle d-flex justify-content-between align-items-center">
             @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
-                <a href="{{ route('spare-parts.create') }}" class="btn btn-primary">Add Spare Part</a>
+                <a href="{{ route('spare-parts.create') }}" class="btn btn-primary">Tambah Spare Part</a>
             @endif
 
             <a href="{{ route('card-list-spare-parts.index') }}" class="btn btn-secondary"><i class="bi bi-card-list"></i></a>
@@ -16,10 +16,18 @@
                 <div class="row g-2 align-items-center">
                     <div class="col">
                         <input id="searchingtitle" type="text" class="form-control" value="{{ Request()->name }}"
-                            placeholder="Searching Spare Part" name="name">
+                            placeholder="Nama Spare Part" name="name">
                     </div>
+                    {{-- <div class="col-3">
+                        <input id="searchingtitle" type="text" class="form-control" value="{{ Request()->name }}"
+                            placeholder="Kategori" name="category">
+                    </div>
+                    <div class="col-3">
+                        <input id="searchingtitle" type="text" class="form-control" value="{{ Request()->name }}"
+                            placeholder="Sub Kategori" name="subcagtegory">
+                    </div> --}}
                     <div class="col-auto">
-                        <button type="submit" class="btn btn-dark">Search</button>
+                        <button type="submit" class="btn btn-dark">Cari</button>
                     </div>
                 </div>
             </form>
@@ -48,7 +56,7 @@
                         <div class="card-body">
 
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="card-title mb-0">List Spare Part</h5>
+                                <h5 class="card-title mb-0">Daftar Spare Part</h5>
 
                                 @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
                                     <div class="d-flex gap-2">
@@ -125,6 +133,9 @@
                                             @if (Auth::user()->is_role == 2)
                                                 <th class="text-center">Harga</th>
                                             @endif
+
+                                            <th class="text-center">Kategori</th>
+                                            <th class="text-center">Sub Categori</th>
                                             <th class="text-center">Stok</th>
                                             <th class="text-center">Satuan</th>
 
@@ -183,6 +194,8 @@
                                                 @endif
 
                                                 <td class="text-center">{{ $part->stock }}</td>
+                                                <td class="text-center">{{ $part->satuan }}</td>
+                                                <td class="text-center">{{ $part->satuan }}</td>
                                                 <td class="text-center">{{ $part->satuan }}</td>
 
 

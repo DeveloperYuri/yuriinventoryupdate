@@ -30,7 +30,7 @@ class ListSparePartModel extends Model
                 $return = $return->where('spare_parts.name', 'like', '%' . Request::get('name') . '%');
             }
 
-        $return = $return->paginate(10);
+        $return = $return->paginate(10)->withQueryString();;
         return $return;
     }
 
