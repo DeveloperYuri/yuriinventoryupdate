@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('asset_tools', function (Blueprint $table) {
-            $table->string('satuan');
+        Schema::table('spare_parts', function (Blueprint $table) {
+            $table->integer('category_id')->nullable();
+            $table->integer('subcategory_id')->nullable();
         });
     }
 
@@ -21,7 +22,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('asset_tools', function (Blueprint $table) {
+        Schema::table('spare_parts', function (Blueprint $table) {
             //
         });
     }

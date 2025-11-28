@@ -22,13 +22,13 @@
                 </div>
             </form>
 
-            @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
+            @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 3)
                 <div>
-                    <a href="{{ route('sparepart.history.pdf', ['start_date' => request('start_date'), 'end_date' => request('end_date')]) }}"
+                    <a href="{{ route('atk.history.pdf', ['start_date' => request('start_date'), 'end_date' => request('end_date')]) }}"
                         class="btn btn-success">Print PDF</a>
                 </div>
                 <div>
-                    <a href="{{ route('sparepart.history.excel', ['start_date' => request('start_date'), 'end_date' => request('end_date')]) }}"
+                    <a href="{{ route('atk.history.excel', ['start_date' => request('start_date'), 'end_date' => request('end_date')]) }}"
                         class="btn btn-success" target="_blank">
                         Export XLX
                     </a>

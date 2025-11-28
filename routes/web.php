@@ -285,3 +285,8 @@ Route::prefix('suratpesanan-atk')->name('suratpesanan-atk.')->group(function () 
     Route::post('{id}/reject', [SuratpesananatkController::class, 'reject'])->name('reject');
 });
 
+Route::get('/atk/history/pdf', [AtkController::class, 'exportHistoryPDF'])->name('atk.history.pdf');
+Route::get('/atk/history/excel', [AtkController::class, 'exportHistoryExcel'])->name('atk.history.excel');
+
+
+

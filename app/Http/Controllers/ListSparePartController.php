@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Exports\SparepartExport;
 use App\Imports\SparePartImport;
+use App\Models\CategoryModel;
 use App\Models\ListSparePartModel;
+use App\Models\SubCategoryModel;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
@@ -13,8 +15,12 @@ class ListSparePartController extends Controller
 {
     public function index(Request $request)
     {
-        $data['getRecord'] = ListSparePartModel::getRecord($request);
-        return view('dashboard.sparepart.listsparepart', $data);
+        $getRecord = ListSparePartModel::getRecord($request);
+
+        $categories = CategoryModel::all();
+        $subcategories = SubCategoryModel::all();
+
+        return view('dashboard.sparepart.listsparepart', compact('getRecord', 'categories', 'subcategories'));
     }
 
     public function cardindex(Request $request)
@@ -25,17 +31,21 @@ class ListSparePartController extends Controller
 
     public function create()
     {
-        return view('dashboard.sparepart.createlistsparepart');
+        $categories = CategoryModel::all();
+        $subcategories = SubCategoryModel::all();
+
+        return view('dashboard.sparepart.createlistsparepart', compact('categories', 'subcategories'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string',
+            'name' => 'required|unique:spare_parts,name',
             // 'price' => 'required|integer',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240'
         ], [
             'name' => 'Nama Spare Part wajib diisi',
+            'name.unique'     => 'Nama Spare Part sudah ada',
             'price.required' => 'Harga Spare Part wajib diisi',
             'price.integer' => 'Harga Spare Part harus berupa angka',
             'image.required'   => 'File gambar harus diisi',
@@ -44,7 +54,7 @@ class ListSparePartController extends Controller
             'image.max'     => 'Ukuran file maksimal 10MB',
         ]);
 
-        $data = $request->only('name', 'price', 'satuan', 'numbers');
+        $data = $request->only('name', 'price', 'satuan', 'numbers', 'category_id', 'subcategory_id');
 
         // ✅ Generate part_number berdasarkan kata pertama dari name
         $jenis = strtolower(strtok($request->name, ' ')); // ambil kata pertama
@@ -66,7 +76,11 @@ class ListSparePartController extends Controller
     public function edit($id)
     {
         $sparePart = ListSparePartModel::findOrFail($id);
-        return view('dashboard.sparepart.editsparepart', compact('sparePart'));
+
+        $categories = CategoryModel::all();
+        $subcategories = SubCategoryModel::all();
+
+        return view('dashboard.sparepart.editsparepart', compact('sparePart', 'categories', 'subcategories'));
     }
 
     public function update(Request $request, $id)
@@ -90,6 +104,8 @@ class ListSparePartController extends Controller
         $sparePart->price = $request->price;
         $sparePart->satuan = $request->satuan;
         $sparePart->numbers = $request->numbers;
+        $sparePart->category_id = $request->category_id;
+        $sparePart->subcategory_id = $request->subcategory_id;
 
 
         if ($request->hasFile('image')) {

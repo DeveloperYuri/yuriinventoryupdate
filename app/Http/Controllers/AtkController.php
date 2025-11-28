@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\AtkExport;
+use App\Exports\AtkHistoryExport;
 use App\Models\AtkModel;
 use App\Models\AtktransactionModel;
 use App\Models\SatuanModel;
@@ -220,5 +221,31 @@ class AtkController extends Controller
             ->pluck('name'); // ambil hanya kolom name
 
         return response()->json($data);
+    }
+
+    public function exportHistoryPDF(Request $request)
+    {
+        $query = AtktransactionModel::with('atk')->orderByDesc('created_at');
+
+        if ($request->start_date) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+
+        if ($request->end_date) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        $transactions = $query->get();
+
+        $pdf = Pdf::loadView('dashboard.atk.atkpdf.atkhistory', compact('transactions'))->setPaper('A4', 'portrait');
+        return $pdf->download('laporan_riwayat_atk.pdf');
+    }
+
+    public function exportHistoryExcel(Request $request)
+    {
+        return Excel::download(
+            new AtkHistoryExport($request->start_date, $request->end_date),
+            'laporan_riwayat_sparepartinout.xlsx'
+        );
     }
 }

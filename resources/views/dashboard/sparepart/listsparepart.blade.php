@@ -14,39 +14,39 @@
         <div class="mt-4">
             <form method="get">
                 <div class="row g-2 align-items-center">
-                    <div class="col">
-                        <input id="searchingtitle" type="text" class="form-control" value="{{ Request()->name }}"
-                            placeholder="Nama Spare Part" name="name">
-                    </div>
-                    {{-- <div class="col-3">
-                        <input id="searchingtitle" type="text" class="form-control" value="{{ Request()->name }}"
-                            placeholder="Kategori" name="category">
+                    <div class="col-4">
+                        <input type="text" name="name" class="form-control" value="{{ request('name') }}"
+                            placeholder="Nama Spare Part">
+
                     </div>
                     <div class="col-3">
-                        <input id="searchingtitle" type="text" class="form-control" value="{{ Request()->name }}"
-                            placeholder="Sub Kategori" name="subcagtegory">
-                    </div> --}}
+                        <select id="category_id" name="category_id"
+                            class="form-control @error('category_id') is-invalid @enderror">
+                            <option value="">-- Pilih Category --</option>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}"
+                                    {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-3">
+                        <select id="subcategory_id" name="subcategory_id"
+                            class="form-control @error('subcategory_id') is-invalid @enderror">
+                            <option value="">-- Pilih Sub Category --</option>
+                            {{-- jika ada subcategories awal (misal edit), bisa looping di sini --}}
+
+                        </select>
+                    </div>
+
                     <div class="col-auto">
-                        <button type="submit" class="btn btn-dark">Cari</button>
+                        <button type="submit" class="btn btn-primary">Cari</button>
+                        <a href="{{ route('spare-parts.index') }}" class="btn btn-secondary">Reset</a>
                     </div>
                 </div>
             </form>
         </div>
-
-        {{-- <div class="mt-4">
-            <form method="get">
-                <div class="row g-2 align-items-center">
-                    <div class="col">
-                        <input id="searchingtitle" type="text" class="form-control" value="{{ Request()->name }}"
-                            placeholder="Searching Spare Part" name="name">
-                    </div>
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-dark">Search</button>
-                    </div>
-                </div>
-            </form>
-        </div> --}}
-
 
         <section class="section">
             <div class="row mt-4">
@@ -135,7 +135,7 @@
                                             @endif
 
                                             <th class="text-center">Kategori</th>
-                                            <th class="text-center">Sub Categori</th>
+                                            <th class="text-center">Sub Kategori</th>
                                             <th class="text-center">Stok</th>
                                             <th class="text-center">Satuan</th>
 
@@ -149,39 +149,28 @@
 
                                         @foreach ($getRecord as $index => $part)
                                             <tr>
-                                                {{-- <td class="text-center">{{ $getRecord->firstItem() + $index }}</td> --}}
                                                 <td class="text-center">
-                                                    @if ($part->image)
-                                                        <a href="#" data-bs-toggle="modal"
-                                                            data-bs-target="#imageModal{{ $part->id }}">
-                                                            <img src="{{ asset('images/' . $part->image) }}"
-                                                                class="img-thumbnail"
-                                                                style="width: 100px; height: 70px; object-fit: contain;">
-                                                        </a>
+                                                    <a href="#" data-bs-toggle="modal"
+                                                        data-bs-target="#imageModal{{ $part->id }}">
+                                                        <img src="{{ asset('images/' . ($part->image ?? 'default.png')) }}"
+                                                            class="img-thumbnail"
+                                                            style="width: 100px; height: 70px; object-fit: contain;">
+                                                    </a>
 
-                                                        <!-- Modal polos -->
-                                                        <div class="modal fade" id="imageModal{{ $part->id }}"
-                                                            tabindex="-1" aria-hidden="true">
-                                                            <div class="modal-dialog modal-dialog-centered modal-lg">
-                                                                <div
-                                                                    class="modal-content bg-transparent border-0 shadow-none">
-                                                                    <div class="modal-body text-center p-0">
-                                                                        <img src="{{ asset('images/' . $part->image) }}"
-                                                                            class="img-fluid rounded"
-                                                                            style="max-height: 90vh;">
-                                                                    </div>
+                                                    <div class="modal fade" id="imageModal{{ $part->id }}"
+                                                        tabindex="-1">
+                                                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                            <div class="modal-content bg-transparent border-0 shadow-none">
+                                                                <div class="modal-body text-center p-0">
+                                                                    <img src="{{ asset('images/' . ($part->image ?? 'default.png')) }}"
+                                                                        class="img-fluid rounded"
+                                                                        style="max-height: 90vh;">
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    @endif
+                                                    </div>
                                                 </td>
-                                                {{-- @if ($part->image)
-                                                        <img src="{{ asset('images/' . $part->image) }}"
-                                                            alt="{{ $part->name }}" width="60">
-                                                    @else
-                                                        <img src="{{ asset('images/default.png') }}"
-                                                            alt="{{ $part->name }}" width="60" loading="lazy">
-                                                    @endif --}}
+
                                                 </td>
                                                 <td class="text-center">
                                                     {{ !empty($part->numbers) ? $part->numbers : '000-000-000' }}
@@ -193,9 +182,10 @@
                                                     </td>
                                                 @endif
 
+                                                <td class="text-center">{{ $part->category->name ?? '-' }}</td>
+                                                <td class="text-center">{{ $part->subcategory->name ?? '-' }}</td>
                                                 <td class="text-center">{{ $part->stock }}</td>
-                                                <td class="text-center">{{ $part->satuan }}</td>
-                                                <td class="text-center">{{ $part->satuan }}</td>
+
                                                 <td class="text-center">{{ $part->satuan }}</td>
 
 
@@ -282,6 +272,42 @@
                 source: "{{ route('spare-parts.autocomplete') }}",
                 minLength: 2, // mulai search setelah 2 karakter
             });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+
+            const oldCategoryId = "{{ request('category_id') }}";
+            const oldSubcategoryId = "{{ request('subcategory_id') }}";
+
+            function loadSubcategories(categoryId, selectedId = null) {
+                $('#subcategory_id').html('<option value="">-- Pilih Sub Category --</option>');
+
+                if (!categoryId) return;
+
+                $.get('/get-subcategories/' + categoryId, function(data) {
+                    $.each(data, function(i, subcat) {
+                        $('#subcategory_id').append(
+                            `<option value="${subcat.id}" ${
+                        selectedId == subcat.id ? 'selected' : ''
+                    }>${subcat.name}</option>`
+                        );
+                    });
+                });
+            }
+
+            // Saat category diubah manual
+            $('#category_id').on('change', function() {
+                loadSubcategories(this.value);
+            });
+
+            // Saat halaman reload (search / pagination)
+            if (oldCategoryId) {
+                $('#category_id').val(oldCategoryId);
+                loadSubcategories(oldCategoryId, oldSubcategoryId);
+            }
+
         });
     </script>
 @endpush
