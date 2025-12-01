@@ -36,6 +36,7 @@ class ListSparePartController extends Controller
 
         return view('dashboard.sparepart.createlistsparepart', compact('categories', 'subcategories'));
     }
+    
 
     public function store(Request $request)
     {

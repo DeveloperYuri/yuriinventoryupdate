@@ -14,6 +14,7 @@
                                 enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
+                                
 
                                 <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">IMAGE</label>

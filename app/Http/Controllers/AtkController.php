@@ -223,6 +223,7 @@ class AtkController extends Controller
         return response()->json($data);
     }
 
+    
     public function exportHistoryPDF(Request $request)
     {
         $query = AtktransactionModel::with('atk')->orderByDesc('created_at');

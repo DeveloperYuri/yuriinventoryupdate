@@ -18,6 +18,7 @@
                         <input type="text" name="name" class="form-control" value="{{ request('name') }}"
                             placeholder="Nama Spare Part">
 
+                            
                     </div>
                     <div class="col-3">
                         <select id="category_id" name="category_id"

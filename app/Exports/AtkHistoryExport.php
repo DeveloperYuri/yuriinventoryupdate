@@ -19,6 +19,7 @@ class AtkHistoryExport implements FromView
 
     public function view(): View
     {
+        
         $query = AtktransactionModel::with('atk')->orderByDesc('created_at');
 
         if ($this->start_date) {

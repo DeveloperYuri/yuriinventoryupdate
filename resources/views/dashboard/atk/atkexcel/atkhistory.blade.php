@@ -7,6 +7,7 @@
         </tr>
 
         <tr>
+            
             <th colspan="5">
                 Periode:
                 @if ($startDate && $endDate)

@@ -21,6 +21,7 @@
 </head>
 <body>
 
+    
     <div class="header">
         <img src="{{ public_path('assets/img/logobaru.png') }}" alt="Logo Perusahaan">
         <h1>PT. Joenoes Ikamulya</h1>
