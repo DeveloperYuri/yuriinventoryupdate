@@ -15,7 +15,7 @@
             <form method="get">
                 <div class="row g-2 align-items-center">
                     <div class="col-4">
-                        <input type="text" name="name" class="form-control" value="{{ request('name') }}"
+                        <input type="text" id="searchingtitle" name="name" class="form-control" value="{{ request('name') }}"
                             placeholder="Nama Spare Part">
 
                             
