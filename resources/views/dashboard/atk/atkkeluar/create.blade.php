@@ -12,8 +12,28 @@
 
                             <h2 class="mt-4">Form Permintaan ATK</h2>
 
-                            <form id="myForm" class="mt-4" action="{{ route('atk-keluar.store') }}"
-                                method="POST">
+                            @if ($errors->has('alert'))
+                                <div class="alert alert-danger">
+                                    <strong>GAGAL SIMPAN!</strong>
+                                    <ul class="mb-0">
+                                        @foreach ($errors->get('alert') as $msg)
+                                            <li>{{ $msg }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+
+                            {{-- @if ($errors->has('alert'))
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <strong>GAGAL SIMPAN!</strong><br>
+                                    {{ $errors->first('alert') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            @endif --}}
+
+
+                            <form id="myForm" class="mt-4" action="{{ route('atk-keluar.store') }}" method="POST">
                                 @csrf
                                 <div class="row mb-3">
                                     <!-- Kiri -->
@@ -31,12 +51,12 @@
                                                 <input type="text"
                                                     class="form-control @error('diterima_dari') is-invalid @enderror"
                                                     name="diminta_oleh" value="{{ old('diminta_oleh') }}">
-                                                @error('diterima_dari')
+                                                @error('diminta_oleh')
                                                     <div class="text-danger small">{{ $message }}</div>
                                                 @enderror
                                             </div>
                                         </div>
-                                        
+
                                     </div>
 
                                     <!-- Kanan -->
@@ -83,7 +103,7 @@
                                             <tbody>
                                                 <tr>
                                                     <td colspan="3">
-                                                        <a href="#" id="addLineBtn">Add Spare Part</a>
+                                                        <a href="#" id="addLineBtn">Tambah ATK</a>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -98,7 +118,7 @@
                                 </div>
 
                                 <div class="mt-3">
-                                    <button type="submit" class="btn btn-primary" id="saveBtn">
+                                    <button type="button" class="btn btn-primary" id="saveBtn">
                                         <span id="btnText">Simpan</span>
                                     </button>
                                     <a href="{{ route('atk-keluar.index') }}" class="btn btn-secondary">Kembali</a>
@@ -184,7 +204,7 @@
         });
     </script>
 
-     <script>
+    <script>
         document.getElementById("myForm").addEventListener("keydown", function(event) {
             if (event.key === "Enter" && event.target.tagName !== "TEXTAREA") {
                 event.preventDefault();
