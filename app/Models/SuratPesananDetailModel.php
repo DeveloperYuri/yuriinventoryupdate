@@ -16,6 +16,8 @@ class SuratPesananDetailModel extends Model
         'spare_part_id',
         'qty',
         'stock',
+        'qty_kurang',
+        'keterangan'
     ];
 
     public function header()

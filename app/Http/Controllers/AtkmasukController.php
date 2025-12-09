@@ -31,7 +31,6 @@ class AtkmasukController extends Controller
 
     public function create()
     {
-        // $noDokumen = 'WH43/IN/' . now()->format('Ymd') . '-' . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT);
         $tahun = now()->format('Y');
 
         // Ambil record terakhir tahun ini
@@ -74,7 +73,6 @@ class AtkmasukController extends Controller
                 'diterima_oleh' => $request->diterima_oleh,
                 'supplier_id' => $request->supplier_id,
                 'po_numbers' => $request->po_numbers,
-                // 'user'          => auth()->user()->name,
             ]);
 
             foreach ($request->product as $i => $atk_id) {
@@ -85,9 +83,7 @@ class AtkmasukController extends Controller
                     'atk_id'               => $atk_id,
                     'type'               => 'in',
                     'quantity'           => $request->demand[$i],
-                    // 'price'              => $sparePart->price, // harga snapshot dari master
                     'user'               => $request->diterima_oleh,
-                    // 'user'               => auth()->user()->name,
                 ]);
             }
 

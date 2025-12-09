@@ -111,8 +111,10 @@
                                     <thead>
                                         <tr>
                                             <th>Nama Spare Part</th>
-                                            <th>Qty</th>
+                                            <th>Qty_Minta</th>
                                             <th>Stock</th>
+                                            <th>Qty_Kurang</th>
+                                            <th>Keterangan</th>
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
@@ -135,11 +137,23 @@
                                                 </td>
                                                 <td>
                                                     <input type="number" name="details[{{ $index }}][qty]"
-                                                        class="form-control" value="{{ $item->qty }}">
+                                                        class="form-control qty-minta" value="{{ $item->qty }}">
                                                 </td>
                                                 <td>
-                                                    <input type="number" class="form-control" value="{{ $item->stock }}"
+                                                    <input type="number" class="form-control stok" value="{{ $item->stock }}"
                                                         readonly>
+                                                </td>
+                                                <td>
+                                                    <input type="number" name="details[{{ $index }}][qty_kurang]"
+                                                        class="form-control qty-kurang" readonly
+                                                        value="{{ $item->qty_kurang }}">
+
+                                                </td>
+                                                <td>
+                                                    <input type="text" name="details[{{ $index }}][keterangan]"
+                                                        class="form-control keterangan" readonly
+                                                        value="{{ $item->keterangan }}">
+
                                                 </td>
                                                 <td>
                                                     <button type="button"
@@ -192,6 +206,7 @@
                     // AJAX ambil stok spare part
                     $.getJSON('/spareparts/' + ui.item.id + '/stock', function(data) {
                         stockInput.val(data.stock); // isi stok
+                        hitungQtyKurang(tr);
                     });
 
                     return false;
@@ -225,11 +240,18 @@
                 <input type="hidden" name="product[]">
             </td>
             <td>
-                <input type="number" name="demand[]" class="form-control" min="1" value="1">
+                <input type="number" name="demand[]" class="form-control  qty-minta" min="1" value="1">
             </td>
             <td>
-                <input type="text" name="stock[]" class="form-control" readonly value="0">
+                <input type="text" name="stock[]" class="form-control stok" readonly value="0">
             </td>
+<td>
+        <input type="number" name="qty_kurang[]" class="form-control qty-kurang" readonly value="0">
+    </td>
+
+    <td>
+        <input type="text" name="keterangan[]" class="form-control keterangan">
+    </td>
             
             <td>
                 <button type="button" class="btn btn-danger btn-sm remove-row">Remove</button>
@@ -299,6 +321,25 @@
                 e.preventDefault();
                 e.target.closest("tr").remove();
             }
+        });
+    </script>
+
+    <script>
+        function hitungQtyKurang(tr) {
+            let qtyMinta = parseInt(tr.find('.qty-minta').val()) || 0;
+            let stok = parseInt(tr.find('.stok').val()) || 0;
+
+            let kurang = qtyMinta - stok;
+            if (kurang < 0) kurang = 0;
+
+            tr.find('.qty-kurang').val(kurang);
+        }
+    </script>
+
+    <script>
+        $(document).on('keyup change', '.qty-minta', function() {
+            let tr = $(this).closest('tr');
+            hitungQtyKurang(tr);
         });
     </script>
 @endpush

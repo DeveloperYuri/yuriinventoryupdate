@@ -228,6 +228,7 @@
                      request()->routeIs('indexcategory') ||
                      request()->routeIs('indexsubcategory') ||
                      request()->routeIs('index.satuan') ||
+                     request()->routeIs('index.department') ||
                      request()->routeIs('indexprofile');
              @endphp
 
@@ -272,6 +273,12 @@
                          <a href="{{ route('index.satuan') }}"
                              class="{{ request()->routeIs('index.satuan') ? 'active' : '' }}">
                              <i class="bi bi-circle"></i><span>Satuan</span>
+                         </a>
+                     </li>
+                     <li>
+                         <a href="{{ route('index.department') }}"
+                             class="{{ request()->routeIs('index.department') ? 'active' : '' }}">
+                             <i class="bi bi-circle"></i><span>Department</span>
                          </a>
                      </li>
                      <li>

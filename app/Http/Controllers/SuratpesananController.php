@@ -46,7 +46,7 @@ class SuratpesananController extends Controller
 
         // Ambil record terakhir tahun ini
         $last = SuratPesananHeaderModel::whereYear('created_at', $tahun)
-            ->whereMonth('created_at', $bulanAngka )
+            ->whereMonth('created_at', $bulanAngka)
             ->orderBy('id', 'desc')
             ->first();
 
@@ -66,7 +66,7 @@ class SuratpesananController extends Controller
 
         return view('dashboard.suratpesanan.create', compact('noDokumen', 'locations', 'categories'));
     }
-    
+
     public function store(Request $request)
     {
         // Validasi input dasar
@@ -107,6 +107,8 @@ class SuratpesananController extends Controller
                     'spare_part_id'           => $spare_part_id,
                     'qty'                     => $request->demand[$i] ?? 0,
                     'stock'                   => $request->stock[$i] ?? 0,  // ambil dari form
+                    'qty_kurang'              => $request->qty_kurang[$i] ?? 0,
+                    'keterangan'              => $request->keterangan[$i] ?? null,
                 ]);
             }
 
@@ -169,6 +171,8 @@ class SuratpesananController extends Controller
                         'spare_part_id' => $detailData['spare_part_id'],
                         'qty'           => $detailData['qty'],
                         'stock'         => $detailData['stock'] ?? $detail->stock,
+                        'qty_kurang'    => $detailData['qty_kurang'],
+                        'keterangan'    => $detailData['keterangan'],
                     ]);
                 } else {
                     // Insert baru (kalau ada baris tambahan manual)
@@ -177,6 +181,8 @@ class SuratpesananController extends Controller
                         'spare_part_id'           => $detailData['spare_part_id'],
                         'qty'                     => $detailData['qty'],
                         'stock'                   => $detailData['stock'] ?? 0,
+                        'qty_kurang'              => $detailData['qty_kurang'],
+                        'keterangan'              => $detailData['keterangan'],
                     ]);
                 }
             }
@@ -189,6 +195,8 @@ class SuratpesananController extends Controller
                         'spare_part_id'           => $spare_part_id,
                         'qty'                     => $request->demand[$i] ?? 0,
                         'stock'                   => $request->stock[$i] ?? 0,
+                        'qty_kurang'              => $request->qty_kurang[$i] ?? 0,
+                        'keterangan'              => $request->keterangan[$i] ?? null,
                     ]);
                 }
             }

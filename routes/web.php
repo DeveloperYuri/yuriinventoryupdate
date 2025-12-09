@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ListAssetToolsController;
 use App\Http\Controllers\ListSparePartController;
 use App\Http\Controllers\ListSparePartMultipleController;
@@ -104,6 +105,14 @@ Route::post('/create/satuan/save', [SatuanController::class, 'store'])->name('st
 Route::get('/edit/satuan/{id}', [SatuanController::class, 'edit'])->name('edit.satuan');
 Route::put('/update/satuan/{id}', [SatuanController::class, 'update'])->name('update.satuan');
 Route::delete('/delete/satuan/{id}', [SatuanController::class, 'destroy'])->name('delete.satuan');
+
+// Department
+Route::get('/department', [DepartmentController::class, 'index'])->name('index.department');
+Route::get('/create/department', [DepartmentController::class, 'create'])->name('create.department');
+Route::post('/create/department/save', [DepartmentController::class, 'store'])->name('store.department');
+Route::get('/edit/department/{id}', [DepartmentController::class, 'edit'])->name('edit.department');
+Route::put('/update/department/{id}', [DepartmentController::class, 'update'])->name('update.department');
+Route::delete('/delete/department/{id}', [DepartmentController::class, 'destroy'])->name('delete.department');
 
 // routes/web.php
 Route::get('/get-subcategories/{category_id}', [SubCategoryController::class, 'getByCategory'])->name('get.subcategories');

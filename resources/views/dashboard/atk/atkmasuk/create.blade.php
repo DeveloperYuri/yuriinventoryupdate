@@ -10,7 +10,7 @@
                     <div class="card">
                         <div class="card-body">
 
-                            <h2 class="mt-4">Form Penerimaan Barang</h2>
+                            <h2 class="mt-4">Form Penerimaan ATK</h2>
 
                             <form id="myForm" class="mt-4" action="{{ route('atkmasuk.store') }}" method="POST">
                                 @csrf
@@ -52,8 +52,7 @@
                                                     <div class="text-danger small">{{ $message }}</div>
                                                 @enderror --}}
                                             </div>
-                                        </div>
-
+                                        </div>           
                                     </div>
 
                                     <!-- Kanan -->
@@ -61,10 +60,11 @@
                                         <div class="row mb-3">
                                             <label class="col-sm-4 col-form-label">Date</label>
                                             <div class="col-sm-8">
-                                                <input type="datetime-local" class="form-control" name="tanggal"
-                                                    value="{{ now()->format('Y-m-d\TH:i') }}">
+                                                <input type="date" class="form-control" name="tanggal"
+                                                    value="{{ now()->format('Y-m-d') }}">
                                             </div>
                                         </div>
+
                                         <div class="row mb-3">
                                             <label class="col-sm-4 col-form-label">Di terima oleh</label>
                                             <div class="col-sm-8">
@@ -76,6 +76,7 @@
                                                 @enderror
                                             </div>
                                         </div>
+
                                         <div class="row mb-3">
                                             <label class="col-sm-4 col-form-label">No PO/SP</label>
                                             <div class="col-sm-8">
@@ -123,11 +124,7 @@
                                     </button>
                                     <a href="{{ route('atkmasuk.index') }}" class="btn btn-secondary">Kembali</a>
                                 </div>
-
-                                {{-- <div class="mt-3">
-                                    <button type="submit" class="btn btn-primary">Save</button>
-                                    <a href="{{ route('sparepartinmultiple.index') }}" class="btn btn-secondary">Cancel</a>
-                                </div> --}}
+                                
                             </form>
                         </div>
                     </div>
@@ -204,7 +201,7 @@
         });
     </script>
 
-     <script>
+    <script>
         document.getElementById("myForm").addEventListener("keydown", function(event) {
             if (event.key === "Enter" && event.target.tagName !== "TEXTAREA") {
                 event.preventDefault();

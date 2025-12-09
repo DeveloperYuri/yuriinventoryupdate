@@ -17,8 +17,8 @@
                                     <label class="col-sm-2 col-form-label">Tanggal<span style="color:red">*</span></label>
                                     <div class="col-sm-8">
                                         <input id="tanggalMulai" name="tanggal" type="text" class="form-control"
-                                            placeholder="Pilih tanggal..." autocomplete="off">
-                                        <input type="hidden" name="tanggal" id="tanggalHidden">
+                                            placeholder="Pilih tanggal..." autocomplete="off" value="{{ now()->format('Y-m-d') }}">
+                                        <input type="hidden" name="tanggal" id="tanggalHidden" value="{{ now()->format('Y-m-d') }}">
                                     </div>
                                 </div>
 

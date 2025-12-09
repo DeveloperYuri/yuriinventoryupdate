@@ -107,8 +107,10 @@
                                             <thead>
                                                 <tr>
                                                     <th>Spare Part</th>
-                                                    <th>Qty</th>
+                                                    <th>Qty_Minta</th>
                                                     <th>Stok</th> <!-- kolom stok baru -->
+                                                    <th>Qty_Kurang</th>
+                                                    <th>Keterangan</th>
                                                     <th></th>
                                                 </tr>
                                             </thead>
@@ -128,12 +130,27 @@
                                                                 @enderror
                                                             </td>
                                                             <td>
-                                                                <input type="number" name="demand[]" class="form-control"
-                                                                    min="1" value="{{ old('demand')[$i] ?? 1 }}">
+                                                                <input type="number" name="demand[]"
+                                                                    class="form-control qty-minta" min="1"
+                                                                    value="{{ old('demand')[$i] ?? 1 }}">
+
                                                                 @error('demand.' . $i)
                                                                     <div class="text-danger small">{{ $message }}</div>
                                                                 @enderror
                                                             </td>
+                                                            <td>
+                                                                <input type="number" name="stock[]"
+                                                                    class="form-control stok" readonly value="0">
+                                                            </td>
+                                                            <td>
+                                                                <input type="number" name="qty_kurang[]"
+                                                                    class="form-control qty-kurang" readonly value="0">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" name="keterangan[]"
+                                                                    class="form-control keterangan" readonly value="">
+                                                            </td>
+
                                                             <td>
                                                                 <button type="button"
                                                                     class="btn btn-danger btn-sm removeLine">Remove</button>
@@ -179,33 +196,79 @@
         function applyAutocomplete(el) {
             el.autocomplete({
                 source: function(request, response) {
-                    $.getJSON('/spareparts/search', {
-                        q: request.term
-                    }, function(data) {
-                        response(data);
+                    $.ajax({
+                        url: '/spareparts/search',
+                        dataType: 'json',
+                        data: {
+                            q: request.term
+                        },
+                        success: function(data) {
+                            response(data);
+                        }
                     });
                 },
                 minLength: 1,
                 select: function(event, ui) {
-                    // Set hidden input dengan id product
-                    $(this).siblings('input[name="product[]"]').val(ui.item.id);
-                    // Set input text dengan label yg dipilih
-                    $(this).val(ui.item.label);
-
                     const tr = $(this).closest('tr');
-                    const stockInput = tr.find('input[name="stock[]"]');
 
-                    // AJAX ambil stok spare part
+                    // isi nama & id produk
+                    $(this).val(ui.item.label);
+                    tr.find('input[name="product[]"]').val(ui.item.id);
+
+                    const stockInput = tr.find('.stok');
+
+                    // ambil stok
                     $.getJSON('/spareparts/' + ui.item.id + '/stock', function(data) {
-                        stockInput.val(data.stock); // isi stok
+                        stockInput.val(data.stock);
+                        hitungQtyKurang(tr);
                     });
 
                     return false;
                 }
             }).autocomplete("instance")._renderItem = function(ul, item) {
-                return $("<li>").append("<div>" + item.label + "</div>").appendTo(ul);
+                return $("<li>")
+                    .append("<div>" + item.label + "</div>")
+                    .appendTo(ul);
             };
         }
+
+        // function applyAutocomplete(el) {
+        //     el.autocomplete({
+        //         source: function(request, response) {
+        //             $.getJSON('/spareparts/' + ui.item.id + '/stock', function(data) {
+        //                 stockInput.val(data.stock);
+
+        //                 // 🔥 WAJIB: hitung ulang qty kurang setelah stok masuk
+        //                 hitungQtyKurang(tr);
+        //             });
+
+        //             // $.getJSON('/spareparts/search', {
+        //             //     q: request.term
+        //             // }, function(data) {
+        //             //     response(data);
+        //             // });
+        //         },
+        //         minLength: 1,
+        //         select: function(event, ui) {
+        //             // Set hidden input dengan id product
+        //             $(this).siblings('input[name="product[]"]').val(ui.item.id);
+        //             // Set input text dengan label yg dipilih
+        //             $(this).val(ui.item.label);
+
+        //             const tr = $(this).closest('tr');
+        //             const stockInput = tr.find('input[name="stock[]"]');
+
+        //             // AJAX ambil stok spare part
+        //             $.getJSON('/spareparts/' + ui.item.id + '/stock', function(data) {
+        //                 stockInput.val(data.stock); // isi stok
+        //             });
+
+        //             return false;
+        //         }
+        //     }).autocomplete("instance")._renderItem = function(ul, item) {
+        //         return $("<li>").append("<div>" + item.label + "</div>").appendTo(ul);
+        //     };
+        // }
 
         $(function() {
             const table = $('#productTableBody');
@@ -231,11 +294,17 @@
                 <input type="hidden" name="product[]">
             </td>
             <td>
-                <input type="number" name="demand[]" class="form-control" min="1" value="1">
+                <input type="number" name="demand[]" class="form-control qty-minta" min="1" value="1">
             </td>
             <td>
-                <input type="text" name="stock[]" class="form-control" readonly value="0">
+<input type="number" name="stock[]" class="form-control stok" readonly value="0">
             </td>
+            <td>
+        <input type="number" name="qty_kurang[]" class="form-control qty-kurang" readonly value="0">
+    </td>
+    <td>
+    <input type="text" name="keterangan[]" class="form-control keterangan" value="">
+</td>
             
             <td>
                 <button type="button" class="btn btn-danger btn-sm removeLine">Remove</button>
@@ -247,6 +316,28 @@
             });
         });
     </script>
+
+    <script>
+        function hitungQtyKurang(tr) {
+            const qtyMinta = parseInt(tr.find('.qty-minta').val()) || 0;
+            const stok = parseInt(tr.find('.stok').val()) || 0;
+
+            let kurang = qtyMinta - stok;
+            if (kurang < 0) kurang = 0;
+
+            tr.find('.qty-kurang').val(kurang);
+        }
+    </script>
+
+    <script>
+        $(document).on('input', '.qty-minta', function() {
+            const tr = $(this).closest('tr');
+            hitungQtyKurang(tr);
+        });
+    </script>
+
+
+
 
     <script>
         document.getElementById('saveBtn').addEventListener('click', function() {

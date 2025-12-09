@@ -86,8 +86,10 @@
                                             <thead>
                                                 <tr>
                                                     <th>Nama Spare Part</th>
-                                                    <th>Qty</th>
+                                                    <th>Qty_Minta</th>
                                                     <th>Stock</th>
+                                                    <th>Qty_Kurang</th>
+                                                    <th>Keterangan</th>
                                                     <th></th>
                                                 </tr>
                                             </thead>
@@ -97,6 +99,8 @@
                                                         <td>{{ $item->sparePart->name ?? '-' }}</td>
                                                         <td>{{ $item->qty }}</td>
                                                         <td>{{ $item->stock }}</td>
+                                                        <td>{{ $item->qty_kurang }}</td>
+                                                        <td>{{ $item->keterangan }}</td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>

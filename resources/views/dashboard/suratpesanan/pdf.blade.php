@@ -83,9 +83,8 @@
 <body>
 
     <div class="header">
-         <img src="{{ public_path('assets/img/logobaru.png') }}" 
-         alt="Logo Perusahaan" 
-         style="width:80px; height:auto; display:block; margin:0 auto 10px auto;">
+        <img src="{{ public_path('assets/img/logobaru.png') }}" alt="Logo Perusahaan"
+            style="width:80px; height:auto; display:block; margin:0 auto 10px auto;">
 
         <h1>PT. Joenoes Ikamulya</h1>
         <p>Jl. Pulogadung No.43, RW.9, Jatinegara, Kec. Cakung</p>
@@ -144,8 +143,10 @@
         <thead>
             <tr>
                 <th>Nama Spare Part</th>
-                <th>Qty</th>
+                <th>Qty_Minta</th>
                 <th>Stock</th>
+                <th>Qty_Kurang</th>
+                <th>Keterangan</th>
             </tr>
         </thead>
         <tbody>
@@ -154,6 +155,9 @@
                     <td>{{ $detail->sparePart->name ?? '-' }}</td>
                     <td>{{ $detail->qty }}</td>
                     <td>{{ $detail->stock }}</td>
+                    <td>{{ $detail->qty_kurang }}</td>
+                    <td>{{ $detail->keterangan }}</td>
+
                 </tr>
             @endforeach
         </tbody>

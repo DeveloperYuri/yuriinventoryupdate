@@ -75,7 +75,7 @@
                                         <table class="table" id="productTable">
                                             <thead>
                                                 <tr>
-                                                    <th>Spare Part</th>
+                                                    <th>Nama ATK</th>
                                                     <th>Qty</th>
                                                     <th></th>
                                                 </tr>
