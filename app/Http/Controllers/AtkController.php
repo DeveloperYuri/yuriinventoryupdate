@@ -158,6 +158,10 @@ class AtkController extends Controller
             $query->whereDate('created_at', '<=', $request->end_date);
         }
 
+        if ($request->filled('type')) {
+            $query->where('type', $request->type); // in / out
+        }
+
         $atktransactions = $query->paginate(20)->withQueryString();
 
         return view('dashboard.atk.history', compact('atktransactions'));
@@ -223,10 +227,10 @@ class AtkController extends Controller
         return response()->json($data);
     }
 
-    
+
     public function exportHistoryPDF(Request $request)
     {
-        $query = AtktransactionModel::with('atk')->orderByDesc('created_at');
+        $query = AtktransactionModel::with('atk')->orderBy('created_at', 'asc');
 
         if ($request->start_date) {
             $query->whereDate('created_at', '>=', $request->start_date);
@@ -234,6 +238,10 @@ class AtkController extends Controller
 
         if ($request->end_date) {
             $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        if ($request->filled('type')) {
+            $query->where('type', $request->type); // in / out
         }
 
         $transactions = $query->get();
@@ -245,7 +253,7 @@ class AtkController extends Controller
     public function exportHistoryExcel(Request $request)
     {
         return Excel::download(
-            new AtkHistoryExport($request->start_date, $request->end_date),
+            new AtkHistoryExport($request->start_date, $request->end_date, $request->type),
             'laporan_riwayat_sparepartinout.xlsx'
         );
     }

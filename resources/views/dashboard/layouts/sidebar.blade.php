@@ -122,10 +122,10 @@
              @if (Auth::user()->is_role == 3 || Auth::user()->is_role == 2)
                  @php
                      $isAtkActive =
-                         request()->routeIs('atk.*') ||
+                         request()->routeIs('atk.index') ||
                          request()->routeIs('atkmasuk.*') ||
                          request()->routeIs('atk-keluar.*') ||
-                         request()->routeIs('riwayat-atk.*') ||
+                         request()->routeIs('atk.history') ||
                          request()->routeIs('suratpesanan-atk.*');
                  @endphp
 
@@ -141,7 +141,7 @@
                          {{-- Daftar ATK --}}
                          <li>
                              <a href="{{ route('atk.index') }}"
-                                 class="{{ request()->routeIs('atk.*') ? 'active' : '' }}">
+                                 class="{{ request()->routeIs('atk.index') ? 'active' : '' }}">
                                  <i class="bi bi-circle"></i><span>Daftar ATK</span>
                              </a>
                          </li>

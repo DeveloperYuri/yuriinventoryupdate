@@ -68,6 +68,30 @@
                         @endif
                         <!-- End Asset Card -->
 
+                        <!-- ATK Card -->
+                        @if ( Auth::user()->is_role == 3 || Auth::user()->is_role == 2)
+                            <div class="col-xxl-4 col-md-4">
+                                <div class="card info-card sales-card">
+                                    <a href="{{ route('atk.index') }}">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Total ATK</h5>
+
+                                            <div class="d-flex align-items-center">
+                                                <div
+                                                    class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                    <i class="bi bi-journal-check"></i>
+                                                </div>
+                                                <div class="ps-3">
+                                                    <h6>{{ $getAtk }}</h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        @endif
+                        <!-- End ATK Card -->
+
                         <!-- Sales Card -->
                         <div class="col-xxl-4 col-md-4">
                             <div class="card info-card sales-card">

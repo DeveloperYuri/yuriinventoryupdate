@@ -5,7 +5,7 @@
 
         <div class="pagetitle d-flex justify-content-between align-items-center">
             @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 0)
-                <a href="{{ route('suratpesanan.create') }}" class="btn btn-primary" dusk="addsparepart">Create Surat
+                <a href="{{ route('suratpesanan.create') }}" class="btn btn-primary" dusk="addsparepart">Buat Surat
                     Pesanan</a>
             @endif
 
@@ -16,10 +16,10 @@
                 <div class="row g-2 align-items-center">
                     <div class="col">
                         <input id="searchingtitle" type="text" class="form-control" value="{{ Request()->name }}"
-                            placeholder="Searching Surat Pesanan" name="name">
+                            placeholder="Cari Surat Pesanan" name="name">
                     </div>
                     <div class="col-auto">
-                        <button type="submit" class="btn btn-dark">Search</button>
+                        <button type="submit" class="btn btn-dark">Cari</button>
                     </div>
                 </div>
             </form>
@@ -33,7 +33,7 @@
                         <div class="card-body">
 
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="card-title mb-0">List Surat Pesanan</h5>
+                                <h5 class="card-title mb-0">Daftar Surat Pesanan</h5>
 
                                 @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
                                     <div class="d-flex gap-2">

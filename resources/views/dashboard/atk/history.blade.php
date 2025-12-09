@@ -16,26 +16,48 @@
                 <div class="col">
                     <input type="date" name="end_date" value="{{ request('end_date') }}" class="form-control">
                 </div>
+                <div class="col">
+                    <select name="type" class="form-control">
+                        <option value="">- Keterangan -</option>
+                        <option value="in" {{ request('type') == 'in' ? 'selected' : '' }}>
+                            Masuk
+                        </option>
+                        <option value="out" {{ request('type') == 'out' ? 'selected' : '' }}>
+                            Keluar
+                        </option>
+                    </select>
+                </div>
                 <div class="col d-flex gap-2">
                     <button class="btn btn-primary">Filter</button>
-                    <a href="{{ route('sparepart.history') }}" class="btn btn-secondary">Reset</a>
+                    <a href="{{ route('atk.history') }}" class="btn btn-secondary">Reset</a>
                 </div>
             </form>
 
             @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 3)
                 <div>
-                    <a href="{{ route('atk.history.pdf', ['start_date' => request('start_date'), 'end_date' => request('end_date')]) }}"
-                        class="btn btn-success">Print PDF</a>
+                    <a href="{{ route('atk.history.pdf', [
+                        'start_date' => request('start_date'),
+                        'end_date' => request('end_date'),
+                        'type' => request('type'),
+                    ]) }}"
+                        class="btn btn-success">
+                        Print PDF ATK
+                    </a>
                 </div>
+
+                {{-- <div>
+                    <a href="{{ route('atk.history.pdf', ['start_date' => request('start_date'), 'end_date' => request('end_date')]) }}"
+                        class="btn btn-success">Print PDF ATK</a>
+                </div> --}}
                 <div>
-                    <a href="{{ route('atk.history.excel', ['start_date' => request('start_date'), 'end_date' => request('end_date')]) }}"
+                    <a href="{{ route('atk.history.excel', ['start_date' => request('start_date'), 'end_date' => request('end_date'), 'type' => request('type'),]) }}"
                         class="btn btn-success" target="_blank">
                         Export XLX
                     </a>
                 </div>
             @endif
         </div>
-        
+
         <section class="section">
             <div class="row">
                 <div class="col-lg-12">
