@@ -19,6 +19,7 @@ class AssettoolsoutModel extends Model
         'location',
         'user_id',
         'note',
+        'keterangan'
     ];
 
     static public function getRecord($request)

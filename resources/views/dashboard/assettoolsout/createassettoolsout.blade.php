@@ -10,7 +10,7 @@
                             <h5 class="card-title">Asset Tools Out</h5>
 
                             <!-- Horizontal Form -->
-                            <form id="myForm" action="{{ route('asset-out.store')}}" method="POST">
+                            <form id="myForm" action="{{ route('asset-out.store') }}" method="POST">
                                 {{ csrf_field() }}
 
                                 {{-- <div class="row mb-3">
@@ -41,7 +41,9 @@
                                 <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Jumlah Keluar</label>
                                     <div class="col-sm-10">
-                                        <input type="number" name="quantity" class="form-control @error('quantity') is-invalid @enderror" min="1" value="{{ old('quantity')}}">
+                                        <input type="number" name="quantity"
+                                            class="form-control @error('quantity') is-invalid @enderror" min="1"
+                                            value="{{ old('quantity') }}">
                                         @error('quantity')
                                             <div class="text-danger">{{ $message }}</div>
                                         @enderror
@@ -51,12 +53,33 @@
                                 <div class="row mb-3">
                                     <label for="user" class="col-sm-2 col-form-label">Diminta oleh</label>
                                     <div class="col-sm-10">
-                                        <input type="text" name="user" id="user" class="form-control @error('user') is-invalid @enderror" value="{{ old('user')}}">
+                                        <input type="text" name="user" id="user"
+                                            class="form-control @error('user') is-invalid @enderror"
+                                            value="{{ old('user') }}">
                                         @error('user')
                                             <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
+
+                                <div class="row mb-3">
+                                    <label for="keterangan" class="col-sm-2 col-form-label">Keterangan</label>
+                                    <div class="col-sm-10">
+                                        <select name="keterangan" id="keterangan"
+                                            class="form-control @error('keterangan') is-invalid @enderror">
+                                            <option value="">-- Pilih Keterangan --</option>
+                                            <option value="Tukar" {{ old('keterangan') == 'Tukar' ? 'selected' : '' }}>Tukar
+                                            </option>
+                                            <option value="Baru" {{ old('keterangan') == 'Baru' ? 'selected' : '' }}>Baru
+                                            </option>
+                                        </select>
+
+                                        @error('keterangan')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
 
                                 <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label"></label>
@@ -65,7 +88,7 @@
                                         <a href="{{ route('asset-out.index') }}" class="btn btn-secondary">Back</a>
                                     </div>
                                 </div>
-                                
+
                             </form><!-- End Horizontal Form -->
 
                         </div>

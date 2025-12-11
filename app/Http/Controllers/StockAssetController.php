@@ -133,7 +133,8 @@ class StockAssetController extends Controller
             'asset_tools_id' => $request->asset_tools_id,
             'type' => 'out',
             'quantity' => $request->quantity,
-            'user' => $request->user
+            'user' => $request->user,
+            'keterangan' => $request->keterangan
         ]);
 
         return redirect()->route('asset-out.index')->with('success', 'Stok keluar berhasil dicatat.');

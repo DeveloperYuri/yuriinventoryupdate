@@ -92,25 +92,25 @@
                      <li>
                          <a href="{{ route('asset-tools.index') }}"
                              class="{{ request()->routeIs('asset-tools.*') ? 'active' : '' }}">
-                             <i class="bi bi-circle"></i><span>List Asset Tools</span>
+                             <i class="bi bi-circle"></i><span>Daftar Asset Tools</span>
                          </a>
                      </li>
                      <li>
                          <a href="{{ route('asset-in.index') }}"
                              class="{{ request()->routeIs('asset-in.*') ? 'active' : '' }}">
-                             <i class="bi bi-circle"></i><span>Asset Tools In</span>
+                             <i class="bi bi-circle"></i><span>Asset Tools Masuk</span>
                          </a>
                      </li>
                      <li>
                          <a href="{{ route('asset-out.index') }}"
                              class="{{ request()->routeIs('asset-out.*') ? 'active' : '' }}">
-                             <i class="bi bi-circle"></i><span>Asset Tools Out</span>
+                             <i class="bi bi-circle"></i><span>Asset Tools Keluar</span>
                          </a>
                      </li>
                      <li>
                          <a href="{{ route('assettools.history') }}"
                              class="{{ request()->routeIs('assettools.history') ? 'active' : '' }}">
-                             <i class="bi bi-circle"></i><span>Asset History In/Out</span>
+                             <i class="bi bi-circle"></i><span>Riwayat Asset Tools Masuk/Keluar</span>
                          </a>
                      </li>
                  </ul>

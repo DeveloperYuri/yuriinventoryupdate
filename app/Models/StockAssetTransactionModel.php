@@ -12,7 +12,7 @@ class StockAssetTransactionModel extends Model
 
     protected $table = 'stock_asset_transactions';
 
-    protected $fillable = ['asset_tools_id', 'type', 'quantity', 'user'];
+    protected $fillable = ['asset_tools_id', 'type', 'quantity', 'user', 'keterangan'];
 
     public function assetTools()
     {

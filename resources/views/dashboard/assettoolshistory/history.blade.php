@@ -4,7 +4,7 @@
     <main id="main" class="main">
 
         <div class="pagetitle mb-5">
-            <h1 class="text-center">History Asset Tools In / Out</h1>
+            <h1 class="text-center">Riwayat Asset Tools Masuk / Keluar TEST</h1>
         </div>
 
         <div class="d-flex justify-content-end align-items-end gap-3 flex-wrap mb-3">
@@ -102,6 +102,7 @@
                                         <th class="text-center">Jumlah</th>
                                         <th class="text-center">Tanggal</th>
                                         <th class="text-center">Keterangan</th>
+                                        <th class="text-center">Status</th>
                                     </tr>
                                     @foreach ($transactions as $index => $item)
                                         <tr>
@@ -116,6 +117,9 @@
                                                 @else
                                                     <span class="badge bg-danger">Keluar</span>
                                                 @endif
+                                            </td>
+                                            <td class="text-center">
+                                                {{ !empty($item->keterangan) ? $item->keterangan : '-' }}
                                             </td>
 
                                         </tr>

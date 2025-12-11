@@ -72,6 +72,7 @@
                                             <th class="text-center">Diminta Oleh</th>
                                             <th class="text-center">Jumlah</th>
                                             <th class="text-center">Tanggal</th>
+                                            <th class="text-center">Keterangan</th>
                                         </tr>
 
                                     </thead>
@@ -84,6 +85,9 @@
                                                 <td class="text-center">{{ $assetout->user }}</td>
                                                 <td class="text-center">{{ $assetout->quantity }}</td>
                                                 <td class="text-center">{{ $assetout->created_at->format('d-m-Y') }}</td>
+                                                <td class="text-center">
+                                                    {{ !empty($assetout->keterangan) ? $assetout->keterangan : '-' }}
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
