@@ -2,12 +2,12 @@
     <thead>
         <tr>
             <th colspan="5" style="text-align: center;">
-                History Spare Part In / Out
+                Riwayat ATK Masuk/Keluar
             </th>
         </tr>
 
         <tr>
-            
+
             <th colspan="5">
                 Periode:
                 @if ($startDate && $endDate)
@@ -26,9 +26,11 @@
             <th style="text-align: center;">No</th>
             <th style="text-align: center;">Nama ATK</th>
             <th style="text-align: center;">User</th>
-            <th style="text-align: center;">Jenis</th>
+            <th style="text-align: center;">Lokasi</th>
             <th style="text-align: center;">Jumlah</th>
             <th style="text-align: center;">Tanggal</th>
+            <th style="text-align: center;">Keterangan</th>
+
         </tr>
     </thead>
     <tbody>
@@ -37,9 +39,11 @@
                 <td style="text-align: center;">{{ $index + 1 }}</td>
                 <td style="text-align: center;">{{ $item->atk->name ?? '-' }}</td>
                 <td style="text-align: center;">{{ $item->user }}</td>
-                <td style="text-align: center;">{{ $item->type == 'in' ? 'Masuk' : 'Keluar' }}</td>
+                <td>{{ $item->atkKeluar->locations->name ?? '-' }}</td>
                 <td style="text-align: center;">{{ $item->quantity }}</td>
                 <td style="text-align: center;">{{ $item->created_at->format('d-m-Y') }}</td>
+                <td style="text-align: center;">{{ $item->type == 'in' ? 'Masuk' : 'Keluar' }}</td>
+
             </tr>
         @endforeach
     </tbody>

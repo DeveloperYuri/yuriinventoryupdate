@@ -40,6 +40,7 @@
                 <th>No</th>
                 <th>Nama ATK</th>
                 <th>User</th>
+                <th>Lokasi</th>
                 <th>Jumlah</th>
                 <th>Tanggal</th>
                 <th>Keterangan</th>
@@ -51,6 +52,7 @@
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $item->atk->name ?? '-' }}</td>
                 <td>{{ $item->user }}</td>
+                <td>{{ $item->atkKeluar->locations->name ?? '-' }}</td>
                 <td>{{ $item->quantity }}</td>
                 <td>{{ $item->created_at->format('d-m-Y') }}</td>
                 <td>{{ $item->type === 'in' ? 'Masuk' : 'Keluar' }}</td>
