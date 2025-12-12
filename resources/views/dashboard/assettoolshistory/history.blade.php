@@ -101,8 +101,8 @@
                                         <th class="text-center">User</th>
                                         <th class="text-center">Jumlah</th>
                                         <th class="text-center">Tanggal</th>
-                                        <th class="text-center">Keterangan</th>
                                         <th class="text-center">Status</th>
+                                        <th class="text-center">Keterangan</th>
                                     </tr>
                                     @foreach ($transactions as $index => $item)
                                         <tr>

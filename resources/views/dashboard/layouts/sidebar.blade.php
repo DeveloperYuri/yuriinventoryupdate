@@ -58,7 +58,7 @@
                          </a>
                      </li>
 
-                     @if (Auth::user()->is_role == 0 || Auth::user()->is_role == 2)
+                     @if (Auth::user()->is_role == 0 || Auth::user()->is_role == 1 || Auth::user()->is_role == 2)
                          <li>
                              <a href="{{ route('suratpesanan.index') }}"
                                  class="{{ request()->routeIs('suratpesanan.index') ? 'active' : '' }}">
