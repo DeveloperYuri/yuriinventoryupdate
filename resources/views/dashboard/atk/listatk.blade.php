@@ -35,7 +35,7 @@
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="card-title mb-0">Daftar ATK</h5>
 
-                                @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
+                                @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 3)
                                     <div class="d-flex gap-2">
                                         <!-- Button Import -->
                                         {{-- <button type="button" class="btn btn-success" data-bs-toggle="modal"
