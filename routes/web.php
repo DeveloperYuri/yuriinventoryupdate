@@ -18,6 +18,7 @@ use App\Http\Controllers\StockAssetController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\SuratPermintaanSparePartController;
 use App\Http\Controllers\SuratpesananatkController;
 use App\Http\Controllers\SuratpesananController;
 use App\Http\Controllers\UsersController;
@@ -232,6 +233,25 @@ Route::get('/stockoutmultiple/{id}', [ListSparePartMultipleController::class, 's
 Route::get('/spareparts/search', [ListSparePartMultipleController::class, 'search']);
 Route::post('/spare-parts/import', [ListSparePartController::class, 'import'])->name('spare-parts.import');
 
+// Surat Permintaan 
+Route::get('/suratpermintaansparepart', [SuratPermintaanSparePartController::class, 'index'])->name('suratpermintaansparepart.index');
+Route::get('/create/suratpermintaansparepart', [SuratPermintaanSparePartController::class, 'create'])->name('suratpermintaansparepart.create');
+Route::post('/create/suratpermintaansparepart/post', [SuratPermintaanSparePartController::class, 'store'])->name('suratpermintaansparepart.store');
+Route::get('/create/suratpermintaansparepart/{id}', [SuratPermintaanSparePartController::class, 'edit'])->name('suratpermintaansparepart.edit');
+Route::put('/create/suratpermintaansparepart/{id}', [SuratPermintaanSparePartController::class, 'update'])->name('suratpermintaansparepart.update');
+Route::delete('/delete/suratpermintaansparepart/{id}', [SuratPermintaanSparePartController::class, 'destroy'])->name('suratpermintaansparepart.delete');
+Route::get('/show/suratpermintaansparepart/{id}', [SuratPermintaanSparePartController::class, 'show'])->name('suratpermintaansparepart.show');
+
+Route::get('suratpermintaan/{id}/pdf', [SuratPermintaanSparePartController::class, 'printPdf'])->name('suratpermintaan.pdf');
+// Route::get('/spareparts/{id}/stock', [SuratPermintaanSparePartController::class, 'getStock']);
+
+Route::prefix('suratpermintaansparepart')->name('suratpermintaansparepart.')->group(function () {
+    Route::post('{id}/submit', [SuratPermintaanSparePartController::class, 'submit'])->name('submit');
+    Route::post('{id}/approve', [SuratPermintaanSparePartController::class, 'approve'])->name('approve');
+    Route::post('{id}/reject', [SuratPermintaanSparePartController::class, 'reject'])->name('reject');
+});
+
+// Surat Pesanan
 Route::get('/suratpesanan', [SuratpesananController::class, 'index'])->name('suratpesanan.index');
 Route::get('/create/suratpesanan', [SuratpesananController::class, 'create'])->name('suratpesanan.create');
 Route::post('/create/suratpesanan/post', [SuratpesananController::class, 'store'])->name('suratpesanan.store');

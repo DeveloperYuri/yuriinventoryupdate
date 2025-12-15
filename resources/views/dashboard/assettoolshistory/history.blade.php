@@ -97,7 +97,7 @@
                                 <table class="table table-hover align-middle">
                                     <tr>
                                         <th class="text-center">No</th>
-                                        <th class="text-center">Nama Spare Part</th>
+                                        <th class="text-center">Nama Asset</th>
                                         <th class="text-center">User</th>
                                         <th class="text-center">Jumlah</th>
                                         <th class="text-center">Tanggal</th>

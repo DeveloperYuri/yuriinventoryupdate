@@ -129,6 +129,11 @@
                                                     @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
                                                         <a href="{{ route('asset-tools.edit', $asset->id) }}"
                                                             class="btn btn-sm btn-warning mt-1">Edit</a>
+
+                                                        <a href="{{ route('assettoolsdetail.history', ['id' => $asset->id]) }}"
+                                                            class="btn btn-info btn-sm mt-1">
+                                                            History Detail
+                                                        </a>
                                                     @endif
                                                     @if (Auth::user()->is_role == 2)
                                                         <form action="{{ route('asset-tools.destroy', $asset->id) }}"
@@ -138,11 +143,6 @@
                                                             <button type="button" class="btn btn-sm btn-danger mt-1"
                                                                 onclick="confirmDelete(this.form)">Hapus</button>
                                                         </form>
-
-                                                        <a href="{{ route('assettoolsdetail.history', ['id' => $asset->id]) }}"
-                                                            class="btn btn-info btn-sm mt-1">
-                                                            History Detail
-                                                        </a>
                                                     @endif
                                                 </td>
 
