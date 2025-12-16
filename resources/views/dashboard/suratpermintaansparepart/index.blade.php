@@ -142,7 +142,7 @@
 
                                                 <td class="text-nowrap">
                                                     @if ($sp->status == 'draft')
-                                                        <a href="{{ route('suratpesanan.edit', $sp->id) }}"
+                                                        <a href="{{ route('suratpermintaansparepart.edit', $sp->id) }}"
                                                             class="btn btn-sm btn-primary">Edit</a>
 
                                                         <form action="{{ route('suratpermintaansparepart.delete', $sp->id) }}"
@@ -155,21 +155,21 @@
                                                             </button>
                                                         </form>
 
-                                                        <form action="{{ route('suratpesanan.submit', $sp->id) }}"
+                                                        <form action="{{ route('suratpermintaansparepart.submit', $sp->id) }}"
                                                             method="POST" class="d-inline">
                                                             @csrf
                                                             <button type="submit"
                                                                 class="btn btn-sm btn-warning">Ajukan</button>
                                                         </form>
                                                     @elseif ($sp->status == 'onprogress' && (auth()->user()->is_role == 1 || auth()->user()->is_role == 2))
-                                                        <form action="{{ route('suratpesanan.approve', $sp->id) }}"
+                                                        <form action="{{ route('suratpermintaansparepart.approve', $sp->id) }}"
                                                             method="POST" class="d-inline">
                                                             @csrf
                                                             <button type="submit"
                                                                 class="btn btn-sm btn-success">Approve</button>
                                                         </form>
 
-                                                        <form action="{{ route('suratpesanan.reject', $sp->id) }}"
+                                                        <form action="{{ route('suratpermintaansparepart.reject', $sp->id) }}"
                                                             method="POST" class="d-inline">
                                                             @csrf
                                                             <button type="submit"

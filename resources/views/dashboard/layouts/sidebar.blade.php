@@ -20,6 +20,8 @@
                      request()->routeIs('stock-out.*') ||
                      request()->routeIs('sparepartinmultiple.*') ||
                      request()->routeIs('sparepartoutmultiple.*') ||
+                     request()->routeIs('suratpermintaansparepart.*') ||
+                     request()->routeIs('suratpesanan.*') ||
                      request()->routeIs('sparepart.history');
              @endphp
 
@@ -33,32 +35,32 @@
                      <li>
                          <a href="{{ route('spare-parts.index') }}"
                              class="{{ request()->routeIs('spare-parts.*') ? 'active' : '' }}">
-                             <i class="bi bi-circle"></i><span>List Spare Part</span>
+                             <i class="bi bi-circle"></i><span>Daftar Spare Part</span>
                          </a>
                      </li>
 
                      <li>
                          <a href="{{ route('sparepartinmultiple.index') }}"
                              class="{{ request()->routeIs('sparepartinmultiple.*') ? 'active' : '' }}">
-                             <i class="bi bi-circle"></i><span>Spare Part In</span>
+                             <i class="bi bi-circle"></i><span>Spare Part Masuk</span>
                          </a>
                      </li>
 
                      <li>
                          <a href="{{ route('sparepartoutmultiple.index') }}"
                              class="{{ request()->routeIs('sparepartoutmultiple.*') ? 'active' : '' }}">
-                             <i class="bi bi-circle"></i><span>Spare Part Out</span>
+                             <i class="bi bi-circle"></i><span>Spare Part Keluar</span>
                          </a>
                      </li>
 
                      <li>
                          <a href="{{ route('sparepart.history') }}"
                              class="{{ request()->routeIs('sparepart.history') ? 'active' : '' }}">
-                             <i class="bi bi-circle"></i><span>History In/Out</span>
+                             <i class="bi bi-circle"></i><span>Riwayat Spare Part Masuk/Keluar</span>
                          </a>
                      </li>
 
-                     @if (Auth::user()->is_role == 2)
+                     @if (Auth::user()->is_role == 0 || Auth::user()->is_role == 1 || Auth::user()->is_role == 2)
                          <li>
                              <a href="{{ route('suratpermintaansparepart.index') }}"
                                  class="{{ request()->routeIs('suratpermintaansparepart.index') ? 'active' : '' }}">

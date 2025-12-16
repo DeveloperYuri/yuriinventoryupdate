@@ -18,7 +18,7 @@
 
                                 <!-- Kanan: Tombol Print PDF -->
                                 <div class="col-md-6 text-end">
-                                    <a href="{{ route('suratpesanan.pdf', $transaction->id) }}" target="_blank"
+                                    <a href="{{ route('suratpermintaan.pdf', $transaction->id) }}" target="_blank"
                                         class="btn btn-primary mt-2">
                                         Print PDF
                                     </a>
