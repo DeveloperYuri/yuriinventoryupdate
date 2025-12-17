@@ -17,7 +17,9 @@ class AtkmasukModel extends Model
         'diterima_oleh',
         'tanggal',
         'supplier_id',
-        'sp_number'
+        'sp_number',
+        'status',
+        'keterangan'
     ];
 
     public function user()

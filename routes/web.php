@@ -291,11 +291,17 @@ Route::get('/atk-masuk/create', [AtkmasukController::class, 'create'])->name('at
 Route::post('/atk-masuk/store', [AtkmasukController::class, 'storein'])->name('atkmasuk.store');
 Route::get('/atk-masuk/show/{id}', [AtkmasukController::class, 'show'])->name('atkmasuk.show');
 
+Route::post('/atkmasuk/{id}/batal', [AtkMasukController::class, 'batal'])
+    ->name('atkmasuk.batal');
+
 // ATK Keluar Banyak Item
 Route::get('/atk-keluar', [AtkkeluarController::class, 'index'])->name('atk-keluar.index');
 Route::get('/atk-keluar/create', [AtkkeluarController::class, 'create'])->name('atk-keluar.create');
 Route::post('/atk-keluar/store', [AtkkeluarController::class, 'store'])->name('atk-keluar.store');
 Route::get('/atk-keluar/show/{id}', [AtkkeluarController::class, 'show'])->name('atk-keluar.show');
+
+Route::post('/atkkeluar/{id}/batal', [AtkkeluarController::class, 'batal'])
+    ->name('atkkeluar.batal');
 
 // Buat Surat Pesanan ATK
 Route::get('/suratpesanan-atk', [SuratpesananatkController::class, 'index'])->name('suratpesanan-atk.index');
@@ -317,6 +323,8 @@ Route::prefix('suratpesanan-atk')->name('suratpesanan-atk.')->group(function () 
 
 Route::get('/atk/history/pdf', [AtkController::class, 'exportHistoryPDF'])->name('atk.history.pdf');
 Route::get('/atk/history/excel', [AtkController::class, 'exportHistoryExcel'])->name('atk.history.excel');
+Route::put('/atk/history/{id}/batal', [AtkController::class, 'batal'])
+    ->name('atk.history.batal');
 
 
 

@@ -10,7 +10,25 @@
                     <div class="card">
                         <div class="card-body">
 
-                            <h2 class="mt-2">Detail Penerimaan ATK</h2>
+                            {{-- <h2 class="mt-2">Detail Permintaan ATK</h2> --}}
+
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <h2>Detail Permintaan ATK</h2>
+
+                                @php
+                                    $status = $atktransaction->status;
+                                    $textClass = match ($status) {
+                                        'sukses' => 'text-success fw-bold',
+                                        'batal' => 'text-danger fw-bold',
+                                        default => 'text-secondary fw-bold',
+                                    };
+                                @endphp
+
+                                <span class="{{ $textClass }} fs-5 text-uppercase">
+                                    {{ $status ?? '-' }}
+                                </span>
+
+                            </div>
 
                             <form class="mt-4" action="{{ route('sparepartinmultiple.store') }}" method="POST">
                                 @csrf

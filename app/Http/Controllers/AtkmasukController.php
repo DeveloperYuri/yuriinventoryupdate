@@ -73,6 +73,7 @@ class AtkmasukController extends Controller
                 'diterima_oleh' => $request->diterima_oleh,
                 'supplier_id' => $request->supplier_id,
                 'po_numbers' => $request->po_numbers,
+                'status' => 'sukses',
             ]);
 
             foreach ($request->product as $i => $atk_id) {
@@ -84,6 +85,7 @@ class AtkmasukController extends Controller
                     'type'               => 'in',
                     'quantity'           => $request->demand[$i],
                     'user'               => $request->diterima_oleh,
+                    'status' => 'sukses',
                 ]);
             }
 
@@ -120,5 +122,27 @@ class AtkmasukController extends Controller
         $locations = LocationsModel::all();
 
         return view('dashboard.sparepartoutmultiple.create', compact('noDokumen', 'locations', 'categories'));
+    }
+
+    public function batal(Request $request, $id)
+    {
+        $request->validate([
+            'keterangan' => 'required|string|min:5'
+        ]);
+
+        $transaction = AtkmasukModel::findOrFail($id);
+
+        if ($transaction->status !== 'sukses') {
+            return back()->with('error', 'Transaksi tidak bisa dibatalkan');
+        }
+
+        $transaction->update([
+            'status'     => 'batal',
+            'keterangan' => $request->keterangan,
+        ]);
+
+        return redirect()
+            ->route('atkmasuk.index')
+            ->with('success', 'Transaksi berhasil dibatalkan');
     }
 }

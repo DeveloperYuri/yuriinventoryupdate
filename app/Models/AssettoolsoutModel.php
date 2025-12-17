@@ -31,7 +31,7 @@ class AssettoolsoutModel extends Model
                 $return = $return->where('assettoolsout.name', 'like', '%' . Request::get('name') . '%');
             }
 
-        $return = $return->paginate(10);
+        $return = $return->paginate(15);
         return $return;
     }
 }

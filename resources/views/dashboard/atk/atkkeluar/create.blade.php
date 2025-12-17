@@ -32,7 +32,6 @@
                                 </div>
                             @endif --}}
 
-
                             <form id="myForm" class="mt-4" action="{{ route('atk-keluar.store') }}" method="POST">
                                 @csrf
                                 <div class="row mb-3">

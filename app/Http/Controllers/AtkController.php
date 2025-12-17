@@ -9,6 +9,7 @@ use App\Models\AtktransactionModel;
 use App\Models\SatuanModel;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class AtkController extends Controller
@@ -171,40 +172,110 @@ class AtkController extends Controller
     {
         $sparePart = AtkModel::findOrFail($id);
 
-        $query = AtktransactionModel::with([
-            'atkKeluar.locations'
-        ])->where('atk_id', $id);
+        /* ===========================
+     * QUERY UNTUK PERHITUNGAN
+     * (HANYA TRANSAKSI SUKSES)
+     * =========================== */
+        $calcQuery = AtktransactionModel::effective()
+            ->where('atk_id', $id);
 
         if ($request->start_date) {
-            $query->whereDate('created_at', '>=', $request->start_date);
+            $calcQuery->whereDate('created_at', '>=', $request->start_date);
         }
 
         if ($request->end_date) {
-            $query->whereDate('created_at', '<=', $request->end_date);
+            $calcQuery->whereDate('created_at', '<=', $request->end_date);
         }
 
-        $allTransactions = $query->orderBy('created_at')->get();
+        $calcTransactions = $calcQuery->orderBy('created_at')->get();
 
-        $totalStock = 0;
+        $runningStock = 0;
         $runningValue = 0;
 
-        // Hitung total stock dan total value
-        $allTransactions->each(function ($item) use (&$totalStock, &$runningValue, $sparePart) {
-            if ($item->type === 'in') {
-                $totalStock += $item->quantity;
-                $runningValue += $item->quantity * $item->price;
+        foreach ($calcTransactions as $trx) {
+            if ($trx->type === 'in') {
+                $runningStock += $trx->quantity;
+                $runningValue += $trx->quantity * $trx->price;
             } else {
-                $totalStock -= $item->quantity;
-                $runningValue -= $item->quantity * $item->price;
+                $runningStock -= $trx->quantity;
+                $runningValue -= $trx->quantity * $trx->price;
             }
-            $item->runningStock = $totalStock; // simpan ke tiap item supaya bisa tampil di view
-            $item->runningValue = $runningValue; // simpan total harga
-        });
 
-        $transactions = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
+            $trx->runningStock = $runningStock;
+            $trx->runningValue = $runningValue;
+        }
 
-        return view('dashboard.atk.detailatk', compact('sparePart', 'transactions', 'totalStock', 'allTransactions'));
+        /* ===========================
+     * QUERY UNTUK TAMPILAN
+     * (TERMASUK BATAL)
+     * =========================== */
+        $transactions = AtktransactionModel::with(['atkKeluar.locations'])
+            ->where('atk_id', $id)
+            ->when(
+                $request->start_date,
+                fn($q) =>
+                $q->whereDate('created_at', '>=', $request->start_date)
+            )
+            ->when(
+                $request->end_date,
+                fn($q) =>
+                $q->whereDate('created_at', '<=', $request->end_date)
+            )
+            ->orderByDesc('created_at')
+            ->paginate(20)
+            ->withQueryString();
+
+        // Ambil nilai akhir untuk footer
+        $lastRunningValue = $calcTransactions->last()->runningValue ?? 0;
+        $lastRunningStock = $runningStock;
+
+        return view('dashboard.atk.detailatk', compact(
+            'sparePart',
+            'transactions',
+            'lastRunningStock',
+            'lastRunningValue'
+        ));
     }
+
+
+    // public function viewHistoryPerItem(Request $request, $id)
+    // {
+    //     $sparePart = AtkModel::findOrFail($id);
+
+    //     $query = AtktransactionModel::with([
+    //         'atkKeluar.locations'
+    //     ])->where('atk_id', $id);
+
+    //     if ($request->start_date) {
+    //         $query->whereDate('created_at', '>=', $request->start_date);
+    //     }
+
+    //     if ($request->end_date) {
+    //         $query->whereDate('created_at', '<=', $request->end_date);
+    //     }
+
+    //     $allTransactions = $query->orderBy('created_at')->get();
+
+    //     $totalStock = 0;
+    //     $runningValue = 0;
+
+    //     // Hitung total stock dan total value
+    //     $allTransactions->each(function ($item) use (&$totalStock, &$runningValue, $sparePart) {
+    //         if ($item->type === 'in') {
+    //             $totalStock += $item->quantity;
+    //             $runningValue += $item->quantity * $item->price;
+    //         } else {
+    //             $totalStock -= $item->quantity;
+    //             $runningValue -= $item->quantity * $item->price;
+    //         }
+    //         $item->runningStock = $totalStock; // simpan ke tiap item supaya bisa tampil di view
+    //         $item->runningValue = $runningValue; // simpan total harga
+    //     });
+
+    //     $transactions = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
+
+    //     return view('dashboard.atk.detailatk', compact('sparePart', 'transactions', 'totalStock', 'allTransactions'));
+    // }
 
     public function cetakPDF()
     {
@@ -257,4 +328,88 @@ class AtkController extends Controller
             'laporan_riwayat_sparepartinout.xlsx'
         );
     }
+
+    public function batal(Request $request, $id)
+    {
+        $request->validate([
+            'keterangan' => 'required|string'
+        ]);
+
+        DB::transaction(function () use ($request, $id) {
+
+            // 🔐 Lock transaksi
+            $trx = AtktransactionModel::lockForUpdate()->findOrFail($id);
+
+            if ($trx->status !== 'sukses') {
+                abort(400, 'Transaksi sudah dibatalkan');
+            }
+
+            // 🔐 Lock stok ATK
+            $atk = AtkModel::lockForUpdate()->findOrFail($trx->atk_id);
+
+            if ($trx->type === 'in') {
+                // ❗ BATAL MASUK → STOK DIKURANGI
+                $atk->stock -= $trx->quantity;
+            } else {
+                // ❗ BATAL KELUAR → STOK DIKEMBALIKAN
+                $atk->stock += $trx->quantity;
+            }
+
+            // 🛡 Cegah stok minus
+            if ($atk->stock < 0) {
+                abort(400, 'Stok menjadi negatif');
+            }
+
+            $atk->save();
+
+            // Update transaksi
+            $trx->update([
+                'status' => 'batal',
+                'keterangan' => $request->keterangan,
+            ]);
+        });
+
+        return redirect()
+            ->route('atk.history')
+            ->with('success', 'Transaksi berhasil dibatalkan dan stok dikembalikan');
+    }
+
+
+    // public function batal(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'keterangan' => 'required|string'
+    //     ]);
+
+    //     DB::transaction(function () use ($request, $id) {
+
+    //         $trx = AtktransactionModel::findOrFail($id);
+
+    //         // Cegah double batal
+    //         if ($trx->status !== 'sukses') {
+    //             abort(400, 'Transaksi sudah dibatalkan');
+    //         }
+
+    //         // Rollback stok
+    //         $atk = AtkModel::findOrFail($trx->atk_id);
+
+    //         if ($trx->type === 'in') {
+    //             // Masuk → stok dikurangi
+    //             $atk->decrement('stock', $trx->quantity);
+    //         } else {
+    //             // Keluar → stok dikembalikan
+    //             $atk->increment('stock', $trx->quantity);
+    //         }
+
+    //         // Update transaksi
+    //         $trx->update([
+    //             'status' => 'batal',
+    //             'keterangan' => $request->keterangan,
+    //         ]);
+    //     });
+
+    //     return redirect()
+    //         ->route('atk.history')
+    //         ->with('success', 'Transaksi berhasil dibatalkan dan stok dikembalikan');
+    // }
 }

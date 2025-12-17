@@ -15,7 +15,9 @@ class AtkkeluarModel extends Model
         'no_dokumen',
         'diminta_oleh',
         'tanggal',
-        'locations_id'
+        'locations_id',
+        'status',
+        'keterangan'
     ];
 
     public function user()

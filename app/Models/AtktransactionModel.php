@@ -12,7 +12,7 @@ class AtktransactionModel extends Model
 
     protected $table = 'atk_transaction';
 
-    protected $fillable = ['atk_id', 'type', 'quantity', 'user', 'atk_masuk_header_id', 'atk_keluar_header_id'];
+    protected $fillable = ['atk_id', 'type', 'quantity', 'user', 'atk_masuk_header_id', 'atk_keluar_header_id', 'status', 'keterangan'];
 
     public function atk()
     {
@@ -39,5 +39,15 @@ class AtktransactionModel extends Model
                 $atk->decrement('stock', $transaction->quantity);
             }
         });
+    }
+
+    public function scopeEffective($query)
+    {
+        return $query->where('status', 'sukses');
+    }
+
+    public function isEffective()
+    {
+        return $this->status === 'sukses';
     }
 }
