@@ -79,12 +79,11 @@
                      @endif
                  </ul>
              </li>
-             @endif
-             <!-- End Spare Part Sidebar -->
+         @endif
+         <!-- End Spare Part Sidebar -->
 
-             <!-- Start Asset Sidebar -->
+         <!-- Start Asset Sidebar -->
          @if (Auth::user()->is_role == 0 || Auth::user()->is_role == 1 || Auth::user()->is_role == 2)
-
              @php
                  $isAssetToolsActive =
                      request()->routeIs('asset-tools.*') ||
@@ -126,181 +125,190 @@
                      </li>
                  </ul>
              </li>
-             @endif
-             <!-- End Asset Sidebar -->
+         @endif
+         <!-- End Asset Sidebar -->
 
-             <!-- Start ATK Sidebar -->
-             @if (Auth::user()->is_role == 3 || Auth::user()->is_role == 2)
-                 @php
-                     $isAtkActive =
-                         request()->routeIs('atk.index') ||
-                         request()->routeIs('atkmasuk.*') ||
-                         request()->routeIs('atk-keluar.*') ||
-                         request()->routeIs('atk.history') ||
-                         request()->routeIs('suratpesanan-atk.*');
-                 @endphp
-
-                 <li class="nav-item">
-                     <a class="nav-link {{ $isAtkActive ? '' : 'collapsed' }}" data-bs-target="#atk-nav"
-                         data-bs-toggle="collapse" href="#">
-                         <i class="bi bi-journal-check"></i><span>ATK</span><i class="bi bi-chevron-down ms-auto"></i>
-                     </a>
-
-                     <ul id="atk-nav" class="nav-content collapse {{ $isAtkActive ? 'show' : '' }}"
-                         data-bs-parent="#sidebar-nav">
-
-                         {{-- Daftar ATK --}}
-                         <li>
-                             <a href="{{ route('atk.index') }}"
-                                 class="{{ request()->routeIs('atk.index') ? 'active' : '' }}">
-                                 <i class="bi bi-circle"></i><span>Daftar ATK</span>
-                             </a>
-                         </li>
-
-                         {{-- ATK - Masuk --}}
-                         <li>
-                             <a href="{{ route('atkmasuk.index') }}"
-                                 class="{{ request()->routeIs('atkmasuk.*') ? 'active' : '' }}">
-                                 <i class="bi bi-circle"></i><span>ATK - Masuk</span>
-                             </a>
-                         </li>
-
-                         {{-- ATK - Keluar --}}
-                         <li>
-                             <a href="{{ route('atk-keluar.index') }}"
-                                 class="{{ request()->routeIs('atk-keluar.*') ? 'active' : '' }}">
-                                 <i class="bi bi-circle"></i><span>ATK - Keluar</span>
-                             </a>
-                         </li>
-
-                         {{-- History --}}
-                         <li>
-                             <a href="{{ route('atk.history') }}"
-                                 class="{{ request()->routeIs('atk.history') ? 'active' : '' }}">
-                                 <i class="bi bi-circle"></i><span>Riwayat ATK Masuk/Keluar</span>
-                             </a>
-                         </li>
-
-                         {{-- Buat Surat Pesanan --}}
-                         <li>
-                             <a href="{{ route('suratpesanan-atk.index') }}"
-                                 class="{{ request()->routeIs('suratpesanan-atk.*') ? 'active' : '' }}">
-                                 <i class="bi bi-circle"></i><span>Buat Surat Pesanan ATK</span>
-                             </a>
-                         </li>
-
-                     </ul>
-                 </li>
-             @endif
-
-             <!-- End ATK Sidebar -->
-
-             <!-- Start Supplier Sidebar -->
-             <li class="nav-item">
-                 <a class="nav-link {{ request()->routeIs('indexsupplier') ? 'active' : 'collapsed' }}"
-                     href="{{ route('indexsupplier') }}">
-                     <i class="bi bi-truck"></i>
-                     <span>Supplier</span>
-                 </a>
-             </li>
-             <!-- End Supplier Sidebar -->
-
-             @if (Auth::user()->is_role == 2)
-                 <!-- Start Riwayat Mesin -->
-                 <li class="nav-item">
-                     <a class="nav-link {{ request()->routeIs('index.riwayatmesin') ? 'active' : 'collapsed' }}"
-                         href="{{ route('index.riwayatmesin') }}">
-                         <i class="bi bi-gear-fill"></i>
-                         <span>Riwayat Mesin</span>
-                     </a>
-                 </li>
-             @endif
-             <!-- End Riwayat Mesin Sidebar -->
-
-             <!-- Start Users Sidebar -->
-             @if (Auth::user()->is_role == 2)
-                 <li class="nav-item">
-                     <a class="nav-link {{ request()->routeIs('indexusers') ? 'active' : 'collapsed' }}"
-                         href="{{ route('indexusers') }}">
-                         <i class="bi bi-person-circle"></i>
-                         <span>Users</span>
-                     </a>
-                 </li>
-             @endif
-             <!-- End Users Sidebar -->
-
-             <!-- Start Spare Part Sidebar -->
-
+         <!-- Start ATK Sidebar -->
+         @if (Auth::user()->is_role == 3 || Auth::user()->is_role == 2)
              @php
-                 $isConfigActive =
-                     request()->routeIs('indexbrand') ||
-                     request()->routeIs('indexwarehouse') ||
-                     request()->routeIs('indexlocations') ||
-                     request()->routeIs('indexcategory') ||
-                     request()->routeIs('indexsubcategory') ||
-                     request()->routeIs('index.satuan') ||
-                     request()->routeIs('index.department') ||
-                     request()->routeIs('indexprofile');
+                 $isAtkActive =
+                     request()->routeIs('atk.index') ||
+                     request()->routeIs('atkmasuk.*') ||
+                     request()->routeIs('atk-keluar.*') ||
+                     request()->routeIs('atk.history') ||
+                     request()->routeIs('suratpesanan-atk.*');
              @endphp
 
              <li class="nav-item">
-                 <a class="nav-link {{ $isConfigActive ? '' : 'collapsed' }}" data-bs-target="#configuration-nav"
+                 <a class="nav-link {{ $isAtkActive ? '' : 'collapsed' }}" data-bs-target="#atk-nav"
                      data-bs-toggle="collapse" href="#">
-                     <i class="bi bi-gear"></i><span>Configuration</span><i class="bi bi-chevron-down ms-auto"></i>
+                     <i class="bi bi-journal-check"></i><span>ATK</span><i class="bi bi-chevron-down ms-auto"></i>
                  </a>
-                 <ul id="configuration-nav" class="nav-content collapse {{ $isConfigActive ? 'show' : '' }}"
+
+                 <ul id="atk-nav" class="nav-content collapse {{ $isAtkActive ? 'show' : '' }}"
                      data-bs-parent="#sidebar-nav">
+
+                     {{-- Daftar ATK --}}
                      <li>
-                         <a href="{{ route('indexbrand') }}"
-                             class="{{ request()->routeIs('indexbrand') ? 'active' : '' }}">
-                             <i class="bi bi-circle"></i><span>Brand</span>
+                         <a href="{{ route('atk.index') }}"
+                             class="{{ request()->routeIs('atk.index') ? 'active' : '' }}">
+                             <i class="bi bi-circle"></i><span>Daftar ATK</span>
                          </a>
                      </li>
+
+                     {{-- ATK - Masuk --}}
                      <li>
-                         <a href="{{ route('indexwarehouse') }}"
-                             class="{{ request()->routeIs('indexwarehouse') ? 'active' : '' }}">
-                             <i class="bi bi-circle"></i><span>Warehouse</span>
+                         <a href="{{ route('atkmasuk.index') }}"
+                             class="{{ request()->routeIs('atkmasuk.*') ? 'active' : '' }}">
+                             <i class="bi bi-circle"></i><span>ATK - Masuk</span>
                          </a>
                      </li>
+
+                     {{-- ATK - Keluar --}}
                      <li>
-                         <a href="{{ route('indexlocations') }}"
-                             class="{{ request()->routeIs('indexlocations') ? 'active' : '' }}">
-                             <i class="bi bi-circle"></i><span>Lokasi</span>
+                         <a href="{{ route('atk-keluar.index') }}"
+                             class="{{ request()->routeIs('atk-keluar.*') ? 'active' : '' }}">
+                             <i class="bi bi-circle"></i><span>ATK - Keluar</span>
                          </a>
                      </li>
+
+                     {{-- History --}}
                      <li>
-                         <a href="{{ route('indexcategory') }}"
-                             class="{{ request()->routeIs('indexcategory') ? 'active' : '' }}">
-                             <i class="bi bi-circle"></i><span>Category</span>
+                         <a href="{{ route('atk.history') }}"
+                             class="{{ request()->routeIs('atk.history') ? 'active' : '' }}">
+                             <i class="bi bi-circle"></i><span>Riwayat ATK Masuk/Keluar</span>
                          </a>
                      </li>
+
+                     {{-- Buat Surat Pesanan --}}
                      <li>
-                         <a href="{{ route('indexsubcategory') }}"
-                             class="{{ request()->routeIs('indexsubcategory') ? 'active' : '' }}">
-                             <i class="bi bi-circle"></i><span>Sub Category</span>
+                         <a href="{{ route('suratpesanan-atk.index') }}"
+                             class="{{ request()->routeIs('suratpesanan-atk.*') ? 'active' : '' }}">
+                             <i class="bi bi-circle"></i><span>Buat Surat Pesanan ATK</span>
                          </a>
                      </li>
-                     <li>
-                         <a href="{{ route('index.satuan') }}"
-                             class="{{ request()->routeIs('index.satuan') ? 'active' : '' }}">
-                             <i class="bi bi-circle"></i><span>Satuan</span>
-                         </a>
-                     </li>
-                     <li>
-                         <a href="{{ route('index.department') }}"
-                             class="{{ request()->routeIs('index.department') ? 'active' : '' }}">
-                             <i class="bi bi-circle"></i><span>Department</span>
-                         </a>
-                     </li>
-                     <li>
-                         <a href="{{ route('indexprofile') }}"
-                             class="{{ request()->routeIs('indexprofile') ? 'active' : '' }}">
-                             <i class="bi bi-circle"></i><span>Profile</span>
-                         </a>
-                     </li>
+
                  </ul>
              </li>
-             <!-- End Spare Part Sidebar -->
+         @endif
+
+         <!-- End ATK Sidebar -->
+
+         <!-- Start Surat Pesanan Baru -->
+         {{-- <li class="nav-item">
+             <a class="nav-link {{ request()->routeIs('suratpesanan.index') ? 'active' : 'collapsed' }}"
+                 href="{{ route('suratpesanan.index') }}">
+                 <i class="bi bi-truck"></i>
+                 <span>Surat Pesanan Baru</span>
+             </a>
+         </li> --}}
+
+         <!-- Start Supplier Sidebar -->
+         <li class="nav-item">
+             <a class="nav-link {{ request()->routeIs('indexsupplier') ? 'active' : 'collapsed' }}"
+                 href="{{ route('indexsupplier') }}">
+                 <i class="bi bi-truck"></i>
+                 <span>Supplier</span>
+             </a>
+         </li>
+         <!-- End Supplier Sidebar -->
+
+         @if (Auth::user()->is_role == 2)
+             <!-- Start Riwayat Mesin -->
+             <li class="nav-item">
+                 <a class="nav-link {{ request()->routeIs('index.riwayatmesin') ? 'active' : 'collapsed' }}"
+                     href="{{ route('index.riwayatmesin') }}">
+                     <i class="bi bi-gear-fill"></i>
+                     <span>Riwayat Mesin</span>
+                 </a>
+             </li>
+         @endif
+         <!-- End Riwayat Mesin Sidebar -->
+
+         <!-- Start Users Sidebar -->
+         @if (Auth::user()->is_role == 2)
+             <li class="nav-item">
+                 <a class="nav-link {{ request()->routeIs('indexusers') ? 'active' : 'collapsed' }}"
+                     href="{{ route('indexusers') }}">
+                     <i class="bi bi-person-circle"></i>
+                     <span>Users</span>
+                 </a>
+             </li>
+         @endif
+         <!-- End Users Sidebar -->
+
+         <!-- Start Spare Part Sidebar -->
+
+         @php
+             $isConfigActive =
+                 request()->routeIs('indexbrand') ||
+                 request()->routeIs('indexwarehouse') ||
+                 request()->routeIs('indexlocations') ||
+                 request()->routeIs('indexcategory') ||
+                 request()->routeIs('indexsubcategory') ||
+                 request()->routeIs('index.satuan') ||
+                 request()->routeIs('index.department') ||
+                 request()->routeIs('indexprofile');
+         @endphp
+
+         <li class="nav-item">
+             <a class="nav-link {{ $isConfigActive ? '' : 'collapsed' }}" data-bs-target="#configuration-nav"
+                 data-bs-toggle="collapse" href="#">
+                 <i class="bi bi-gear"></i><span>Configuration</span><i class="bi bi-chevron-down ms-auto"></i>
+             </a>
+             <ul id="configuration-nav" class="nav-content collapse {{ $isConfigActive ? 'show' : '' }}"
+                 data-bs-parent="#sidebar-nav">
+                 <li>
+                     <a href="{{ route('indexbrand') }}"
+                         class="{{ request()->routeIs('indexbrand') ? 'active' : '' }}">
+                         <i class="bi bi-circle"></i><span>Brand</span>
+                     </a>
+                 </li>
+                 <li>
+                     <a href="{{ route('indexwarehouse') }}"
+                         class="{{ request()->routeIs('indexwarehouse') ? 'active' : '' }}">
+                         <i class="bi bi-circle"></i><span>Warehouse</span>
+                     </a>
+                 </li>
+                 <li>
+                     <a href="{{ route('indexlocations') }}"
+                         class="{{ request()->routeIs('indexlocations') ? 'active' : '' }}">
+                         <i class="bi bi-circle"></i><span>Lokasi</span>
+                     </a>
+                 </li>
+                 <li>
+                     <a href="{{ route('indexcategory') }}"
+                         class="{{ request()->routeIs('indexcategory') ? 'active' : '' }}">
+                         <i class="bi bi-circle"></i><span>Category</span>
+                     </a>
+                 </li>
+                 <li>
+                     <a href="{{ route('indexsubcategory') }}"
+                         class="{{ request()->routeIs('indexsubcategory') ? 'active' : '' }}">
+                         <i class="bi bi-circle"></i><span>Sub Category</span>
+                     </a>
+                 </li>
+                 <li>
+                     <a href="{{ route('index.satuan') }}"
+                         class="{{ request()->routeIs('index.satuan') ? 'active' : '' }}">
+                         <i class="bi bi-circle"></i><span>Satuan</span>
+                     </a>
+                 </li>
+                 <li>
+                     <a href="{{ route('index.department') }}"
+                         class="{{ request()->routeIs('index.department') ? 'active' : '' }}">
+                         <i class="bi bi-circle"></i><span>Department</span>
+                     </a>
+                 </li>
+                 <li>
+                     <a href="{{ route('indexprofile') }}"
+                         class="{{ request()->routeIs('indexprofile') ? 'active' : '' }}">
+                         <i class="bi bi-circle"></i><span>Profile</span>
+                     </a>
+                 </li>
+             </ul>
+         </li>
+         <!-- End Spare Part Sidebar -->
 
      </ul>
 

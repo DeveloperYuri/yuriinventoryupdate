@@ -12,6 +12,7 @@ use App\Exports\StockSparePartInExport;
 use App\Exports\StockSparePartOutExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class StockController extends Controller
 {
@@ -181,42 +182,158 @@ class StockController extends Controller
     {
         $sparePart = ListSparePartModel::findOrFail($id);
 
-        $query = StockTransactionModel::with([
-            'stockOutHeader.location',
-            'stockOutHeader.category',
-            'stockOutHeader.subcategory'
-        ])->where('spare_part_id', $id);
+        /* ===========================
+     * 1️⃣ HITUNG STOK (HANYA SUKSES)
+     * =========================== */
+        $calcQuery = StockTransactionModel::where('spare_part_id', $id)
+            ->where('status', 'sukses');
 
         if ($request->start_date) {
-            $query->whereDate('created_at', '>=', $request->start_date);
+            $calcQuery->whereDate('created_at', '>=', $request->start_date);
         }
 
         if ($request->end_date) {
-            $query->whereDate('created_at', '<=', $request->end_date);
+            $calcQuery->whereDate('created_at', '<=', $request->end_date);
         }
 
-        $allTransactions = $query->orderBy('created_at')->get();
+        $calcTransactions = $calcQuery
+            ->orderBy('created_at')
+            ->get();
 
-        $totalStock = 0;
+        $runningStock = 0;
         $runningValue = 0;
 
-        // Hitung total stock dan total value
-        $allTransactions->each(function ($item) use (&$totalStock, &$runningValue, $sparePart) {
+        foreach ($calcTransactions as $item) {
             if ($item->type === 'in') {
-                $totalStock += $item->quantity;
+                $runningStock += $item->quantity;
                 $runningValue += $item->quantity * $item->price;
             } else {
-                $totalStock -= $item->quantity;
+                $runningStock -= $item->quantity;
                 $runningValue -= $item->quantity * $item->price;
             }
-            $item->runningStock = $totalStock; // simpan ke tiap item supaya bisa tampil di view
-            $item->runningValue = $runningValue; // simpan total harga
-        });
+        }
 
-        $transactions = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
+        /* ===========================
+     * 2️⃣ HISTORY (SEMUA STATUS)
+     * =========================== */
+        $transactions = StockTransactionModel::with([
+            'stockOutHeader.location',
+            'stockOutHeader.category',
+            'stockOutHeader.subcategory'
+        ])
+            ->where('spare_part_id', $id)
+            ->when(
+                $request->start_date,
+                fn($q) => $q->whereDate('created_at', '>=', $request->start_date)
+            )
+            ->when(
+                $request->end_date,
+                fn($q) => $q->whereDate('created_at', '<=', $request->end_date)
+            )
+            ->orderByDesc('created_at')
+            ->paginate(20)
+            ->withQueryString();
 
-        return view('dashboard.sparepart.detailsparepart', compact('sparePart', 'transactions', 'totalStock', 'allTransactions'));
+        return view('dashboard.sparepart.detailsparepart', [
+            'sparePart'        => $sparePart,
+            'transactions'     => $transactions,
+            'lastRunningStock' => $runningStock,
+            'lastRunningValue' => $runningValue,
+        ]);
     }
+
+
+    // public function viewHistoryPerItem(Request $request, $id)
+    // {
+    //     $sparePart = ListSparePartModel::findOrFail($id);
+
+    //     $query = StockTransactionModel::with([
+    //         'stockOutHeader.location',
+    //         'stockOutHeader.category',
+    //         'stockOutHeader.subcategory'
+    //     ])
+    //         ->where('spare_part_id', $id)
+    //         ->where('status', 'sukses'); // INI KUNCI
+
+    //     if ($request->start_date) {
+    //         $query->whereDate('created_at', '>=', $request->start_date);
+    //     }
+
+    //     if ($request->end_date) {
+    //         $query->whereDate('created_at', '<=', $request->end_date);
+    //     }
+
+    //     // 🔹 AMBIL SEMUA TRANSAKSI (UNTUK HITUNG)
+    //     $allTransactions = $query->orderBy('created_at')->get();
+
+    //     $runningStock = 0;
+    //     $runningValue = 0;
+
+    //     foreach ($allTransactions as $item) {
+    //         if ($item->type === 'in') {
+    //             $runningStock += $item->quantity;
+    //             $runningValue += $item->quantity * $item->price;
+    //         } else {
+    //             $runningStock -= $item->quantity;
+    //             $runningValue -= $item->quantity * $item->price;
+    //         }
+    //     }
+
+    //     // 🔹 PAGINATION UNTUK TAMPILAN
+    //     $transactions = $query
+    //         ->orderByDesc('created_at')
+    //         ->paginate(20)
+    //         ->withQueryString();
+
+    //     return view('dashboard.sparepart.detailsparepart', [
+    //         'sparePart'          => $sparePart,
+    //         'transactions'       => $transactions,
+    //         'lastRunningStock'   => $runningStock,
+    //         'lastRunningValue'   => $runningValue,
+    //     ]);
+    // }
+
+
+    // public function viewHistoryPerItem(Request $request, $id)
+    // {
+    //     $sparePart = ListSparePartModel::findOrFail($id);
+
+    //     $query = StockTransactionModel::with([
+    //         'stockOutHeader.location',
+    //         'stockOutHeader.category',
+    //         'stockOutHeader.subcategory'
+    //     ])->where('spare_part_id', $id);
+
+    //     if ($request->start_date) {
+    //         $query->whereDate('created_at', '>=', $request->start_date);
+    //     }
+
+    //     if ($request->end_date) {
+    //         $query->whereDate('created_at', '<=', $request->end_date);
+    //     }
+
+    //     $allTransactions = $query->orderBy('created_at')->get();
+
+    //     $totalStock = 0;
+    //     $runningValue = 0;
+
+    //     // Hitung total stock dan total value
+    //     $allTransactions->each(function ($item) use (&$totalStock, &$runningValue, $sparePart) {
+    //         if ($item->type === 'in') {
+    //             $totalStock += $item->quantity;
+    //             $runningValue += $item->quantity * $item->price;
+    //         } else {
+    //             $totalStock -= $item->quantity;
+    //             $runningValue -= $item->quantity * $item->price;
+    //         }
+    //         $item->runningStock = $totalStock; // simpan ke tiap item supaya bisa tampil di view
+    //         $item->runningValue = $runningValue; // simpan total harga
+    //     });
+
+    //     $transactions = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
+
+    //     return view('dashboard.sparepart.detailsparepart', compact('sparePart', 'transactions', 'totalStock', 'allTransactions'));
+    // }
 
     public function exportHistoryPerItemPDF($id, Request $request)
     {
@@ -280,5 +397,53 @@ class StockController extends Controller
             new SparePartHistoryInOutExport($request->start_date, $request->end_date),
             'laporan_riwayat_sparepartinout.xlsx'
         );
+    }
+
+    public function batal(Request $request, $id)
+    {
+
+        // dd('CONTROLLER MASUK', $id);
+
+        $request->validate([
+            'keterangan' => 'required|string'
+        ]);
+
+        DB::transaction(function () use ($request, $id) {
+
+            // 🔐 Lock transaksi
+            $trx = StockTransactionModel::lockForUpdate()->findOrFail($id);
+
+            if ($trx->status !== 'sukses') {
+                abort(400, 'Transaksi sudah dibatalkan');
+            }
+
+            // 🔐 Lock stok ATK
+            $atk = ListSparePartModel::lockForUpdate()->findOrFail($trx->spare_part_id);
+
+            if ($trx->type === 'in') {
+                // ❗ BATAL MASUK → STOK DIKURANGI
+                $atk->stock -= $trx->quantity;
+            } else {
+                // ❗ BATAL KELUAR → STOK DIKEMBALIKAN
+                $atk->stock += $trx->quantity;
+            }
+
+            // 🛡 Cegah stok minus
+            if ($atk->stock < 0) {
+                abort(400, 'Stok menjadi negatif');
+            }
+
+            $atk->save();
+
+            // Update transaksi
+            $trx->update([
+                'status' => 'batal',
+                'keterangan' => $request->keterangan,
+            ]);
+        });
+
+        return redirect()
+            ->route('sparepart.history')
+            ->with('success', 'Transaksi berhasil dibatalkan dan stok dikembalikan');
     }
 }

@@ -12,7 +12,7 @@ class StockTransactionModel extends Model
 
     protected $table = 'stock_transactions';
 
-    protected $fillable = ['spare_part_id', 'type', 'quantity', 'user', 'stock_in_header_id', 'stock_out_header_id', 'price'];
+    protected $fillable = ['spare_part_id', 'type', 'quantity', 'user', 'stock_in_header_id', 'stock_out_header_id', 'price', 'status', 'keterangan'];
 
     public function sparePart()
     {
@@ -39,5 +39,15 @@ class StockTransactionModel extends Model
                 $sparePart->decrement('stock', $transaction->quantity);
             }
         });
+    }
+
+    public function scopeEffective($query)
+    {
+        return $query->where('status', 'sukses');
+    }
+
+    public function isEffective()
+    {
+        return $this->status === 'sukses';
     }
 }

@@ -184,6 +184,9 @@ Route::get('/sparepart/{id}/history/pdf', [StockController::class, 'exportHistor
 Route::get('/sparepart/{id}/export-excel', [StockController::class, 'exportHistoryPerItemExcel'])->name('sparepartdetail.history.excel');
 Route::get('/export-history-excel', [StockController::class, 'exportHistoryExcel'])->name('sparepart.history.excel');
 
+Route::put('/sparepart/history/{id}/batal', [StockController::class, 'batal'])
+    ->name('sparepart.history.batal');
+
 Route::get('/export-stock-in-excel', [StockController::class, 'exportStockInExcel'])->name('stockin.export.excel');
 Route::get('/export-stock-out-excel', [StockController::class, 'exportStockOutExcel'])->name('stockout.export.excel');
 
@@ -224,11 +227,17 @@ Route::get('/listsparepart/in/multiple/create', [ListSparePartMultipleController
 Route::post('/listsparepart/in/multiple/post', [ListSparePartMultipleController::class, 'storein'])->name('sparepartinmultiple.store');
 Route::get('/stockinmultiple/{id}', [ListSparePartMultipleController::class, 'show'])->name('sparepartinmultiple.show');
 
+Route::post('/sparepartin/{id}/batal', [ListSparePartMultipleController::class, 'batalmasuk'])
+    ->name('spartpartmasuk.batal');
+
 // Spare Part Out Multiple
 Route::get('/sparepart/out/multiple', [ListSparePartMultipleController::class, 'indexout'])->name('sparepartoutmultiple.index');
 Route::get('/listsparepart/out/multiple/create', [ListSparePartMultipleController::class, 'createout'])->name('sparepartoutmultiple.createout');
 Route::post('/listsparepart/out/multiple/post', [ListSparePartMultipleController::class, 'storeout'])->name('sparepartoutmultiple.store');
 Route::get('/stockoutmultiple/{id}', [ListSparePartMultipleController::class, 'showout'])->name('sparepartoutmultiple.show');
+
+Route::post('/sparepartout/{id}/batal', [ListSparePartMultipleController::class, 'batalkeluar'])
+    ->name('spartpartkeluar.batal');
 
 Route::get('/spareparts/search', [ListSparePartMultipleController::class, 'search']);
 Route::post('/spare-parts/import', [ListSparePartController::class, 'import'])->name('spare-parts.import');

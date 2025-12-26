@@ -4,7 +4,7 @@
     <main id="main" class="main">
 
         <div class="pagetitle mb-5">
-            <h1 class="text-center">Riwayat Asset Tools Masuk / Keluar TEST</h1>
+            <h1 class="text-center">Riwayat Asset Tools Masuk / Keluar</h1>
         </div>
 
         <div class="d-flex justify-content-end align-items-end gap-3 flex-wrap mb-3">

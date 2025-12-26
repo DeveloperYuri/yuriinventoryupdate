@@ -109,6 +109,8 @@
                                         <th class="text-center">Category</th>
                                         <th class="text-center">Sub Category</th>
                                         <th class="text-center">Tanggal</th>
+                                        <th class="text-center">Tipe</th>
+                                        <th class="text-center">Status</th>
                                         <th class="text-center">Keterangan</th>
                                     </tr>
                                     <tbody>
@@ -119,7 +121,14 @@
                                             <tr>
                                                 <td class="text-center">{{ $transactions->firstItem() + $index }}</td>
                                                 <td class="text-center">{{ $item->user ?? '-' }}</td>
-                                                <td class="text-center">{{ $item->quantity }}</td>
+                                                {{-- JUMLAH --}}
+                                                <td class="text-center">
+                                                    <span
+                                                        class="{{ $item->status === 'batal' ? 'text-danger fw-bold' : '' }}">
+                                                        {{ $item->quantity }}
+                                                    </span>
+                                                </td>
+                                                {{-- <td class="text-center">{{ $item->quantity }}</td> --}}
 
                                                 @if (Auth::user()->is_role == 2)
                                                     <td class="text-center">Rp. {{ number_format($item->price) }}</td>
@@ -136,16 +145,61 @@
                                                     {{ $item->stockOutHeader->subcategory->name ?? '-' }}</td>
 
                                                 <td class="text-center">{{ $item->created_at->format('d-m-Y') }}</td>
+
                                                 <td class="text-center">
+                                                    {{ $item->type == 'in' ? 'Masuk' : 'Keluar' }}
+                                                </td>
+                                                {{-- <td class="text-center">
+                                                    <span
+                                                        class="badge {{ $item->type === 'in' ? 'bg-success' : 'bg-danger' }}">
+                                                        {{ $item->type === 'in' ? 'Masuk' : 'Keluar' }}
+                                                    </span>
+                                                </td> --}}
+
+                                                {{-- STATUS --}}
+                                                <td class="text-center">
+                                                    <span
+                                                        class="badge {{ $item->status === 'batal' ? 'bg-danger' : 'bg-success' }}">
+                                                        {{ ucfirst($item->status) }}
+                                                    </span>
+                                                </td>
+
+                                                {{-- KETERANGAN --}}
+                                                <td class="text-center">
+                                                    {{ $item->keterangan ?? '-' }}
+                                                </td>
+                                                {{-- <td class="text-center">
                                                     <span
                                                         class="badge {{ $item->type == 'in' ? 'bg-success' : 'bg-danger' }}">
                                                         {{ $item->type == 'in' ? 'Masuk' : 'Keluar' }}
                                                     </span>
-                                                </td>
+                                                </td> --}}
                                             </tr>
                                         @endforeach
 
-                                        @if ($transactions->currentPage() === $transactions->lastPage())
+                                         @if ($transactions->currentPage() === $transactions->lastPage())
+                                            <tr class="table-light">
+                                                <td colspan="2" class="text-end">
+                                                    <strong>Jumlah Akhir Stok</strong>
+                                                </td>
+                                                <td class="text-center">
+                                                    <strong>{{ $lastRunningStock }}</strong>
+                                                </td>
+
+                                                @if (Auth::user()->is_role == 2)
+                                                    <td class="text-end">
+                                                        <strong>Total Harga</strong>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <strong>Rp. {{ number_format($lastRunningValue) }}</strong>
+                                                    </td>
+                                                @endif
+
+                                                <td colspan="4"></td>
+                                            </tr>
+                                        @endif
+
+                                        {{-- @if ($transactions->currentPage() === $transactions->lastPage())
                                             <tr>
                                                 <td colspan="2" class="text-end"><strong>Jumlah Akhir Stok</strong></td>
                                                 <td class="text-center"><strong>{{ $totalStock }}</strong></td>
@@ -157,7 +211,7 @@
                                                 @endif
                                                 <td colspan="3"></td>
                                             </tr>
-                                        @endif
+                                        @endif --}}
                                     </tbody>
                                 </table>
                                 <!-- End Default Table Example -->

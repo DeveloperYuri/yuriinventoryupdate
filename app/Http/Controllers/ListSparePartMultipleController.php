@@ -79,6 +79,7 @@ class ListSparePartMultipleController extends Controller
                 'diterima_oleh' => $request->diterima_oleh,
                 'supplier_id' => $request->supplier_id,
                 'po_numbers' => $request->po_numbers,
+                'status' => 'sukses',
                 // 'user'          => auth()->user()->name,
             ]);
 
@@ -92,6 +93,7 @@ class ListSparePartMultipleController extends Controller
                     'quantity'           => $request->demand[$i],
                     'price'              => $sparePart->price, // harga snapshot dari master
                     'user'               => $request->diterima_oleh,
+                    'status' => 'sukses',
                     // 'user'               => auth()->user()->name,
                 ]);
             }
@@ -215,7 +217,8 @@ class ListSparePartMultipleController extends Controller
                 'diminta_oleh'  => $request->diminta_oleh,
                 'locations_id' => $request->locations_id,
                 'category_id' => $request->category_id,
-                'subcategory_id' => $request->subcategory_id
+                'subcategory_id' => $request->subcategory_id,
+                'status' => 'sukses'
             ]);
 
             foreach ($request->product as $i => $spare_part_id) {
@@ -227,7 +230,8 @@ class ListSparePartMultipleController extends Controller
                     'type'                => 'out',
                     'quantity'            => $request->demand[$i],
                     'price'               => $sparePart->price, // ambil harga dari master
-                    'user'                => $request->diminta_oleh
+                    'user'                => $request->diminta_oleh,
+                    'status' => 'sukses',
                 ]);
             }
 
@@ -271,5 +275,49 @@ class ListSparePartMultipleController extends Controller
         $transaction = StockOutHeader::with('stockTransactions.sparePart')->findOrFail($id);
 
         return view('dashboard.sparepartoutmultiple.show', compact('transaction'));
+    }
+
+    public function batalmasuk(Request $request, $id)
+    {
+        $request->validate([
+            'keterangan' => 'required|string|min:5'
+        ]);
+
+        $transaction = StockInHeader::findOrFail($id);
+
+        if ($transaction->status !== 'sukses') {
+            return back()->with('error', 'Transaksi tidak bisa dibatalkan');
+        }
+
+        $transaction->update([
+            'status'     => 'batal',
+            'keterangan' => $request->keterangan,
+        ]);
+
+        return redirect()
+            ->route('sparepartinmultiple.index')
+            ->with('success', 'Transaksi berhasil dibatalkan');
+    }
+
+    public function batalkeluar(Request $request, $id)
+    {
+        $request->validate([
+            'keterangan' => 'required|string|min:5'
+        ]);
+
+        $transaction = StockOutHeader::findOrFail($id);
+
+        if ($transaction->status !== 'sukses') {
+            return back()->with('error', 'Transaksi tidak bisa dibatalkan');
+        }
+
+        $transaction->update([
+            'status'     => 'batal',
+            'keterangan' => $request->keterangan,
+        ]);
+
+        return redirect()
+            ->route('sparepartoutmultiple.index')
+            ->with('success', 'Transaksi berhasil dibatalkan');
     }
 }

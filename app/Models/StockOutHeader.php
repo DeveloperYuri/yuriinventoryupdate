@@ -17,7 +17,9 @@ class StockOutHeader extends Model
         'tanggal',
         'locations_id',
         'category_id',
-        'subcategory_id'
+        'subcategory_id',
+        'status',
+        'keterangan'
     ];
 
     public function user()
