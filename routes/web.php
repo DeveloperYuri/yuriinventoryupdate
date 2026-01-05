@@ -286,7 +286,7 @@ Route::delete('/delete/suratpesananbaru/{id}', [SuratPesananBaruController::clas
 Route::get('/show/suratpesananbaru/{id}', [SuratPesananBaruController::class, 'show'])->name('suratpesananbaru.show');
 
 Route::get('suratpesananbaru/{id}/pdf', [SuratPesananBaruController::class, 'printPdf'])->name('suratpesananbaru.pdf');
-Route::get('/spareparts/{id}/stock', [SuratPesananBaruController::class, 'getStock']);
+// Route::get('/spareparts/{id}/stock', [SuratPesananBaruController::class, 'getStock']);
 
 Route::prefix('suratpesananbaru')->name('suratpesananbaru.')->group(function () {
     Route::post('{id}/submit', [SuratPesananBaruController::class, 'submit'])->name('submit');
@@ -336,7 +336,7 @@ Route::get('/edit/suratpesanan-atk/{id}', [SuratpesananatkController::class, 'ed
 Route::put('/update/suratpesanan-atk/{id}', [SuratpesananatkController::class, 'update'])->name('suratpesanan-atk.update');
 Route::delete('/suratpesanan-atk/delete/{id}', [SuratpesananatkController::class, 'destroy'])->name('suratpesanan-atk.delete');
 Route::get('/show/suratpesanan-atk/{id}', [SuratpesananatkController::class, 'show'])->name('suratpesanan-atk.show');
-Route::get('/atk/{id}/stock', [SuratpesananatkController::class, 'getStock']);
+// Route::get('/atk/{id}/stock', [SuratpesananatkController::class, 'getStock']);
 Route::get('suratpesanan-atk/{id}/pdf', [SuratpesananatkController::class, 'printPdf'])->name('suratpesanan-atk.pdf');
 
 Route::prefix('suratpesanan-atk')->name('suratpesanan-atk.')->group(function () {
