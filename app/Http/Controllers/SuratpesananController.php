@@ -45,8 +45,12 @@ class SuratpesananController extends Controller
         $bulan = $romawi[$bulanAngka];
 
         // Ambil record terakhir tahun ini
+        // $last = SuratPesananHeaderModel::whereYear('created_at', $tahun)
+        //     ->whereMonth('created_at', $bulanAngka)
+        //     ->orderBy('id', 'desc')
+        //     ->first();
+
         $last = SuratPesananHeaderModel::whereYear('created_at', $tahun)
-            ->whereMonth('created_at', $bulanAngka)
             ->orderBy('id', 'desc')
             ->first();
 
@@ -212,7 +216,7 @@ class SuratpesananController extends Controller
 
         $suratpesanan->delete();
 
-        return redirect()->route('suratpesanan.index')->with('success', 'Surat pesanan berhasil dicatat.');
+        return redirect()->route('suratpesanan.index')->with('success', 'Surat pesanan berhasil dihapus.');
     }
 
     public function show($id)

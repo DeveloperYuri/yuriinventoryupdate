@@ -93,7 +93,7 @@
 
     <hr>
 
-    <h2 style="text-align: center;">Surat Pesanan</h2>
+    <h2 style="text-align: center;">Surat Permintaan Spare Part</h2>
 
     <table class="table-header-info" style="width:100%; border-collapse: collapse; margin-bottom: 20px; border: 0;">
         <tr>

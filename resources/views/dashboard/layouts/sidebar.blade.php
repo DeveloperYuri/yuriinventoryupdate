@@ -195,13 +195,15 @@
          <!-- End ATK Sidebar -->
 
          <!-- Start Surat Pesanan Baru -->
-         {{-- <li class="nav-item">
-             <a class="nav-link {{ request()->routeIs('suratpesanan.index') ? 'active' : 'collapsed' }}"
-                 href="{{ route('suratpesanan.index') }}">
-                 <i class="bi bi-truck"></i>
-                 <span>Surat Pesanan Baru</span>
-             </a>
-         </li> --}}
+         @if (Auth::user()->is_role == 2)
+             <li class="nav-item">
+                 <a class="nav-link {{ request()->routeIs('suratpesananbaru.index') ? 'active' : 'collapsed' }}"
+                     href="{{ route('suratpesananbaru.index') }}">
+                     <i class="bi bi-truck"></i>
+                     <span>Surat Pesanan Baru</span>
+                 </a>
+             </li>
+         @endif
 
          <!-- Start Supplier Sidebar -->
          <li class="nav-item">

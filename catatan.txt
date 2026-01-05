@@ -1,0 +1,31 @@
+// Buat view item table spare parts, asset, atk
+
+CREATE OR REPLACE VIEW v_items_all AS
+
+-- SPARE PARTS (PAKAI STOK)
+SELECT
+    sp.id,
+    sp.name,
+    'sparepart' AS item_type,
+    sp.stock
+FROM spare_parts sp
+
+UNION ALL
+
+-- ASSET TOOLS (TANPA STOK)
+SELECT
+    at.id,
+    at.name,
+    'asset' AS item_type,
+    0 AS stock
+FROM asset_tools at
+
+UNION ALL
+
+-- ATK (PAKAI STOK)
+SELECT
+    a.id,
+    a.name,
+    'atk' AS item_type,
+    a.stock
+FROM atk a;

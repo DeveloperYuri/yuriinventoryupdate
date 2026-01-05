@@ -69,6 +69,14 @@ class ListSparePartController extends Controller
             $data['image'] = $imageName;
         }
 
+        //buat di testing deploy rumah web
+        // if ($request->hasFile('image')) {
+        //     $imageName = time() . '.' . $request->image->extension();
+        //     $destinationPath = $_SERVER['DOCUMENT_ROOT'] . '/images';
+        //     $request->image->move($destinationPath, $imageName);
+        //     $data['image'] = $imageName;
+        // }
+
         ListSparePartModel::create($data);
 
         return redirect()->route('spare-parts.index')->with('success', 'Spare part berhasil ditambahkan.');

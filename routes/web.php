@@ -8,6 +8,7 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ListAssetToolsController;
 use App\Http\Controllers\ListSparePartController;
 use App\Http\Controllers\ListSparePartMultipleController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SuratPermintaanSparePartController;
 use App\Http\Controllers\SuratpesananatkController;
+use App\Http\Controllers\SuratPesananBaruController;
 use App\Http\Controllers\SuratpesananController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\WarehouseController;
@@ -128,24 +130,20 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');;
 
 
 Route::group(['middleware' => 'superadmin'], function () {
-    
-    Route::get('/dashboardsuperadmin', [DashboardController::class, 'index'])->name('indexdashboardsuperadmin');
 
+    Route::get('/dashboardsuperadmin', [DashboardController::class, 'index'])->name('indexdashboardsuperadmin');
 });
 
 Route::group(['middleware' => 'admin'], function () {
     Route::get('/dashboardadmin', [DashboardController::class, 'index'])->name('indexdashboardadmin');
-
 });
 
 Route::group(['middleware' => 'hrd'], function () {
     Route::get('/dashboardhr', [DashboardController::class, 'index'])->name('indexdashboardhr');
-
 });
 
 Route::group(['middleware' => 'users'], function () {
     Route::get('/dashboardusers', [DashboardController::class, 'index'])->name('indexdashboarduser');
-
 });
 
 // Route::group(['middleware' => 'hrd'], function () {
@@ -278,6 +276,24 @@ Route::prefix('suratpesanan')->name('suratpesanan.')->group(function () {
     Route::post('{id}/reject', [SuratPesananController::class, 'reject'])->name('reject');
 });
 
+// Surat Pesanan Baru
+Route::get('/suratpesananbaru', [SuratPesananBaruController::class, 'index'])->name('suratpesananbaru.index');
+Route::get('/create/suratpesananbaru', [SuratPesananBaruController::class, 'create'])->name('suratpesananbaru.create');
+Route::post('/create/suratpesananbaru/post', [SuratPesananBaruController::class, 'store'])->name('suratpesananbaru.store');
+Route::get('/create/suratpesananbaru/{id}', [SuratPesananBaruController::class, 'edit'])->name('suratpesananbaru.edit');
+Route::put('/create/suratpesananbaru/{id}', [SuratPesananBaruController::class, 'update'])->name('suratpesananbaru.update');
+Route::delete('/delete/suratpesananbaru/{id}', [SuratPesananBaruController::class, 'destroy'])->name('suratpesananbaru.delete');
+Route::get('/show/suratpesananbaru/{id}', [SuratPesananBaruController::class, 'show'])->name('suratpesananbaru.show');
+
+Route::get('suratpesananbaru/{id}/pdf', [SuratPesananBaruController::class, 'printPdf'])->name('suratpesananbaru.pdf');
+Route::get('/spareparts/{id}/stock', [SuratPesananBaruController::class, 'getStock']);
+
+Route::prefix('suratpesananbaru')->name('suratpesananbaru.')->group(function () {
+    Route::post('{id}/submit', [SuratPesananBaruController::class, 'submit'])->name('submit');
+    Route::post('{id}/approve', [SuratPesananBaruController::class, 'approve'])->name('approve');
+    Route::post('{id}/reject', [SuratPesananBaruController::class, 'reject'])->name('reject');
+});
+
 // ATK
 Route::get('/atk', [AtkController::class, 'index'])->name('atk.index');
 Route::get('/cardlist-atk', [AtkController::class, 'cardindex'])->name('cardlist-atk.index');
@@ -335,5 +351,4 @@ Route::get('/atk/history/excel', [AtkController::class, 'exportHistoryExcel'])->
 Route::put('/atk/history/{id}/batal', [AtkController::class, 'batal'])
     ->name('atk.history.batal');
 
-
-
+Route::get('/autocomplete/items', [ItemController::class, 'autocomplete']);

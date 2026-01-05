@@ -45,8 +45,12 @@ class SuratPermintaanSparePartController extends Controller
         $bulan = $romawi[$bulanAngka];
 
         // Ambil record terakhir tahun ini
+        // $last = SuratPermintaanSparePartHeaderModel::whereYear('created_at', $tahun)
+        //     ->whereMonth('created_at', $bulanAngka)
+        //     ->orderBy('id', 'desc')
+        //     ->first();
+        
         $last = SuratPermintaanSparePartHeaderModel::whereYear('created_at', $tahun)
-            ->whereMonth('created_at', $bulanAngka)
             ->orderBy('id', 'desc')
             ->first();
 
@@ -188,7 +192,7 @@ class SuratPermintaanSparePartController extends Controller
             if ($request->has('product')) {
                 foreach ($request->product as $i => $spare_part_id) {
                     SuratPermintaanSparePartDetailModel::create([
-                        'surat_pesanan_header_id' => $id,
+                        'surat_permintaan_header_id' => $id,
                         'spare_part_id'           => $spare_part_id,
                         'qty'                     => $request->demand[$i] ?? 0,
                         'stock'                   => $request->stock[$i] ?? 0,
@@ -262,5 +266,4 @@ class SuratPermintaanSparePartController extends Controller
 
         return back()->with('success', 'Surat permintaan ditolak.');
     }
-
 }

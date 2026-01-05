@@ -86,14 +86,18 @@
         <img src="{{ public_path('assets/img/logobaru.png') }}" alt="Logo Perusahaan"
             style="width:80px; height:auto; display:block; margin:0 auto 10px auto;">
 
+            {{-- buat deploy di rumah web --}}
+            {{-- <img src="{{ asset('assets/img/logobaru.png') }}" alt="Logo Perusahaan"
+     style="width:80px; height:auto; display:block; margin:0 auto 10px auto;"> --}}
+
         <h1>PT. Joenoes Ikamulya</h1>
-        <p>Jl. Pulogadung No.43, RW.9, Jatinegara, Kec. Cakung</p>
+        <p>Jl. Pulogadung No.43, Jatinegara, Kec. Cakung</p>
         <p>Kota Jakarta Timur, Daerah Khusus Ibukota Jakarta 13930</p>
     </div>
 
     <hr>
 
-    <h2 style="text-align: center;">Surat Pesanan</h2>
+    <h2 style="text-align: center;">Surat Pesanan Spare Part</h2>
 
     <table class="table-header-info" style="width:100%; border-collapse: collapse; margin-bottom: 20px; border: 0;">
         <tr>
