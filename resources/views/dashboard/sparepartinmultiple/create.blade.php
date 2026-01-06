@@ -12,7 +12,8 @@
 
                             <h2 class="mt-4">Form Penerimaan Barang</h2>
 
-                            <form id="myForm" class="mt-4" action="{{ route('sparepartinmultiple.store') }}" method="POST">
+                            <form id="myForm" class="mt-4" action="{{ route('sparepartinmultiple.store') }}"
+                                method="POST">
                                 @csrf
                                 <div class="row mb-3">
                                     <!-- Kiri -->
@@ -58,13 +59,18 @@
 
                                     <!-- Kanan -->
                                     <div class="col-md-6">
+
                                         <div class="row mb-3">
-                                            <label class="col-sm-4 col-form-label">Date</label>
+                                            <label class="col-sm-4 col-form-label">Tanggal</label>
                                             <div class="col-sm-8">
-                                                <input type="datetime-local" class="form-control" name="tanggal"
-                                                    value="{{ now()->format('Y-m-d\TH:i') }}">
+                                                <input id="tanggalMulai" name="tanggal" type="text" class="form-control"
+                                                    placeholder="Pilih tanggal..." autocomplete="off"
+                                                    value="{{ now()->format('Y-m-d') }}">
+                                                <input type="hidden" name="tanggal" id="tanggalHidden"
+                                                    value="{{ now()->format('Y-m-d') }}">
                                             </div>
                                         </div>
+
                                         <div class="row mb-3">
                                             <label class="col-sm-4 col-form-label">Di terima oleh</label>
                                             <div class="col-sm-8">
@@ -77,13 +83,13 @@
                                             </div>
                                         </div>
                                         <div class="row mb-3">
-                                            <label class="col-sm-4 col-form-label">No PO</label>
+                                            <label class="col-sm-4 col-form-label">No. SP</label>
                                             <div class="col-sm-8">
-                                                <input type="text" class="form-control" name="po_numbers"
-                                                    value="{{ old('po_numbers') }}">
-                                                {{-- @error('diterima_oleh')
-                                                    <div class="text-danger small">{{ $message }}</div>
-                                                @enderror --}}
+                                                <input type="text" class="form-control" id="po_autocomplete"
+                                                    name="po_numbers" value="{{ old('po_numbers') }}"
+                                                    placeholder="Cari No SP">
+
+                                                <input type="hidden" name="po_id" id="po_id">
                                             </div>
                                         </div>
                                     </div>
@@ -121,7 +127,8 @@
                                     <button type="submit" class="btn btn-primary" id="saveBtn">
                                         <span id="btnText">Save</span>
                                     </button>
-                                    <a href="{{ route('sparepartinmultiple.index') }}" class="btn btn-secondary">Cancel</a>
+                                    <a href="{{ route('sparepartinmultiple.index') }}"
+                                        class="btn btn-secondary">Cancel</a>
                                 </div>
 
                                 {{-- <div class="mt-3">
@@ -204,10 +211,52 @@
         });
     </script>
 
-     <script>
+    <script>
         document.getElementById("myForm").addEventListener("keydown", function(event) {
             if (event.key === "Enter" && event.target.tagName !== "TEXTAREA") {
                 event.preventDefault();
+            }
+        });
+    </script>
+
+    <script>
+        $(function() {
+            $('#po_autocomplete').autocomplete({
+                source: function(request, response) {
+                    $.getJSON("{{ route('suratpesanan.search') }}", {
+                        q: request.term
+                    }, response);
+                },
+                minLength: 1,
+                select: function(event, ui) {
+                    $('#po_autocomplete').val(ui.item.label);
+                    $('#po_id').val(ui.item.id);
+                    return false;
+                }
+            }).autocomplete("instance")._renderItem = function(ul, item) {
+                return $("<li>")
+                    .append("<div>" + item.label + "</div>")
+                    .appendTo(ul);
+            };
+        });
+    </script>
+
+     <script>
+        new Litepicker({
+            element: document.getElementById('tanggalMulai'),
+            lang: 'id', // Bahasa Indonesia
+            format: 'DD MMMM YYYY', // 29 November 2025
+            dropdowns: {
+                minYear: 2020,
+                maxYear: new Date().getFullYear() + 5,
+                months: true,
+                years: true
+            },
+            setup: (picker) => {
+                picker.on('selected', (date) => {
+                    const mysql = date.format('YYYY-MM-DD');
+                    document.getElementById('tanggalHidden').value = mysql;
+                });
             }
         });
     </script>

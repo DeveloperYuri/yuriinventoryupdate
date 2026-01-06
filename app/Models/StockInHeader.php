@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class StockInHeader extends Model
 {
@@ -35,5 +36,12 @@ class StockInHeader extends Model
     public function supplier()
     {
         return $this->belongsTo(SupplierModel::class);
+    }
+
+     public function getTanggalDisplayAttribute()
+    {
+        return $this->tanggal
+            ? Carbon::parse($this->tanggal)->translatedFormat('d F Y')
+            : '-';
     }
 }

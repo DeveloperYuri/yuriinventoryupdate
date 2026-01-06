@@ -228,6 +228,9 @@ Route::get('/stockinmultiple/{id}', [ListSparePartMultipleController::class, 'sh
 Route::post('/sparepartin/{id}/batal', [ListSparePartMultipleController::class, 'batalmasuk'])
     ->name('spartpartmasuk.batal');
 
+Route::get('/surat-pesanan/search', [ListSparePartMultipleController::class, 'searchsp'])
+    ->name('suratpesanan.search');
+
 // Spare Part Out Multiple
 Route::get('/sparepart/out/multiple', [ListSparePartMultipleController::class, 'indexout'])->name('sparepartoutmultiple.index');
 Route::get('/listsparepart/out/multiple/create', [ListSparePartMultipleController::class, 'createout'])->name('sparepartoutmultiple.createout');

@@ -31,17 +31,29 @@
                                                     value="{{ $transaction->diterima_dari }}" readonly>
                                             </div>
                                         </div>
+                                        <div class="row mb-3">
+                                            <label class="col-sm-4 col-form-label">Supplier</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control"
+                                                    value="{{ $transaction->supplier->name ?? '-' }}" readonly>
+                                            </div>
+                                        </div>
+
                                     </div>
                                     <!-- Kanan -->
                                     <div class="col-md-6">
+                                        
                                         <div class="row mb-3">
-                                            <label class="col-sm-4 col-form-label">Date</label>
+                                            <label class="col-sm-4 col-form-label">Tanggal</label>
                                             <div class="col-sm-8">
-                                                <input type="text" class="form-control" name="diterima_dari"
-                                                    value="{{ \Carbon\Carbon::parse($transaction->tanggal)->format('d-m-Y') }}"
-                                                    readonly>
+                                                <input id="tanggalMulai" name="tanggal" type="text" class="form-control"
+                                                    placeholder="Pilih tanggal..." autocomplete="off"
+                                                    value="{{ $transaction->tanggal_display }}">
+                                                <input type="hidden" name="tanggal" id="tanggalHidden"
+                                                    value="{{ $transaction->tanggal_display }}">
                                             </div>
                                         </div>
+
                                         <div class="row mb-3">
                                             <label class="col-sm-4 col-form-label">Di terima oleh</label>
                                             <div class="col-sm-8">
@@ -49,6 +61,15 @@
                                                     value="{{ $transaction->diterima_oleh }}" readonly>
                                             </div>
                                         </div>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-4 col-form-label">No. SP</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control"
+                                                    value="{{ $transaction->po_numbers ?? '-' }}" readonly>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
 

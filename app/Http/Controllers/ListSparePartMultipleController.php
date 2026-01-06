@@ -9,6 +9,7 @@ use App\Models\StockInHeader;
 use App\Models\StockOutHeader;
 use App\Models\StockTransactionModel;
 use App\Models\SupplierModel;
+use App\Models\SuratPesananHeaderModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -319,5 +320,22 @@ class ListSparePartMultipleController extends Controller
         return redirect()
             ->route('sparepartoutmultiple.index')
             ->with('success', 'Transaksi berhasil dibatalkan');
+    }
+
+    public function searchsp(Request $request)
+    {
+        $q = $request->q;
+
+        return SuratPesananHeaderModel::where('status', 'approved')
+            ->where('no_surat_pesanan', 'like', "%{$q}%")
+            ->limit(10)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id'    => $item->id,
+                    'label' => $item->no_surat_pesanan,
+                    'value' => $item->no_surat_pesanan,
+                ];
+            });
     }
 }

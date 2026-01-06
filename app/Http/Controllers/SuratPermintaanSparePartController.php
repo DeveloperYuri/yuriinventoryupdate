@@ -62,7 +62,7 @@ class SuratPermintaanSparePartController extends Controller
 
         // Generate nomor baru
         $nextNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
-        $noDokumen = "SP/{$bulan}/{$tahun}/{$nextNumber}";
+        $noDokumen = "SPB/{$bulan}/{$tahun}/{$nextNumber}";
 
         $locations = LocationsModel::all();
         $categories = CategoryModel::all();
