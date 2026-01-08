@@ -25,7 +25,7 @@
         <img src="https://www.baby-dee.co.id/assets/img/logobaru.png" alt="Logo Perusahaan">
 
         <h1>PT. Joenoes Ikamulya</h1>
-        <p>Jl. Pulogadung No.43, RW.9, Jatinegara, Kec. Cakung</p>
+        <p>Jl. Pulogadung No.43, Jatinegara, Kec. Cakung</p>
         <p>Kota Jakarta Timur, Daerah Khusus Ibukota Jakarta 13930</p>
         {{-- <p>Telp: (021) 12345678 | Email: info@contohjaya.com</p> --}}
     </div>
@@ -39,7 +39,7 @@
             <tr>
                 <th>No</th>
                 <th>Nama Asset Tools</th>
-                <th>Harga (Rp)</th>
+                {{-- <th>Harga (Rp)</th> --}}
                 <th>Stok</th>
             </tr>
         </thead>
@@ -48,7 +48,7 @@
             <tr>
                 <td>{{ $no+1 }}</td>
                 <td>{{ $item->name }}</td>
-                <td>Rp {{ number_format($item->price, 0, ',', '.') }}</td>
+                {{-- <td>Rp {{ number_format($item->price, 0, ',', '.') }}</td> --}}
                 <td>{{ $item->stock }}</td>
             </tr>
             @endforeach

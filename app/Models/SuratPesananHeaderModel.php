@@ -17,7 +17,8 @@ class SuratPesananHeaderModel extends Model
         'name',
         'locations_id',
         'category_id',
-        'subcategory_id'
+        'subcategory_id',
+        'tanggal'
     ];
 
     static public function getRecord($request)

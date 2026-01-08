@@ -58,7 +58,7 @@
                                             <label class="col-sm-4 col-form-label">Date</label>
                                             <div class="col-sm-8">
                                                 <input type="text" class="form-control" name="diterima_dari"
-                                                    value="{{ \Carbon\Carbon::parse($transaction->created_at)->format('d-m-Y') }}"
+                                                    value="{{ \Carbon\Carbon::parse($transaction->tanggal)->format('d-m-Y') }}"
                                                     readonly>
                                             </div>
                                         </div>

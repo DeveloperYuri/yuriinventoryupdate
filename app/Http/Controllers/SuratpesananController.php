@@ -99,6 +99,7 @@ class SuratpesananController extends Controller
                 'locations_id'     => $request->locations_id,
                 'category_id'      => $request->category_id,
                 'subcategory_id'   => $request->subcategory_id,
+                'tanggal'   => $request->tanggal,
             ]);
 
             // Loop semua spare part untuk simpan detail

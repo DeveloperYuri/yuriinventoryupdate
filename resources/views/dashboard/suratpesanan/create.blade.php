@@ -60,7 +60,7 @@
                                         <div class="row mb-3">
                                             <label class="col-sm-2 col-form-label">Date</label>
                                             <div class="col-sm-10">
-                                                <input type="date" class="form-control" name="created_at"
+                                                <input type="date" class="form-control" name="tanggal"
                                                     value="{{ now()->format('Y-m-d') }}">
                                             </div>
                                         </div>
