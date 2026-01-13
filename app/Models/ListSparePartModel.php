@@ -15,10 +15,20 @@ class ListSparePartModel extends Model
 
     protected $fillable = ['name', 'stock', 'image', 'price', 'satuan', 'numbers', 'category_id', 'subcategory_id'];
 
+    // public function transactions()
+    // {
+    //     return $this->hasMany(StockTransactionModel::class);
+    // }
+
     public function transactions()
     {
-        return $this->hasMany(StockTransactionModel::class);
+        return $this->hasMany(
+            StockTransactionModel::class,
+            'spare_part_id', // foreign key di stock_transactions
+            'id'             // primary key di spare_parts
+        );
     }
+
 
     static public function getRecord($request)
     {
@@ -80,5 +90,19 @@ class ListSparePartModel extends Model
     public function subcategory()
     {
         return $this->belongsTo(SubCategoryModel::class, 'subcategory_id');
+    }
+
+    public function getTotalIn()
+    {
+        return $this->transactions()
+            ->where('type', 'in')
+            ->sum('quantity');
+    }
+
+    public function getTotalOut()
+    {
+        return $this->transactions()
+            ->where('type', 'out')
+            ->sum('quantity');
     }
 }

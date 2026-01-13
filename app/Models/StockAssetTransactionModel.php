@@ -12,11 +12,16 @@ class StockAssetTransactionModel extends Model
 
     protected $table = 'stock_asset_transactions';
 
-    protected $fillable = ['asset_tools_id', 'type', 'quantity', 'user', 'keterangan'];
+    protected $fillable = ['asset_tools_id', 'type', 'quantity', 'user', 'keterangan', 'locations_id'];
 
     public function assetTools()
     {
         return $this->belongsTo(ListAssetToolsModel::class, 'asset_tools_id'); // Relasi ke ListAssetToolsModel
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(LocationsModel::class, 'locations_id');
     }
 
     protected static function booted()

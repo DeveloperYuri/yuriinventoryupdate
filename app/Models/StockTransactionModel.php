@@ -14,9 +14,18 @@ class StockTransactionModel extends Model
 
     protected $fillable = ['spare_part_id', 'type', 'quantity', 'user', 'stock_in_header_id', 'stock_out_header_id', 'price', 'status', 'keterangan'];
 
+    // public function sparePart()
+    // {
+    //     return $this->belongsTo(ListSparePartModel::class);
+    // }
+
     public function sparePart()
     {
-        return $this->belongsTo(ListSparePartModel::class);
+        return $this->belongsTo(
+            ListSparePartModel::class,
+            'spare_part_id',
+            'id'
+        );
     }
 
     public function stockOutHeader()

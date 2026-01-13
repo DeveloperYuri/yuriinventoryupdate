@@ -63,6 +63,25 @@
                                 </div>
 
                                 <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Lokasi</label>
+                                            <div class="col-sm-10">
+                                                <select name="locations_id"
+                                                    class="form-control @error('locations_id') is-invalid @enderror">
+                                                    <option value="">-- Pilih Lokasi --</option>
+                                                    @foreach ($locations as $location)
+                                                        <option value="{{ $location->id }}"
+                                                            {{ old('locations_id') == $location->id ? 'selected' : '' }}>
+                                                            {{ $location->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('locations_id')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                <div class="row mb-3">
                                     <label for="keterangan" class="col-sm-2 col-form-label">Keterangan</label>
                                     <div class="col-sm-10">
                                         <select name="keterangan" id="keterangan"

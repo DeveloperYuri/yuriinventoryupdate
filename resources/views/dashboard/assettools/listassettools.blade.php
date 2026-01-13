@@ -70,7 +70,9 @@
                                             <th class="text-center">No</th>
                                             <th class="text-center">Gambar</th>
                                             <th class="text-center">Nama</th>
-                                            <th class="text-center">Harga</th>
+                                            <th class="text-center">Digunakan oleh</th>
+                                            <th class="text-center">Lokasi</th>
+                                            {{-- <th class="text-center">Harga</th> --}}
                                             <th class="text-center">Stok</th>
                                             <th class="text-center">Satuan</th>
 
@@ -119,7 +121,13 @@
                                                     @endif
                                                 </td> --}}
                                                 <td class="text-center">{{ $asset->name }}</td>
-                                                <td class="text-center">Rp {{ number_format($asset->price, 0, ',', '.') }}
+<td class="text-center">
+    {{ $asset->latestStockTransaction?->user ?? '-' }}
+</td>
+<td class="text-center">
+    {{ $asset->latestStockTransaction?->location?->name ?? '-' }}
+</td>
+                                                {{-- <td class="text-center">Rp {{ number_format($asset->price, 0, ',', '.') }} --}}
                                                 </td>
                                                 <td class="text-center">{{ $asset->stock }}</td>
                                                 <td class="text-center">{{ $asset->satuan }}</td>

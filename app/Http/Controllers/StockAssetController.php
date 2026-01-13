@@ -7,6 +7,7 @@ use App\Exports\AssetToolsHistoryPerItemExport;
 use App\Exports\AssetToolsInExport;
 use App\Exports\AssetToolsOutExport;
 use App\Models\ListAssetToolsModel;
+use App\Models\LocationsModel;
 use App\Models\StockAssetTransactionModel;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -103,7 +104,9 @@ class StockAssetController extends Controller
     public function stockOutForm()
     {
         $assetTools = ListAssetToolsModel::all();
-        return view('dashboard.assettoolsout.createassettoolsout', compact('assetTools'));
+        $locations = LocationsModel::all();
+
+        return view('dashboard.assettoolsout.createassettoolsout', compact('assetTools', 'locations'));
     }
 
     public function storeStockOut(Request $request)
@@ -134,7 +137,9 @@ class StockAssetController extends Controller
             'type' => 'out',
             'quantity' => $request->quantity,
             'user' => $request->user,
-            'keterangan' => $request->keterangan
+            'keterangan' => $request->keterangan,
+            'locations_id' => $request->locations_id,
+
         ]);
 
         return redirect()->route('asset-out.index')->with('success', 'Stok keluar berhasil dicatat.');

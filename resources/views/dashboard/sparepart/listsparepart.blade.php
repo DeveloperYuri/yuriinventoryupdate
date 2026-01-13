@@ -131,12 +131,14 @@
                                             <th class="text-center">Gambar</th>
                                             <th class="text-center">Serial Number</th>
                                             <th class="text-center">Nama</th>
-                                            @if (Auth::user()->is_role == 2)
+                                            {{-- @if (Auth::user()->is_role == 2)
                                                 <th class="text-center">Harga</th>
-                                            @endif
+                                            @endif --}}
 
                                             <th class="text-center">Kategori</th>
                                             <th class="text-center">Sub Kategori</th>
+                                            <th class="text-center">Masuk</th>
+                                            <th class="text-center">Keluar</th>
                                             <th class="text-center">Stok</th>
                                             <th class="text-center">Satuan</th>
 
@@ -185,6 +187,8 @@
 
                                                 <td class="text-center">{{ $part->category->name ?? '-' }}</td>
                                                 <td class="text-center">{{ $part->subcategory->name ?? '-' }}</td>
+                                                <td class="text-center">{{ $part->getTotalIn() }}</td>
+                                                <td class="text-center">{{ $part->getTotalOut() }}</td>
                                                 <td class="text-center">{{ $part->stock }}</td>
 
                                                 <td class="text-center">{{ $part->satuan }}</td>

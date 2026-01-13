@@ -187,7 +187,7 @@ Route::put('/sparepart/history/{id}/batal', [StockController::class, 'batal'])
 
 Route::get('/export-stock-in-excel', [StockController::class, 'exportStockInExcel'])->name('stockin.export.excel');
 Route::get('/export-stock-out-excel', [StockController::class, 'exportStockOutExcel'])->name('stockout.export.excel');
-
+//
 // Asset Tools In Out
 Route::get('/Assettools', [ListAssetToolsController::class, 'index'])->name('asset-tools.index');
 Route::get('/cardlistAssettools', [ListAssetToolsController::class, 'cardindex'])->name('card-list-asset-tools.index');

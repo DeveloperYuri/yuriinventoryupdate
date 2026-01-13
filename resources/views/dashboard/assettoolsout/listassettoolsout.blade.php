@@ -70,6 +70,7 @@
                                             <th class="text-center">No</th>
                                             <th class="text-center">Name Asset</th>
                                             <th class="text-center">Diminta Oleh</th>
+                                            <th class="text-center">Lokasi</th>
                                             <th class="text-center">Jumlah</th>
                                             <th class="text-center">Tanggal</th>
                                             <th class="text-center">Keterangan</th>
@@ -83,6 +84,7 @@
                                                 <td class="text-center">{{ $transactions->firstItem() + $index }}</td>
                                                 <td class="text-center">{{ $assetout->assetTools->name }}</td>
                                                 <td class="text-center">{{ $assetout->user }}</td>
+                                                <td class="text-center">{{ $assetout->location->name ?? '-' }}</td>
                                                 <td class="text-center">{{ $assetout->quantity }}</td>
                                                 <td class="text-center">{{ $assetout->created_at->format('d-m-Y') }}</td>
                                                 <td class="text-center">
