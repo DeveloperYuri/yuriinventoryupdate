@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DashboardsparepartController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ListAssetToolsController;
@@ -152,6 +153,10 @@ Route::group(['middleware' => 'users'], function () {
 // });
 
 // Sparepart list In Out
+
+Route::get('/dashboard/sparepart', [DashboardsparepartController::class, 'index'])->name('dashboardsparepart.index');
+
+
 Route::get('/sparepart', [ListSparePartController::class, 'index'])->name('spare-parts.index');
 Route::get('/cardlistsparepart', [ListSparePartController::class, 'cardindex'])->name('card-list-spare-parts.index');
 

@@ -179,11 +179,11 @@
                                                     {{ !empty($part->numbers) ? $part->numbers : '000-000-000' }}
                                                 </td>
                                                 <td class="text-center">{{ $part->name }}</td>
-                                                @if (Auth::user()->is_role == 2)
+                                                {{-- @if (Auth::user()->is_role == 2)
                                                     <td class="text-center">Rp
                                                         {{ number_format($part->price, 0, ',', '.') }}
                                                     </td>
-                                                @endif
+                                                @endif --}}
 
                                                 <td class="text-center">{{ $part->category->name ?? '-' }}</td>
                                                 <td class="text-center">{{ $part->subcategory->name ?? '-' }}</td>

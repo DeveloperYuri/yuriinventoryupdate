@@ -32,6 +32,16 @@
                  </a>
                  <ul id="sparepart-nav" class="nav-content collapse {{ $isSparePartActive ? 'show' : '' }}"
                      data-bs-parent="#sidebar-nav">
+
+                    @if (Auth::user()->is_role == 2)
+                      <li>
+                         <a href="{{ route('dashboardsparepart.index') }}"
+                             class="{{ request()->routeIs('dashboardsparepart.index.*') ? 'active' : '' }}">
+                             <i class="bi bi-circle"></i><span>Dashboard Spare Part</span>
+                         </a>
+                     </li>
+                     @endif
+                     
                      <li>
                          <a href="{{ route('spare-parts.index') }}"
                              class="{{ request()->routeIs('spare-parts.*') ? 'active' : '' }}">

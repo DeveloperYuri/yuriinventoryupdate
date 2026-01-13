@@ -1,4 +1,4 @@
-// Buat view item table spare parts, asset, atk
+// Buat view item table spare parts, asset, atk (Budi)
 
 CREATE OR REPLACE VIEW v_items_all AS
 
@@ -29,3 +29,24 @@ SELECT
     'atk' AS item_type,
     a.stock
 FROM atk a;
+
+// buat count jumlah jenis spare part baru per bulan (Budi) 
+
+SELECT 
+    ROW_NUMBER() OVER (ORDER BY created_at ASC) AS no,
+    id,
+    name,
+    stock,
+    created_at
+FROM spare_parts
+WHERE MONTH(created_at) = 12
+  AND YEAR(created_at) = 2025;
+
+// Hitung total Masuk Per Bulan (Budi)
+SELECT SUM(quantity) AS total_masuk
+FROM stock_transactions
+WHERE type = 'masuk'
+  AND MONTH(created_at) = 1
+  AND YEAR(created_at) = 2026;
+
+
