@@ -155,6 +155,10 @@ Route::group(['middleware' => 'users'], function () {
 // Sparepart list In Out
 
 Route::get('/dashboard/sparepart', [DashboardsparepartController::class, 'index'])->name('dashboardsparepart.index');
+Route::get('/dashboard-sparepart/export-excel', 
+    [DashboardsparepartController::class, 'exportExcel']
+)->name('dashboardsparepart.export.excel');
+
 
 
 Route::get('/sparepart', [ListSparePartController::class, 'index'])->name('spare-parts.index');
