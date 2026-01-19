@@ -39,8 +39,10 @@
             <tr>
                 <th>No</th>
                 <th>Nama Asset Tools</th>
+                <th>Digunakan oleh</th>
+                <th>Lokasi</th>
                 {{-- <th>Harga (Rp)</th> --}}
-                <th>Stok</th>
+                {{-- <th>Stok</th> --}}
             </tr>
         </thead>
         <tbody>
@@ -48,8 +50,10 @@
             <tr>
                 <td>{{ $no+1 }}</td>
                 <td>{{ $item->name }}</td>
+                <td>{{ $item->latestStockTransaction?->user ?? '-' }}</td>
+                <td>{{ $item->latestStockTransaction?->location?->name ?? '-' }}</td>
                 {{-- <td>Rp {{ number_format($item->price, 0, ',', '.') }}</td> --}}
-                <td>{{ $item->stock }}</td>
+                {{-- <td>{{ $item->stock }}</td> --}}
             </tr>
             @endforeach
         </tbody>

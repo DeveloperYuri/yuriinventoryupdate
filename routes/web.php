@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AssetitController;
 use App\Http\Controllers\AtkController;
 use App\Http\Controllers\AtkkeluarController;
 use App\Http\Controllers\AtkmasukController;
@@ -15,6 +16,8 @@ use App\Http\Controllers\ListSparePartController;
 use App\Http\Controllers\ListSparePartMultipleController;
 use App\Http\Controllers\LocationsController;
 use App\Http\Controllers\RiwayatmesinController;
+use App\Http\Controllers\RiwayatpeminjamanassetitController;
+use App\Http\Controllers\RiwayatperbaikanassetitController;
 use App\Http\Controllers\SatuanController;
 use App\Http\Controllers\StockAssetController;
 use App\Http\Controllers\StockController;
@@ -196,7 +199,7 @@ Route::put('/sparepart/history/{id}/batal', [StockController::class, 'batal'])
 
 Route::get('/export-stock-in-excel', [StockController::class, 'exportStockInExcel'])->name('stockin.export.excel');
 Route::get('/export-stock-out-excel', [StockController::class, 'exportStockOutExcel'])->name('stockout.export.excel');
-//
+
 // Asset Tools In Out
 Route::get('/Assettools', [ListAssetToolsController::class, 'index'])->name('asset-tools.index');
 Route::get('/cardlistAssettools', [ListAssetToolsController::class, 'cardindex'])->name('card-list-asset-tools.index');
@@ -364,3 +367,36 @@ Route::put('/atk/history/{id}/batal', [AtkController::class, 'batal'])
     ->name('atk.history.batal');
 
 Route::get('/autocomplete/items', [ItemController::class, 'autocomplete']);
+
+// Asset IT
+Route::get('/Asset-IT', [AssetitController::class, 'index'])->name('asset-it.index');
+Route::get('/Asset-IT/create', [AssetitController::class, 'create'])->name('asset-it.create');
+Route::post('/Asset-IT/create/store', [AssetitController::class, 'store'])->name('asset-it.store');
+Route::delete('/Asset-IT/delete/{id}', [AssetitController::class, 'destroy'])->name('asset-it.delete');
+Route::get('/Asset-IT/edit/{id}', [AssetitController::class, 'edit'])->name('asset-it.edit');
+Route::put('/Asset-IT/edit/update/{id}', [AssetitController::class, 'update'])->name('asset-it.update');
+Route::get('/Asset-IT/show/{id}', [AssetitController::class, 'show'])->name('asset-it.show');
+
+// Riwayat Peminjaman Asset IT
+Route::get('/peminjaman/Asset-IT', [RiwayatpeminjamanassetitController::class, 'index'])->name('peminjamanasset-it.index');
+Route::get('/peminjaman/Asset-IT/create', [RiwayatpeminjamanassetitController::class, 'create'])->name('peminjamanasset-it.create');
+Route::post('/peminjaman/Asset-IT/create/store', [RiwayatpeminjamanassetitController::class, 'store'])->name('peminjamanasset-it.store');
+Route::delete('/peminjaman/Asset-IT/delete/{id}', [RiwayatpeminjamanassetitController::class, 'destroy'])->name('peminjamanasset-it.delete');
+Route::get('/peminjaman/Asset-IT/edit/{id}', [RiwayatpeminjamanassetitController::class, 'edit'])->name('peminjamanasset-it.edit');
+Route::put('/peminjaman/Asset-IT/edit/update/{id}', [RiwayatpeminjamanassetitController::class, 'update'])->name('peminjamanasset-it.update');
+Route::get('/peminjaman/Asset-IT/show/{id}', [RiwayatpeminjamanassetitController::class, 'show'])->name('peminjamanasset-it.show');
+
+// Riwayat Perbaikan Asset IT
+Route::get('/perbaikan/Asset-IT', [RiwayatperbaikanassetitController::class, 'index'])->name('perbaikanasset-it.index');
+Route::get('/perbaikan/Asset-IT/create', [RiwayatperbaikanassetitController::class, 'create'])->name('perbaikanasset-it.create');
+Route::post('/perbaikan/Asset-IT/create/store', [RiwayatperbaikanassetitController::class, 'store'])->name('perbaikanasset-it.store');
+Route::delete('/perbaikan/Asset-IT/delete/{id}', [RiwayatperbaikanassetitController::class, 'destroy'])->name('perbaikanasset-it.delete');
+Route::get('/perbaikan/Asset-IT/edit/{id}', [RiwayatperbaikanassetitController::class, 'edit'])->name('perbaikanasset-it.edit');
+Route::put('/perbaikan/Asset-IT/edit/update/{id}', [RiwayatperbaikanassetitController::class, 'update'])->name('perbaikanasset-it.update');
+Route::get('/perbaikan/Asset-IT/show/{id}', [RiwayatperbaikanassetitController::class, 'show'])->name('perbaikanasset-it.show');
+Route::get('/asset-it/ajax-detail', [RiwayatperbaikanassetitController::class, 'ajaxDetail'])
+    ->name('asset-it.ajax-detail');
+
+
+
+

@@ -22,7 +22,6 @@ class ListAssetToolsController extends Controller
         return view('dashboard.assettools.cardlistassettools', $data);
     }
 
-
     public function create()
     {
         return view('dashboard.assettools.createassettools');

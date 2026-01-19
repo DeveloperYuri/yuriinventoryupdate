@@ -138,6 +138,45 @@
          @endif
          <!-- End Asset Sidebar -->
 
+         <!-- Start Asset Sidebar -->
+         @if (Auth::user()->is_role == 0 || Auth::user()->is_role == 1 || Auth::user()->is_role == 2)
+             @php
+                 $isAssetITActive =
+                     request()->routeIs('asset-it.*') ||
+                     request()->routeIs('perbaikanasset-it.*') ||
+                     request()->routeIs('peminjamanasset-it.*') ;
+             @endphp
+
+             <li class="nav-item">
+                 <a class="nav-link {{ $isAssetITActive ? '' : 'collapsed' }}" data-bs-target="#assetit-nav"
+                     data-bs-toggle="collapse" href="#">
+                     <i class="bi bi-tools"></i><span>Asset IT</span><i class="bi bi-chevron-down ms-auto"></i>
+                 </a>
+                 <ul id="assetit-nav" class="nav-content collapse {{ $isAssetITActive ? 'show' : '' }}"
+                     data-bs-parent="#sidebar-nav">
+                     <li>
+                         <a href="{{ route('asset-it.index') }}"
+                             class="{{ request()->routeIs('asset-it.*') ? 'active' : '' }}">
+                             <i class="bi bi-circle"></i><span>Daftar Asset IT</span>
+                         </a>
+                     </li>
+                     <li>
+                         <a href="{{ route('peminjamanasset-it.index') }}"
+                             class="{{ request()->routeIs('peminjamanasset-it.*') ? 'active' : '' }}">
+                             <i class="bi bi-circle"></i><span>Riwayat Peminjaman Asset IT</span>
+                         </a>
+                     </li>
+                     <li>
+                         <a href="{{ route('perbaikanasset-it.index') }}"
+                             class="{{ request()->routeIs('perbaikanasset-it.*') ? 'active' : '' }}">
+                             <i class="bi bi-circle"></i><span>Riwayat Perbaikan Asset IT</span>
+                         </a>
+                     </li>
+                 </ul>
+             </li>
+         @endif
+         <!-- End Asset Sidebar -->
+
          <!-- Start ATK Sidebar -->
          @if (Auth::user()->is_role == 3 || Auth::user()->is_role == 2)
              @php

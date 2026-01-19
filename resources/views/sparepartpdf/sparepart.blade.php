@@ -84,8 +84,10 @@
             <tr>
                 <th>No</th>
                 <th>Nama Spare Part</th>
+                <th>Jumlah Masuk (PCS)</th>
+                <th>Jumlah Keluar (PCS)</th>
                 {{-- <th>Harga (Rp)</th> --}}
-                <th>Stok</th>
+                <th>Stok Akhir (PCS)</th>
             </tr>
         </thead>
         <tbody>
@@ -93,6 +95,8 @@
                 <tr>
                     <td>{{ $no + 1 }}</td>
                     <td>{{ $item->name }}</td>
+                    <td>{{ $item->getTotalIn() }}</td>
+                    <td>{{ $item->getTotalOut() }}</td>
                     {{-- <td>Rp {{ number_format($item->price, 0, ',', '.') }}</td> --}}
                     <td>{{ $item->stock }}</td>
                 </tr>

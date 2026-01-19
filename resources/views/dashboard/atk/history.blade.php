@@ -18,7 +18,7 @@
                 </div>
                 <div class="col">
                     <select name="type" class="form-control">
-                        <option value="">- Keterangan -</option>
+                        <option value="">- Tipe -</option>
                         <option value="in" {{ request('type') == 'in' ? 'selected' : '' }}>
                             Masuk
                         </option>
