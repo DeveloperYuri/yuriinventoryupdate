@@ -98,6 +98,13 @@ class RiwayatpeminjamanassetitController extends Controller
         return redirect()->route('peminjamanasset-it.index')->with('success', 'Data Peminjaman Asset IT berhasil diperbarui.');
     }
 
+    public function show($id){
+        $riwayatpeminjamanassetit = RiwayatpeminjamanassetitModel::findOrFail($id);
+        $locations = LocationsModel::all();
+
+        return view('dashboard.assetit.riwayatpeminjamanassetit.show', compact('riwayatpeminjamanassetit', 'locations'));
+    }
+
     public function destroy($id)
     {
         $riwayatpeminjamanassetit = RiwayatpeminjamanassetitModel::findOrFail($id);

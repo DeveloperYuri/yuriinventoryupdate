@@ -128,7 +128,7 @@
 
                                                 <td class="text-center">
                                                     @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
-                                                        <a href="{{ route('perbaikanasset-it.show', ['id' => $asset->id]) }}"
+                                                        <a href="{{ route('peminjamanasset-it.show', ['id' => $asset->id]) }}"
                                                             class="btn btn-info btn-sm mt-1">
                                                             Detail
                                                         </a>
