@@ -159,6 +159,9 @@
                                                     @elseif($status == 'Dipinjam')
                                                         <span class="badge bg-primary"><i class="bi bi-person-check"></i>
                                                             Dipinjam</span>
+                                                    @elseif($status == 'Dipakai')
+                                                        <span class="badge bg-primary"><i class="bi bi-person-check"></i>
+                                                            DiPakai</span>
                                                     @elseif($status == 'Sedang Perbaikan')
                                                         <span class="badge bg-warning text-dark"><i class="bi bi-tools"></i>
                                                             Perbaikan</span>
