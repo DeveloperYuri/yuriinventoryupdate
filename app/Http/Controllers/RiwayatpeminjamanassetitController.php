@@ -44,7 +44,7 @@ class RiwayatpeminjamanassetitController extends Controller
             // 'locations_id' => 'required|integer',
             'tanggal_pinjam' => 'required|date',
             'status' => 'required|string',
-            'keterangan' => 'required|string',
+            // 'keterangan' => 'required|string',
         ], [
             // 'nomer_asset' => 'Nomor Asset IT wajib diisi',
             // 'nama' => 'Nama Asset IT wajib diisi',
@@ -52,7 +52,7 @@ class RiwayatpeminjamanassetitController extends Controller
             // 'locations_id' => 'Lokasi Asset IT wajib diisi',
             'tanggal_pinjam' => 'Tanggal mulai perbaikan wajib diisi',
             'status' => 'Status Perbaikan Asset IT wajib diisi',
-            'keterangan' => 'Keterangan Perabaikan Asset IT wajib diisi',
+            // 'keterangan' => 'Keterangan Perabaikan Asset IT wajib diisi',
 
         ]);
 
@@ -89,7 +89,7 @@ class RiwayatpeminjamanassetitController extends Controller
             'locations_id' => 'required|integer',
             'tanggal_pinjam' => 'required|date',
             'status' => 'required|string',
-            'keterangan' => 'required|string',
+            // 'keterangan' => 'required|string',
         ], [
             'nomer_asset' => 'Nomor Asset IT wajib diisi',
             'nama' => 'Nama Asset IT wajib diisi',
@@ -97,7 +97,7 @@ class RiwayatpeminjamanassetitController extends Controller
             'locations_id' => 'Lokasi Asset IT wajib diisi',
             'tanggal_pinjam' => 'Tanggal pinjam wajib diisi',
             'status' => 'Status peminjaman Asset IT wajib diisi',
-            'keterangan' => 'Keterangan peminjaman Asset IT wajib diisi',
+            // 'keterangan' => 'Keterangan peminjaman Asset IT wajib diisi',
 
         ]);
 

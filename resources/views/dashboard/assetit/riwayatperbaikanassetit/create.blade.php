@@ -137,8 +137,7 @@
                                 </div>
 
                                 <div class="row mb-3">
-                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Perbaikan<span
-                                            style="color: red">*</span></label>
+                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Perbaikan</label>
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control @error('perbaikan') is-invalid @enderror"
                                             id="inputText" name="perbaikan" value="{{ old('perbaikan') }}">

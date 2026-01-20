@@ -150,13 +150,34 @@
                                     <div class="col-sm-10">
                                         <!-- INPUT TAMPILAN -->
                                         <input id="tanggalSelesai" type="text" class="form-control" autocomplete="off"
+                                            placeholder="Pilih tanggal..."
+                                            value="{{ $riwayatperbaikanassetit->tanggal_selesai
+                                                ? \Carbon\Carbon::parse($riwayatperbaikanassetit->tanggal_selesai)->translatedFormat('d F Y')
+                                                : '' }}">
+
+                                        <!-- INPUT KE DB -->
+                                        <input type="hidden" name="tanggal_selesai" id="tanggalSelesaiHidden"
+                                            value="{{ $riwayatperbaikanassetit->tanggal_selesai ?? '' }}">
+
+                                        {{-- <input type="hidden" name="tanggal_kembali" id="tanggalSelesaiHidden"> --}}
+                                    </div>
+                                </div>
+
+                                {{-- <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">
+                                        Tanggal Selesai
+                                    </label>
+
+                                    <div class="col-sm-10">
+                                        <!-- INPUT TAMPILAN -->
+                                        <input id="tanggalSelesai" type="text" class="form-control" autocomplete="off"
                                             value="{{ \Carbon\Carbon::parse($riwayatperbaikanassetit->tanggal_selesai)->translatedFormat('d F Y') }}">
 
                                         <!-- INPUT KE DB -->
                                         <input type="hidden" name="tanggal_selesai" id="tanggalSelesaiHidden"
                                             value="{{ $riwayatperbaikanassetit->tanggal_selesai }}">
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 {{-- <div class="row mb-3">
                                     <label class="col-sm-2 col-form-label">

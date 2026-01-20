@@ -43,7 +43,7 @@ class RiwayatperbaikanassetitController extends Controller
             'user' => 'required|string',
             'locations_id' => 'required|integer',
             'kerusakan' => 'required|string',
-            'perbaikan' => 'required|string',
+            // 'perbaikan' => 'required|string',
             'tanggal_mulai' => 'required|date',
             'status' => 'required|string',
         ], [
@@ -56,7 +56,7 @@ class RiwayatperbaikanassetitController extends Controller
             'user' => 'User Asset IT wajib diisi',
             'locations_id' => 'Lokasi Asset IT wajib diisi',
             'kerusakan' => 'Kerusakan Asset IT wajib diisi',
-            'perbaikan' => 'Perbaikan Asset IT wajib diisi',
+            // 'perbaikan' => 'Perbaikan Asset IT wajib diisi',
             'tanggal_mulai' => 'Tanggal mulai perbaikan wajib diisi',
             'status' => 'Status Perbaikan Asset IT wajib diisi',
         ]);
@@ -75,7 +75,7 @@ class RiwayatperbaikanassetitController extends Controller
             ->update([
                 'status' => $request->status === 'Sedang Perbaikan'
                     ? 'Sedang Perbaikan'
-                    : 'Tersedia'
+                    : 'DiPakai'
             ]);
 
 
@@ -154,7 +154,7 @@ class RiwayatperbaikanassetitController extends Controller
 
             $statusAsset = match (trim($request->status)) {
                 'Sedang Perbaikan' => 'Perbaikan',
-                'Selesai'          => 'Tersedia',
+                'Selesai'          => 'Dipakai',
                 default            => 'Tersedia',
             };
 

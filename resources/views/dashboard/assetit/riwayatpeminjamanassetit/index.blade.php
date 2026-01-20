@@ -33,7 +33,7 @@
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="card-title mb-0">Daftar Riwayat Peminjaman Asset IT</h5>
 
-                                @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 3)
+                                @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 4)
                                     <div class="d-flex gap-2">
                                         <!-- Button Import -->
                                         {{-- <button type="button" class="btn btn-success" data-bs-toggle="modal"
@@ -123,8 +123,20 @@
                                                 <td class="text-center">{{ $asset->location->name ?? '-' }}</td>
                                                 <td class="text-center">{{ $asset->tanggal_pinjam }}</td>
                                                 <td class="text-center">{{ $asset->tanggal_kembali ?? '-' }}</td>
-                                                <td class="text-center">{{ $asset->status }}</td>
 
+                                                @php
+                                                    $status = $asset->status;
+                                                @endphp
+
+                                                <td class="text-center">
+                                                    @if ($status == 'Kembali')
+                                                        <span class="badge bg-success"><i class="bi bi-check-circle"></i>
+                                                            Kembali</span>
+                                                    @elseif($status == 'Di Pinjam')
+                                                        <span class="badge bg-danger"><i class="bi bi-person-check"></i>
+                                                            Dipinjam</span>
+                                                    @endif
+                                                </td>
 
                                                 <td class="text-center">
                                                     @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 4)
