@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('riwayat_peminjaman_asset_it', function (Blueprint $table) {
-            $table->Integer('asset_id')->after('id');
+            $table->Integer('asset_id')->after('id')->nullable();
         });
     }
 

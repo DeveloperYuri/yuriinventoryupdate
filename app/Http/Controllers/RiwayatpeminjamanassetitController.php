@@ -85,7 +85,7 @@ class RiwayatpeminjamanassetitController extends Controller
         $request->validate([
             'nomer_asset' => 'required|string',
             'nama' => 'required|string',
-            'user' => 'required|string',
+            // 'user' => 'required|string',
             'locations_id' => 'required|integer',
             'tanggal_pinjam' => 'required|date',
             'status' => 'required|string',
@@ -93,7 +93,7 @@ class RiwayatpeminjamanassetitController extends Controller
         ], [
             'nomer_asset' => 'Nomor Asset IT wajib diisi',
             'nama' => 'Nama Asset IT wajib diisi',
-            'user' => 'User Asset IT wajib diisi',
+            // 'user' => 'User Asset IT wajib diisi',
             'locations_id' => 'Lokasi Asset IT wajib diisi',
             'tanggal_pinjam' => 'Tanggal pinjam wajib diisi',
             'status' => 'Status peminjaman Asset IT wajib diisi',
