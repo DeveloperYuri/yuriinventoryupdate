@@ -28,8 +28,8 @@ class AssetitModel extends Model
             //->where('status', '=', 'active')
             ->orderBy('id', 'desc');
 
-        if (!empty(Request::get('nama'))) {
-            $return = $return->where('asset_it.nama', 'like', '%' . Request::get('nama') . '%');
+        if (!empty(Request::get('nomer_asset'))) {
+            $return = $return->where('asset_it.nomer_asset', 'like', '%' . Request::get('nomer_asset') . '%');
         }
 
         $return = $return->paginate(10);

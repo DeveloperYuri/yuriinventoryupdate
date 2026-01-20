@@ -30,7 +30,10 @@ class AuthController extends Controller
                 return redirect()->intended('dashboardusers');
             } else if (Auth::user()->is_role == 3) {
                 // echo "HRD";
-                return redirect()->intended('dashboardhr');;
+                return redirect()->intended('dashboardhr');
+            } else if (Auth::user()->is_role == 4) {
+                // echo "IT Admin";
+                return redirect()->intended('dashboarditadmin');
             } else {
                 return redirect('login')->with('error', 'No Available Email.. Please Check');
             }

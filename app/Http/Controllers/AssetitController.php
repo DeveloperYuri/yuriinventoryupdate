@@ -82,13 +82,13 @@ class AssetitController extends Controller
             'nomer_asset' => 'required|string',
             'nama' => 'required|string',
             'locations_id' => 'required|integer',
-            'spesifikasi' => 'required|string',
+            // 'spesifikasi' => 'required|string',
             'status' => 'required|string',
         ], [
             'nomer_asset' => 'Nomor Asset IT wajib diisi',
             'nama' => 'Nama Asset IT wajib diisi',
             'locations_id' => 'Lokasi Asset IT wajib diisi',
-            'spesifikasi' => 'Spesifikasi Asset IT wajib diisi',
+            // 'spesifikasi' => 'Spesifikasi Asset IT wajib diisi',
             'status' => 'Status Asset IT wajib diisi',
 
         ]);

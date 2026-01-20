@@ -4,7 +4,7 @@
     <main id="main" class="main">
 
         <div class="pagetitle d-flex justify-content-between align-items-center">
-            @if (Auth::user()->is_role == 3 || Auth::user()->is_role == 2)
+            @if (Auth::user()->is_role == 4 || Auth::user()->is_role == 2)
                 <a href="{{ route('asset-it.create') }}" class="btn btn-primary">Tambah Asset IT</a>
             @endif
         </div>
@@ -13,8 +13,8 @@
             <form method="get">
                 <div class="row g-2 align-items-center">
                     <div class="col">
-                        <input id="searchingtitle" type="text" class="form-control" value="{{ Request()->nama }}"
-                            placeholder="Cari Asset IT" name="nama">
+                        <input id="searchingtitle" type="text" class="form-control" value="{{ Request()->nomer_asset }}"
+                            placeholder="Cari Nomer Asset IT" name="nomer_asset">
                     </div>
                     <div class="col-auto">
                         <button type="submit" class="btn btn-dark">Cari</button>
@@ -109,7 +109,7 @@
                                             <th class="text-center">Status</th>
 
 
-                                            @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 3)
+                                            @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 4)
                                                 <th class="text-center">Aksi</th>
                                             @endif
                                         </tr>
@@ -153,7 +153,7 @@
 
 
                                                 <td class="text-center">
-                                                    @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
+                                                    @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 4)
                                                         <a href="{{ route('asset-it.show', ['id' => $asset->id]) }}"
                                                             class="btn btn-info btn-sm mt-1">
                                                             Detail
@@ -162,7 +162,7 @@
                                                         <a href="{{ route('asset-it.edit', $asset->id) }}"
                                                             class="btn btn-sm btn-warning mt-1">Edit</a>
                                                     @endif
-                                                    @if (Auth::user()->is_role == 2)
+                                                    @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 4)
                                                         <form action="{{ route('asset-it.delete', $asset->id) }}"
                                                             method="POST" style="display:inline-block;">
                                                             @csrf

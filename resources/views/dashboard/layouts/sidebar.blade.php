@@ -138,8 +138,8 @@
          @endif
          <!-- End Asset Sidebar -->
 
-         <!-- Start Asset Sidebar -->
-         @if (Auth::user()->is_role == 0 || Auth::user()->is_role == 1 || Auth::user()->is_role == 2)
+         <!-- Start Asset IT Sidebar -->
+         @if (Auth::user()->is_role == 0 || Auth::user()->is_role == 4 || Auth::user()->is_role == 2)
              @php
                  $isAssetITActive =
                      request()->routeIs('asset-it.*') ||
@@ -150,7 +150,7 @@
              <li class="nav-item">
                  <a class="nav-link {{ $isAssetITActive ? '' : 'collapsed' }}" data-bs-target="#assetit-nav"
                      data-bs-toggle="collapse" href="#">
-                     <i class="bi bi-tools"></i><span>Asset IT</span><i class="bi bi-chevron-down ms-auto"></i>
+                     <i class="bi bi-laptop"></i><span>Asset IT</span><i class="bi bi-chevron-down ms-auto"></i>
                  </a>
                  <ul id="assetit-nav" class="nav-content collapse {{ $isAssetITActive ? 'show' : '' }}"
                      data-bs-parent="#sidebar-nav">

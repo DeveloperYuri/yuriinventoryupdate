@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AssetitModel;
 use App\Models\AtkModel;
 use App\Models\ListAssetToolsModel;
 use App\Models\ListSparePartModel;
@@ -16,6 +17,7 @@ class DashboardController extends Controller
         $data['getAssettools'] = ListAssetToolsModel::count();
         $data['getSupplier'] = SupplierModel::count();
         $data['getAtk'] = AtkModel::count();
+        $data['getAssetIT'] = AssetitModel::count();
 
         return view('dashboard.index', $data);
     }

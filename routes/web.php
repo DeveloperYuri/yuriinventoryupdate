@@ -146,6 +146,10 @@ Route::group(['middleware' => 'hrd'], function () {
     Route::get('/dashboardhr', [DashboardController::class, 'index'])->name('indexdashboardhr');
 });
 
+Route::group(['middleware' => 'itadmin'], function () {
+    Route::get('/dashboarditadmin', [DashboardController::class, 'index'])->name('indexdashboarditadmin');
+});
+
 Route::group(['middleware' => 'users'], function () {
     Route::get('/dashboardusers', [DashboardController::class, 'index'])->name('indexdashboarduser');
 });

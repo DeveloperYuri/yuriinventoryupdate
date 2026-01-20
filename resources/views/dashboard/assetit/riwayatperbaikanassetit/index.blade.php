@@ -4,7 +4,7 @@
     <main id="main" class="main">
 
         <div class="pagetitle d-flex justify-content-between align-items-center">
-            @if (Auth::user()->is_role == 3 || Auth::user()->is_role == 2)
+            @if (Auth::user()->is_role == 4 || Auth::user()->is_role == 2)
                 <a href="{{ route('perbaikanasset-it.create') }}" class="btn btn-primary">Tambah Perbaikan Asset IT</a>
             @endif
         </div>
@@ -112,7 +112,7 @@
                                             <th class="text-center">Tanggal Selesai</th>
                                             <th class="text-center">Status</th>
 
-                                            @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 3)
+                                            @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 4)
                                                 <th class="text-center">Aksi</th>
                                             @endif
                                         </tr>
@@ -158,7 +158,7 @@
 
 
                                                 <td class="text-center">
-                                                    @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
+                                                    @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 4)
                                                         <a href="{{ route('perbaikanasset-it.show', ['id' => $asset->id]) }}"
                                                             class="btn btn-info btn-sm mt-1">
                                                             Detail
@@ -167,7 +167,7 @@
                                                         <a href="{{ route('perbaikanasset-it.edit', $asset->id) }}"
                                                             class="btn btn-sm btn-warning mt-1">Edit</a>
                                                     @endif
-                                                    @if (Auth::user()->is_role == 2)
+                                                    @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 4)
                                                         <form
                                                             action="{{ route('perbaikanasset-it.delete', $asset->id) }}"
                                                             method="POST" style="display:inline-block;">

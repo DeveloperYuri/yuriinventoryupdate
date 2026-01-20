@@ -11,19 +11,23 @@
                             <h5 class="card-title">Edit Users</h5>
 
                             <!-- Horizontal Form -->
-                            <form action="{{ route('updateuserspost', $users->id)}}" method="POST">
-                                @method("PUT") 
+                            <form action="{{ route('updateuserspost', $users->id) }}" method="POST">
+                                @method('PUT')
                                 {{ csrf_field() }}
                                 <div class="row mb-3">
-                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Name<span style="color: red">*</span></label>
+                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Name<span
+                                            style="color: red">*</span></label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="inputText" name="name" required value="{{ $users->name }}">
+                                        <input type="text" class="form-control" id="inputText" name="name" required
+                                            value="{{ $users->name }}">
                                     </div>
                                 </div>
                                 <div class="row mb-3">
-                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Email<span style="color: red">*</span></label>
+                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Email<span
+                                            style="color: red">*</span></label>
                                     <div class="col-sm-10">
-                                        <input type="email" class="form-control" id="inputEmail" name="email"  required value="{{ $users->email }}">
+                                        <input type="email" class="form-control" id="inputEmail" name="email" required
+                                            value="{{ $users->email }}">
                                     </div>
                                 </div>
                                 <div class="row mb-3">
@@ -35,11 +39,13 @@
                                 <div class="row mb-3">
                                     <label for="inputPassword3" class="col-sm-2 col-form-label">Confirm Password</label>
                                     <div class="col-sm-10">
-                                        <input type="password" class="form-control" id="inputPassword" name="confirm_password">
+                                        <input type="password" class="form-control" id="inputPassword"
+                                            name="confirm_password">
                                     </div>
                                 </div>
                                 <div class="row mb-3">
-                                    <label for="inputState" class="col-sm-2 col-form-label">Select Role<span style="color: red">*</span></label>
+                                    <label for="inputState" class="col-sm-2 col-form-label">Select Role<span
+                                            style="color: red">*</span></label>
                                     <div class="col-sm-10">
                                         <select id="inputState" class="form-select" name="is_role" required>
                                             <option selected value="">Choose Role</option>
@@ -60,6 +66,7 @@
                                     <label for="inputEmail3" class="col-sm-2 col-form-label"></label>
                                     <div class="col-sm-10">
                                         <button type="submit" class="btn btn-primary">Save</button>
+                                        <a href="{{ route('indexusers') }}" class="btn btn-secondary">Kembali</a>
                                     </div>
                                 </div>
                             </form><!-- End Horizontal Form -->
