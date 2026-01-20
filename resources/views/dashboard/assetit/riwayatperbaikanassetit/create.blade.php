@@ -60,10 +60,27 @@
                                     </div>
                                 </div> --}}
 
-                                <div class="row mb-3">
+                                {{-- <div class="row mb-3">
                                     <label class="col-sm-2 col-form-label">Nomer Asset</label>
                                     <div class="col-sm-10">
                                         <input type="text" id="nomer_asset" name="nomer_asset" class="form-control">
+                                    </div>
+                                </div> --}}
+
+                                <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">
+                                        Nomer Asset <span style="color: red">*</span>
+                                    </label>
+
+                                    <div class="col-sm-10">
+                                        <input type="text" id="nomer_asset" name="nomer_asset" class="form-control"
+                                            list="assetList" placeholder="Ketik / pilih nomer asset" required>
+
+                                        <datalist id="assetList">
+                                            @foreach ($assets as $asset)
+                                                <option value="{{ $asset->nomer_asset }}"></option>
+                                            @endforeach
+                                        </datalist>
                                     </div>
                                 </div>
 
@@ -207,29 +224,23 @@
 @endsection
 
 @push('scripts')
-    {{-- <script>
-        document.getElementById('asset_id').addEventListener('change', function() {
-            let assetId = this.value;
+    <script>
+        document.getElementById('nomer_asset').addEventListener('change', function() {
+            let nomerAsset = this.value;
+            if (!nomerAsset) return;
 
-            if (!assetId) {
-                document.getElementById('nama_asset').value = '';
-                document.getElementById('digunakan_oleh').value = '';
-                document.getElementById('lokasi').value = '';
-                return;
-            }
-
-            fetch("{{ route('asset-it.ajax-detail') }}?asset_id=" + assetId)
+            fetch("{{ route('asset-it.ajax-detail') }}?nomer_asset=" + nomerAsset)
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data);
-                    console.log(test);
-                    document.getElementById('nama_asset').value = data.nama_asset;
-                    document.getElementById('digunakan_oleh').value = data.user;
-                    document.getElementById('lokasi').value = data.lokasi;
+                    if (!data) return;
+
+                    document.getElementById('nama').value = data.nama;
+                    document.getElementById('user').value = data.user;
+                    document.querySelector('select[name="locations_id"]').value = data.location_id;
                 })
                 .catch(err => console.error(err));
         });
-    </script> --}}
+    </script>
 
     <script>
         new Litepicker({

@@ -13,6 +13,7 @@ class RiwayatpeminjamanassetitModel extends Model
     protected $table = 'riwayat_peminjaman_asset_it';
 
     protected $fillable = [
+        'asset_id',
         'nomer_asset',
         'nama',
         'user',
@@ -21,6 +22,7 @@ class RiwayatpeminjamanassetitModel extends Model
         'tanggal_kembali',
         'status',
         'keterangan',
+
     ];
 
     static public function getRecord($request)
@@ -40,5 +42,10 @@ class RiwayatpeminjamanassetitModel extends Model
     public function location()
     {
         return $this->belongsTo(LocationsModel::class, 'locations_id');
+    }
+
+    public function asset()
+    {
+        return $this->belongsTo(AssetitModel::class, 'asset_id');
     }
 }

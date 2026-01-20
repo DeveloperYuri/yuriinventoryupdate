@@ -133,6 +133,10 @@
                                                 {{ old('status', $assetit->status) == 'Dipakai' ? 'selected' : '' }}>
                                                 Dipakai
                                             </option>
+                                            <option value="Rusak"
+                                                {{ old('status', $assetit->status) == 'Rusak' ? 'selected' : '' }}>
+                                                Rusak
+                                            </option>
                                         </select>
 
                                         @error('status')

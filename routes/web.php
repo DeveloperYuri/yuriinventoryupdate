@@ -162,7 +162,8 @@ Route::group(['middleware' => 'users'], function () {
 // Sparepart list In Out
 
 Route::get('/dashboard/sparepart', [DashboardsparepartController::class, 'index'])->name('dashboardsparepart.index');
-Route::get('/dashboard-sparepart/export-excel', 
+Route::get(
+    '/dashboard-sparepart/export-excel',
     [DashboardsparepartController::class, 'exportExcel']
 )->name('dashboardsparepart.export.excel');
 
@@ -402,5 +403,9 @@ Route::get('/asset-it/ajax-detail', [RiwayatperbaikanassetitController::class, '
     ->name('asset-it.ajax-detail');
 
 
+// web.php
+Route::get('/asset-it/ajax-detail', [AssetItController::class, 'ajaxDetail'])
+    ->name('asset-it.ajax-detail');
 
-
+Route::get('/assetit/autocomplete', [AssetItController::class, 'autocomplete'])
+    ->name('assetit.autocomplete');

@@ -126,6 +126,14 @@
                                                 {{ old('status', $assetit->status) == 'Dipakai' ? 'selected' : '' }}>
                                                 Dipakai
                                             </option>
+                                            <option value="Dipakai"
+                                                {{ old('status', $assetit->status) == 'Dipinjam' ? 'selected' : '' }}>
+                                                Dipinjam
+                                            </option>
+                                            <option value="Dipakai"
+                                                {{ old('status', $assetit->status) == 'Sedang Perbaikan' ? 'selected' : '' }}>
+                                                Sedang Perbaikan
+                                            </option>
                                         </select>
 
                                         @error('status')

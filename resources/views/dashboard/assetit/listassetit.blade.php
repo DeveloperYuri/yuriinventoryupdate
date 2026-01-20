@@ -148,8 +148,28 @@
                                                 <td class="text-center">{{ $asset->user ?? '-' }}</td>
                                                 <td class="text-center">{{ $asset->location->name ?? '-' }}</td>
 
+                                                @php
+                                                    $status = $asset->status;
+                                                @endphp
 
-                                                <td class="text-center">{{ $asset->status }}</td>
+                                                <td class="text-center">
+                                                    @if ($status == 'Tersedia')
+                                                        <span class="badge bg-success"><i class="bi bi-check-circle"></i>
+                                                            Tersedia</span>
+                                                    @elseif($status == 'Dipinjam')
+                                                        <span class="badge bg-primary"><i class="bi bi-person-check"></i>
+                                                            Dipinjam</span>
+                                                    @elseif($status == 'Sedang Perbaikan')
+                                                        <span class="badge bg-warning text-dark"><i class="bi bi-tools"></i>
+                                                            Perbaikan</span>
+                                                    @elseif($status == 'Rusak')
+                                                        <span class="badge bg-danger"><i class="bi bi-x-circle"></i>
+                                                            Rusak</span>
+                                                    @endif
+                                                </td>
+
+
+                                                {{-- <td class="text-center">{{ $asset->status }}</td> --}}
 
 
                                                 <td class="text-center">

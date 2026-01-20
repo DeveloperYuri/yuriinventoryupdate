@@ -119,8 +119,6 @@
                                         <select name="status" class="form-control">
                                             <option value="Tersedia">Tersedia</option>
                                             <option value="Dipakai">Dipakai</option>
-                                            <option value="Maintenance">Maintenance</option>
-                                            <option value="Sedang Perbaikan">Sedang Perbaikan</option>
                                             <option value="Rusak">Rusak</option>
                                         </select>
                                     </div>

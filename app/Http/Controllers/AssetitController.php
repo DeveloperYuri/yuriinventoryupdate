@@ -78,7 +78,7 @@ class AssetitController extends Controller
 
     public function update(Request $request, $id)
     {
-         $request->validate([
+        $request->validate([
             'nomer_asset' => 'required|string',
             'nama' => 'required|string',
             'locations_id' => 'required|integer',
@@ -115,7 +115,8 @@ class AssetitController extends Controller
         return redirect()->route('asset-it.index')->with('success', 'Asset IT berhasil diperbarui.');
     }
 
-    public function show($id){
+    public function show($id)
+    {
         $assetit = AssetitModel::findOrFail($id);
         $locations = LocationsModel::all();
 
@@ -137,4 +138,54 @@ class AssetitController extends Controller
         return redirect()->route('asset-it.index')->with('success', 'Asset IT berhasil dihapus.');
     }
 
+    public function ajaxDetail(Request $request)
+    {
+        $asset = AssetitModel::where('nomer_asset', $request->nomer_asset)->first();
+
+        if (!$asset) {
+            return response()->json(null);
+        }
+
+        return response()->json([
+            'nama'        => $asset->nama,
+            'user'        => $asset->user,
+            'location_id' => $asset->locations_id,
+        ]);
+    }
+
+    // public function ajaxDetail(Request $request)
+    // {
+    //     $asset = AssetitModel::find($request->asset_id);
+
+    //     if (!$asset) {
+    //         return response()->json(null);
+    //     }
+
+    //     return response()->json([
+    //         'nama'        => $asset->nama,
+    //         'user'        => $asset->user,
+    //         'location_id' => $asset->locations_id,
+    //     ]);
+    // }
+
+
+    public function autocomplete(Request $request)
+    {
+        $search = $request->q;
+
+        $assets = AssetitModel::where('nama', 'like', "%{$search}%")
+            ->orWhere('nomer_asset', 'like', "%{$search}%")
+            ->limit(10)
+            ->get();
+
+        return response()->json(
+            $assets->map(function ($asset) {
+                return [
+                    'id'    => $asset->id,
+                    'label' => $asset->nomer_asset . ' - ' . $asset->nama,
+                    'value' => $asset->nomer_asset
+                ];
+            })
+        );
+    }
 }

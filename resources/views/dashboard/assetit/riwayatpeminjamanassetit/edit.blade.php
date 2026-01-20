@@ -86,7 +86,8 @@
 
                                     <div class="col-sm-10">
                                         <!-- INPUT TAMPILAN -->
-                                        <input id="tanggalSelesai" type="text" class="form-control" autocomplete="off" placeholder="Pilih tanggal..."
+                                        <input id="tanggalSelesai" type="text" class="form-control" autocomplete="off"
+                                            placeholder="Pilih tanggal..."
                                             value="{{ $riwayatpeminjamanassetit->tanggal_kembali
                                                 ? \Carbon\Carbon::parse($riwayatpeminjamanassetit->tanggal_kembali)->translatedFormat('d F Y')
                                                 : '' }}">
@@ -104,8 +105,15 @@
                                             style="color: red">*</span></label>
                                     <div class="col-sm-10">
                                         <select name="status" class="form-control">
-                                            <option value="Di Pinjam">Di Pinjam</option>
-                                            <option value="Kembali">Kembali</option>
+                                            <option value="Di Pinjam"
+                                                {{ old('status', $riwayatpeminjamanassetit->status) == 'Di Pinjam' ? 'selected' : '' }}>
+                                                Di Pinjam
+                                            </option>
+
+                                            <option value="Kembali"
+                                                {{ old('status', $riwayatpeminjamanassetit->status) == 'Kembali' ? 'selected' : '' }}>
+                                                Kembali
+                                            </option>
                                         </select>
                                     </div>
                                 </div>

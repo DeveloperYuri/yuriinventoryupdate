@@ -15,22 +15,57 @@
                                 enctype="multipart/form-data">
                                 {{ csrf_field() }}
 
+                                {{-- <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">
+                                        Nomer Asset <span style="color:red">*</span>
+                                    </label>
+
+                                    <div class="col-sm-10">
+                                        <input type="text" id="asset_autocomplete" class="form-control"
+                                            placeholder="Ketik nomor / nama asset" autocomplete="off" required>
+
+                                        <input type="hidden" name="asset_id" id="asset_id">
+                                    </div>
+                                </div> --}}
+
+
+                                {{-- Ajax Jalan --}}
                                 <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">
+                                        Nomer Asset <span style="color: red">*</span>
+                                    </label>
+
+                                    <div class="col-sm-10">
+                                        <input type="text" id="nomer_asset" name="nomer_asset" class="form-control"
+                                            list="assetList" placeholder="Ketik / pilih nomer asset" required>
+
+                                        <datalist id="assetList">
+                                            @foreach ($assets as $asset)
+                                                <option value="{{ $asset->nomer_asset }}"></option>
+                                            @endforeach
+                                        </datalist>
+                                    </div>
+                                </div>
+
+
+                                {{-- <div class="row mb-3">
                                     <label class="col-sm-2 col-form-label">Nomer Asset<span style="color: red">*</span></label>
                                     <div class="col-sm-10">
                                         <input type="text" id="nomer_asset" name="nomer_asset" class="form-control">
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <div class="row mb-3">
-                                    <label class="col-sm-2 col-form-label">Nama Asset<span style="color: red">*</span></label>
+                                    <label class="col-sm-2 col-form-label">Nama Asset<span
+                                            style="color: red">*</span></label>
                                     <div class="col-sm-10">
                                         <input type="text" id="nama" name="nama" class="form-control">
                                     </div>
                                 </div>
 
                                 <div class="row mb-3">
-                                    <label class="col-sm-2 col-form-label">Digunakan Oleh<span style="color: red">*</span></label>
+                                    <label class="col-sm-2 col-form-label">Digunakan Oleh<span
+                                            style="color: red">*</span></label>
                                     <div class="col-sm-10">
                                         <input type="text" id="user" name="user" class="form-control">
                                     </div>
@@ -129,28 +164,75 @@
 
 @push('scripts')
     {{-- <script>
-        document.getElementById('asset_id').addEventListener('change', function() {
-            let assetId = this.value;
+        $(function() {
+            $("#asset_autocomplete").autocomplete({
+                minLength: 2,
+                source: function(request, response) {
+                    $.ajax({
+                        url: "{{ route('assetit.autocomplete') }}",
+                        dataType: "json",
+                        data: {
+                            q: request.term
+                        },
+                        success: function(data) {
+                            response(data);
+                        }
+                    });
+                },
+                select: function(event, ui) {
+                    $('#asset_autocomplete').val(ui.item.label);
+                    $('#asset_id').val(ui.item.id);
 
-            if (!assetId) {
-                document.getElementById('nama_asset').value = '';
-                document.getElementById('digunakan_oleh').value = '';
-                document.getElementById('lokasi').value = '';
-                return;
-            }
+                    // 🔥 PANGGIL AJAX DETAIL DI SINI
+                    loadAssetDetail(ui.item.id);
 
-            fetch("{{ route('asset-it.ajax-detail') }}?asset_id=" + assetId)
+                    return false;
+                }
+            });
+        });
+
+        // AJAX DETAIL
+        function loadAssetDetail(assetId) {
+            $.ajax({
+                url: "{{ route('asset-it.ajax-detail') }}",
+                type: "GET",
+                dataType: "json",
+                data: {
+                    asset_id: assetId
+                },
+                success: function(data) {
+                    if (!data) return;
+
+                    $('#nama').val(data.nama);
+                    $('#user').val(data.user);
+                    $('select[name="locations_id"]').val(data.location_id);
+                },
+                error: function(err) {
+                    console.error(err);
+                }
+            });
+        }
+    </script> --}}
+
+    {{-- // Ajax Jalan --}}
+    <script>
+        document.getElementById('nomer_asset').addEventListener('change', function() {
+            let nomerAsset = this.value;
+            if (!nomerAsset) return;
+
+            fetch("{{ route('asset-it.ajax-detail') }}?nomer_asset=" + nomerAsset)
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data);
-                    console.log(test);
-                    document.getElementById('nama_asset').value = data.nama_asset;
-                    document.getElementById('digunakan_oleh').value = data.user;
-                    document.getElementById('lokasi').value = data.lokasi;
+                    if (!data) return;
+
+                    document.getElementById('nama').value = data.nama;
+                    document.getElementById('user').value = data.user;
+                    document.querySelector('select[name="locations_id"]').value = data.location_id;
                 })
                 .catch(err => console.error(err));
         });
-    </script> --}}
+    </script>
+
 
     <script>
         new Litepicker({

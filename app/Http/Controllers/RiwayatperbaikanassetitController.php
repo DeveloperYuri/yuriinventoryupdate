@@ -6,6 +6,7 @@ use App\Models\AssetitModel;
 use App\Models\LocationsModel;
 use App\Models\RiwayatperbaikanassetitModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RiwayatperbaikanassetitController extends Controller
 {
@@ -18,11 +19,19 @@ class RiwayatperbaikanassetitController extends Controller
 
     public function create()
     {
+        $assets    = AssetitModel::select('nomer_asset')->get();
         $locations = LocationsModel::all();
-        $assets = AssetitModel::orderBy('nomer_asset')->get();
 
-        return view('dashboard.assetit.riwayatperbaikanassetit.create', compact('locations', 'assets'));
+        return view('dashboard.assetit.riwayatperbaikanassetit.create', compact('assets', 'locations'));
     }
+
+    // public function create()
+    // {
+    //     $locations = LocationsModel::all();
+    //     $assets = AssetitModel::orderBy('nomer_asset')->get();
+
+    //     return view('dashboard.assetit.riwayatperbaikanassetit.create', compact('locations', 'assets'));
+    // }
 
     public function store(Request $request)
     {
@@ -62,6 +71,14 @@ class RiwayatperbaikanassetitController extends Controller
 
         RiwayatperbaikanassetitModel::create($data);
 
+        AssetitModel::where('nomer_asset', $request->nomer_asset)
+            ->update([
+                'status' => $request->status === 'Sedang Perbaikan'
+                    ? 'Sedang Perbaikan'
+                    : 'Tersedia'
+            ]);
+
+
         return redirect()->route('perbaikanasset-it.index')->with('success', 'Data perbaikan asset IT berhasil ditambahkan.');
     }
 
@@ -75,7 +92,7 @@ class RiwayatperbaikanassetitController extends Controller
 
     public function update(Request $request, $id)
     {
-         $request->validate([
+        $request->validate([
             'nomer_asset' => 'required|string',
             'nama' => 'required|string',
             'user' => 'required|string',
@@ -96,33 +113,64 @@ class RiwayatperbaikanassetitController extends Controller
 
         ]);
 
-        $riwayatperbaikanassetit = RiwayatperbaikanassetitModel::findOrFail($id);
-        $riwayatperbaikanassetit->nomer_asset = $request->nomer_asset;
-        $riwayatperbaikanassetit->nama = $request->nama;
-        $riwayatperbaikanassetit->user = $request->user;
-        $riwayatperbaikanassetit->locations_id = $request->locations_id;
-        $riwayatperbaikanassetit->kerusakan = $request->kerusakan;
-        $riwayatperbaikanassetit->perbaikan = $request->perbaikan;
-        $riwayatperbaikanassetit->tanggal_mulai = $request->tanggal_mulai;
-        $riwayatperbaikanassetit->tanggal_selesai = $request->tanggal_selesai;
-        $riwayatperbaikanassetit->status = $request->status;
-        $riwayatperbaikanassetit->keterangan = $request->keterangan;
+        // $riwayatperbaikanassetit = RiwayatperbaikanassetitModel::findOrFail($id);
+        // $riwayatperbaikanassetit->nomer_asset = $request->nomer_asset;
+        // $riwayatperbaikanassetit->nama = $request->nama;
+        // $riwayatperbaikanassetit->user = $request->user;
+        // $riwayatperbaikanassetit->locations_id = $request->locations_id;
+        // $riwayatperbaikanassetit->kerusakan = $request->kerusakan;
+        // $riwayatperbaikanassetit->perbaikan = $request->perbaikan;
+        // $riwayatperbaikanassetit->tanggal_mulai = $request->tanggal_mulai;
+        // $riwayatperbaikanassetit->tanggal_selesai = $request->tanggal_selesai;
+        // $riwayatperbaikanassetit->status = $request->status;
+        // $riwayatperbaikanassetit->keterangan = $request->keterangan;
 
-        if ($request->hasFile('image')) {
-            if ($riwayatperbaikanassetit->image && file_exists(public_path('images/' . $riwayatperbaikanassetit->image))) {
-                unlink(public_path('images/' . $riwayatperbaikanassetit->image));
+        DB::transaction(function () use ($request, $id) {
+
+            // 1️⃣ Update riwayat perbaikan
+            $riwayatperbaikanassetit = RiwayatperbaikanassetitModel::findOrFail($id);
+
+            $riwayatperbaikanassetit->update([
+                'nomer_asset'      => $request->nomer_asset,
+                'nama'             => $request->nama,
+                'user'             => $request->user,
+                'locations_id'     => $request->locations_id,
+                'kerusakan'        => $request->kerusakan,
+                'perbaikan'        => $request->perbaikan,
+                'tanggal_mulai'    => $request->tanggal_mulai,
+                'tanggal_selesai'  => $request->tanggal_selesai,
+                'status'           => $request->status,
+                'keterangan'       => $request->keterangan,
+            ]);
+
+            if ($request->hasFile('image')) {
+                if ($riwayatperbaikanassetit->image && file_exists(public_path('images/' . $riwayatperbaikanassetit->image))) {
+                    unlink(public_path('images/' . $riwayatperbaikanassetit->image));
+                }
+                $imageName = time() . '.' . $request->image->extension();
+                $request->image->move(public_path('images'), $imageName);
+                $riwayatperbaikanassetit->image = $imageName;
             }
-            $imageName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('images'), $imageName);
-            $riwayatperbaikanassetit->image = $imageName;
-        }
 
-        $riwayatperbaikanassetit->save();
+            $statusAsset = match (trim($request->status)) {
+                'Sedang Perbaikan' => 'Perbaikan',
+                'Selesai'          => 'Tersedia',
+                default            => 'Tersedia',
+            };
+
+            AssetitModel::where('nomer_asset', trim($request->nomer_asset))
+                ->update([
+                    'status' => $statusAsset
+                ]);
+        });
+
+        // $riwayatperbaikanassetit->save();
 
         return redirect()->route('perbaikanasset-it.index')->with('success', 'Data Perbaikan Asset IT berhasil diperbarui.');
     }
 
-    public function show($id){
+    public function show($id)
+    {
         $riwayatperbaikanassetit = RiwayatperbaikanassetitModel::findOrFail($id);
         $locations = LocationsModel::all();
 

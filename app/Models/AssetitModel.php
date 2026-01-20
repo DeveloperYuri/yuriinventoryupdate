@@ -40,4 +40,9 @@ class AssetitModel extends Model
     {
         return $this->belongsTo(LocationsModel::class, 'locations_id');
     }
+
+    public function peminjaman()
+    {
+        return $this->hasMany(RiwayatpeminjamanassetitModel::class, 'asset_id');
+    }
 }
