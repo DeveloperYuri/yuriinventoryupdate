@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Request;
 
 class AtkModel extends Model
 {
-     use HasFactory;
+    use HasFactory;
 
     protected $table = 'atk';
 
@@ -20,10 +20,15 @@ class AtkModel extends Model
         'satuan_id'
     ];
 
-    //  public function transactions()
-    // {
-    //     return $this->hasMany(StockTransactionModel::class);
-    // }
+    public function transactions()
+    {
+        return $this->hasMany(
+            AtktransactionModel::class,
+            'atk_id', // foreign key di stock_transactions
+            'id'             // primary key di spare_parts
+        );
+    }
+
 
     static public function getRecord($request)
     {
@@ -31,9 +36,9 @@ class AtkModel extends Model
             //->where('status', '=', 'active')
             ->orderBy('id', 'desc');
 
-            if (!empty(Request::get('name'))) {
-                $return = $return->where('atk.name', 'like', '%' . Request::get('name') . '%');
-            }
+        if (!empty(Request::get('name'))) {
+            $return = $return->where('atk.name', 'like', '%' . Request::get('name') . '%');
+        }
 
         $return = $return->paginate(10);
         return $return;
@@ -45,9 +50,9 @@ class AtkModel extends Model
             //->where('status', '=', 'active')
             ->orderBy('id', 'desc');
 
-            if (!empty(Request::get('name'))) {
-                $return = $return->where('atk.name', 'like', '%' . Request::get('name') . '%');
-            }
+        if (!empty(Request::get('name'))) {
+            $return = $return->where('atk.name', 'like', '%' . Request::get('name') . '%');
+        }
 
         $return = $return->paginate(9);
         return $return;
@@ -58,4 +63,17 @@ class AtkModel extends Model
         return $this->belongsTo(SatuanModel::class, 'satuan_id');
     }
 
+    public function getTotalIn()
+    {
+        return $this->transactions()
+            ->where('type', 'in')
+            ->sum('quantity');
+    }
+
+    public function getTotalOut()
+    {
+        return $this->transactions()
+            ->where('type', 'out')
+            ->sum('quantity');
+    }
 }

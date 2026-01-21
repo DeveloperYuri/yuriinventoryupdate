@@ -8,6 +8,8 @@
         <tr>
             <th style="text-align: center;">No</th>
             <th style="text-align: center;">Nama</th>
+            <th style="text-align: center;">Masuk</th>
+            <th style="text-align: center;">Keluar</th>
             <th style="text-align: center;">Stok</th>
         </tr>
     </thead>
@@ -16,6 +18,8 @@
             <tr>
                 <td style="text-align: center;">{{ $index + 1 }}</td>
                 <td style="text-align: center;">{{ $item->name }}</td>
+                <td style="text-align: center;">{{ $item->getTotalIn() }}</td>
+                <td style="text-align: center;">{{ $item->getTotalOut() }}</td>
                 <td style="text-align: center;">{{ $item->stock }}</td>
             </tr>
         @endforeach

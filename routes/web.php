@@ -402,6 +402,15 @@ Route::get('/perbaikan/Asset-IT/show/{id}', [RiwayatperbaikanassetitController::
 Route::get('/asset-it/ajax-detail', [RiwayatperbaikanassetitController::class, 'ajaxDetail'])
     ->name('asset-it.ajax-detail');
 
+// Spare Part IT
+Route::get('/sparepart-IT', [AssetitController::class, 'index'])->name('asset-it.index');
+// Route::get('/Asset-IT/create', [AssetitController::class, 'create'])->name('asset-it.create');
+// Route::post('/Asset-IT/create/store', [AssetitController::class, 'store'])->name('asset-it.store');
+// Route::delete('/Asset-IT/delete/{id}', [AssetitController::class, 'destroy'])->name('asset-it.delete');
+// Route::get('/Asset-IT/edit/{id}', [AssetitController::class, 'edit'])->name('asset-it.edit');
+// Route::put('/Asset-IT/edit/update/{id}', [AssetitController::class, 'update'])->name('asset-it.update');
+// Route::get('/Asset-IT/show/{id}', [AssetitController::class, 'show'])->name('asset-it.show');
+
 
 // web.php
 Route::get('/asset-it/ajax-detail', [AssetItController::class, 'ajaxDetail'])

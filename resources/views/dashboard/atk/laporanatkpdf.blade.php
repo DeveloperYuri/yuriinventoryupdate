@@ -65,9 +65,8 @@
 <body>
 
     <div class="header">
-        <img src="{{ public_path('assets/img/logobaru.png') }}" 
-         alt="Logo Perusahaan" 
-         style="width:80px; height:auto; display:block; margin:0 auto 10px auto;">
+        <img src="{{ public_path('assets/img/logobaru.png') }}" alt="Logo Perusahaan"
+            style="width:80px; height:auto; display:block; margin:0 auto 10px auto;">
 
         <h1>PT. Joenoes Ikamulya</h1>
         <p>Kawasan Industri Pulogadung No.43, Jakarta Timur, Jakarta 13930</p>
@@ -84,6 +83,8 @@
             <tr>
                 <th>No</th>
                 <th>Nama ATK</th>
+                <th>Masuk</th>
+                <th>Keluar</th>
                 {{-- <th>Harga (Rp)</th> --}}
                 <th>Stok</th>
             </tr>
@@ -93,6 +94,8 @@
                 <tr>
                     <td>{{ $no + 1 }}</td>
                     <td>{{ $item->name }}</td>
+                    <td>{{ $item->getTotalIn() }}</td>
+                    <td>{{ $item->getTotalOut() }}</td>
                     {{-- <td>Rp {{ number_format($item->price, 0, ',', '.') }}</td> --}}
                     <td>{{ $item->stock }}</td>
                 </tr>

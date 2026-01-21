@@ -106,9 +106,11 @@
                                             {{-- <th class="text-center">No</th> --}}
                                             <th class="text-center">Gambar</th>
                                             <th class="text-center">Nama</th>
-                                            @if (Auth::user()->is_role == 2)
+                                            {{-- @if (Auth::user()->is_role == 2)
                                                 <th class="text-center">Harga</th>
-                                            @endif
+                                            @endif --}}
+                                            <th class="text-center">Masuk</th>
+                                            <th class="text-center">Keluar</th>
                                             <th class="text-center">Stok</th>
                                             <th class="text-center">Satuan</th>
 
@@ -173,12 +175,13 @@
 
 
                                                 <td class="text-center">{{ $atk->name }}</td>
-                                                @if (Auth::user()->is_role == 2)
+                                                {{-- @if (Auth::user()->is_role == 2)
                                                     <td class="text-center">Rp
                                                         {{ number_format($atk->price, 0, ',', '.') }}
                                                     </td>
-                                                @endif
-
+                                                @endif --}}
+                                                <td class="text-center">{{ $atk->getTotalIn() }}</td>
+                                                <td class="text-center">{{ $atk->getTotalOut() }}</td>
                                                 <td class="text-center">{{ $atk->stock }}</td>
                                                 <td class="text-center">{{ $atk->satuan->name ?? '-' }}</td>
 
