@@ -16,34 +16,17 @@
                                 {{ csrf_field() }}
 
                                 <div class="row mb-3">
-                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Nomer Asset</label>
+                                    <label class="col-sm-2 col-form-label">Nomer Asset</label>
                                     <div class="col-sm-10">
                                         <input type="text"
-                                            class="form-control @error('nomer_asset') is-invalid @enderror" id="inputText"
-                                            name="nomer_asset" value="{{ old('nomer_asset') }}">
+                                            class="form-control @error('nomer_asset') is-invalid @enderror"
+                                            name="nomer_asset" value="{{ old('nomer_asset', $newNumber) }}" readonly>
+
                                         @error('nomer_asset')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
-
-                                {{-- generate otomatis numer asset IT --}}
-                                {{-- <div class="row mb-3">
-                                    <label for="nomor_asset" class="col-sm-2 col-form-label">Nomor Asset</label>
-                                    <div class="col-sm-10">
-                                        <!-- Tampil readonly di form -->
-                                        <input type="text" class="form-control" id="nomor_asset"
-                                            value="{{ $newNumber }}" readonly>
-
-                                        <!-- Input yang dikirim ke controller -->
-                                        <input type="hidden" name="nomor_asset" value="{{ $newNumber }}">
-
-                                        @error('nomor_asset')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div> --}}
-
 
                                 <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Foto Asset<span

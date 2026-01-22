@@ -177,40 +177,41 @@
          @endif
          <!-- End Asset IT Sidebar -->
 
-         <!-- Start Asset IT Sidebar -->
+         <!-- Start Spare Part IT Sidebar -->
          @if (Auth::user()->is_role == 0 || Auth::user()->is_role == 4 || Auth::user()->is_role == 2)
              @php
-                 $isAssetITActive =
-                     request()->routeIs('asset-it.*') ||
-                     request()->routeIs('perbaikanasset-it.*') ||
-                     request()->routeIs('peminjamanasset-it.*');
+                 $isSparepartITActive =
+                     request()->routeIs('sparepart-it.*') ||
+                     request()->routeIs('sparepartitinmultiple.*') ||
+                     request()->routeIs('sparepartithistory.*');
              @endphp
 
              <li class="nav-item">
-                 <a class="nav-link {{ $isAssetITActive ? '' : 'collapsed' }}" data-bs-target="#assetit-nav"
+                 <a class="nav-link {{ $isSparepartITActive ? '' : 'collapsed' }}" data-bs-target="#sparepartit-nav"
                      data-bs-toggle="collapse" href="#">
                      <i class="bi bi-laptop"></i><span>Spare Part IT</span><i class="bi bi-chevron-down ms-auto"></i>
                  </a>
-                 <ul id="assetit-nav" class="nav-content collapse {{ $isAssetITActive ? 'show' : '' }}"
+                 <ul id="sparepartit-nav" class="nav-content collapse {{ $isSparepartITActive ? 'show' : '' }}"
                      data-bs-parent="#sidebar-nav">
                      <li>
-                         <a href="{{ route('asset-it.index') }}"
-                             class="{{ request()->routeIs('asset-it.*') ? 'active' : '' }}">
+                         <a href="{{ route('sparepart-it.index') }}"
+                             class="{{ request()->routeIs('sparepart-it.*') ? 'active' : '' }}">
                              <i class="bi bi-circle"></i><span>Daftar Spare Part IT</span>
                          </a>
                      </li>
-                     {{-- <li>
-                         <a href="{{ route('peminjamanasset-it.index') }}"
-                             class="{{ request()->routeIs('peminjamanasset-it.*') ? 'active' : '' }}">
-                             <i class="bi bi-circle"></i><span>Riwayat Peminjaman Asset IT</span>
+                     <li>
+                         <a href="{{ route('sparepartitinmultiple.index') }}"
+                             class="{{ request()->routeIs('sparepartitinmultiple.*') ? 'active' : '' }}">
+                             <i class="bi bi-circle"></i><span>Spare Part IT Masuk</span>
                          </a>
                      </li>
+
                      <li>
-                         <a href="{{ route('perbaikanasset-it.index') }}"
-                             class="{{ request()->routeIs('perbaikanasset-it.*') ? 'active' : '' }}">
-                             <i class="bi bi-circle"></i><span>Riwayat Perbaikan Asset IT</span>
+                         <a href="{{ route('sparepartithistory.index') }}"
+                             class="{{ request()->routeIs('sparepartithistory.*') ? 'active' : '' }}">
+                             <i class="bi bi-circle"></i><span>Riwayat Spare Part IT</span>
                          </a>
-                     </li> --}}
+                     </li>
                  </ul>
              </li>
          @endif

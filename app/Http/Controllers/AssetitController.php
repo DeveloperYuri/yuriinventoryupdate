@@ -19,19 +19,35 @@ class AssetitController extends Controller
     {
         $locations = LocationsModel::all();
 
-        // Ambil asset terakhir
-        // $lastAsset = AssetitModel::orderBy('id', 'desc')->first();
+        $lastAsset = AssetitModel::orderBy('nomer_asset', 'desc')->first();
 
-        // // Ambil angka terakhir (4 digit)
-        // $lastNumber = $lastAsset
-        //     ? intval(substr($lastAsset->inventory_number, 4)) // Ambil setelah "INVTR"
-        //     : 0;
+        if ($lastAsset) {
+            $lastNumber = (int) substr($lastAsset->nomer_asset, 5); // INVTR = 5 char
+            $newNumber = 'INVTR' . ($lastNumber + 1);
+        } else {
+            $newNumber = 'INVTR30001';
+        }
 
-        // // Buat nomor baru
-        // $newNumber = 'INVTR' . str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
-
-        return view('dashboard.assetit.create', compact('locations'));
+        return view('dashboard.assetit.create', compact('locations', 'newNumber'));
     }
+
+    // public function create()
+    // {
+    //     $locations = LocationsModel::all();
+
+    //     // Ambil asset terakhir
+    //     $lastAsset = AssetitModel::orderBy('id', 'desc')->first();
+
+    //     // Ambil angka terakhir (4 digit)
+    //     $lastNumber = $lastAsset
+    //         ? intval(substr($lastAsset->inventory_number, 4)) // Ambil setelah "INVTR"
+    //         : 0;
+
+    //     // Buat nomor baru
+    //     $newNumber = 'INVTR' . str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+
+    //     return view('dashboard.assetit.create', compact('locations'));
+    // }
 
     public function store(Request $request)
     {

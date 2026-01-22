@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sparepart_it', function (Blueprint $table) {
+        Schema::create('sparepartit_masuk_header', function (Blueprint $table) {
             $table->id();
-            $table->string('image');
-            $table->string('name');
-            $table->integer('stock');
-            $table->integer('satuan_id');
+            $table->string('no_dokumen');
+            $table->string('diterima_dari');
+            $table->string('diterima_oleh');
+            $table->date('tanggal');
+            $table->string('status');
+            $table->string('keterangan')->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sparepart_it');
+        Schema::dropIfExists('sparepartit_masuk_header');
     }
 };

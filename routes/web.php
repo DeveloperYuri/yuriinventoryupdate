@@ -19,6 +19,9 @@ use App\Http\Controllers\RiwayatmesinController;
 use App\Http\Controllers\RiwayatpeminjamanassetitController;
 use App\Http\Controllers\RiwayatperbaikanassetitController;
 use App\Http\Controllers\SatuanController;
+use App\Http\Controllers\SparepartitController;
+use App\Http\Controllers\SparepartitmasukController;
+use App\Http\Controllers\SparepartittransactionController;
 use App\Http\Controllers\StockAssetController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SubCategoryController;
@@ -403,13 +406,41 @@ Route::get('/asset-it/ajax-detail', [RiwayatperbaikanassetitController::class, '
     ->name('asset-it.ajax-detail');
 
 // Spare Part IT
-Route::get('/sparepart-IT', [AssetitController::class, 'index'])->name('asset-it.index');
-// Route::get('/Asset-IT/create', [AssetitController::class, 'create'])->name('asset-it.create');
-// Route::post('/Asset-IT/create/store', [AssetitController::class, 'store'])->name('asset-it.store');
-// Route::delete('/Asset-IT/delete/{id}', [AssetitController::class, 'destroy'])->name('asset-it.delete');
-// Route::get('/Asset-IT/edit/{id}', [AssetitController::class, 'edit'])->name('asset-it.edit');
-// Route::put('/Asset-IT/edit/update/{id}', [AssetitController::class, 'update'])->name('asset-it.update');
+Route::get('/sparepart-IT', [SparepartitController::class, 'index'])->name('sparepart-it.index');
+Route::get('/sparepart-IT/create', [SparepartitController::class, 'create'])->name('sparepart-it.create');
+Route::post('/sparepart-IT/create/store', [SparepartitController::class, 'store'])->name('sparepart-it.store');
+Route::delete('/sparepart-IT/delete/{id}', [SparepartitController::class, 'destroy'])->name('sparepart-it.delete');
+Route::get('/sparepart-IT/edit/{id}', [SparepartitController::class, 'edit'])->name('sparepart-it.edit');
+Route::put('/sparepart-IT/edit/update/{id}', [SparepartitController::class, 'update'])->name('sparepart-it.update');
 // Route::get('/Asset-IT/show/{id}', [AssetitController::class, 'show'])->name('asset-it.show');
+Route::get('/sparepart-IT/autocomplete', [SparepartitController::class, 'autocomplete'])->name('sparepart-it.autocomplete');
+Route::get('/sparepart-IT/pdf', [SparepartitController::class, 'cetakPDF'])->name('sparepart-it.cetakpdf');
+Route::get('/export-sparepart-IT', [SparepartitController::class, 'exportExcel'])->name('sparepart-it.export');
+Route::get('/sparepart-IT/history/{id}', [SparepartitController::class, 'viewHistoryPerItem'])->name('sparepartdetail-it.history');
+
+// Spare Part IT In Multiple
+Route::get('/sparepart-IT/in/multiple', [SparepartitmasukController::class, 'index'])->name('sparepartitinmultiple.index');
+Route::get('/sparepart-IT/in/multiple/create', [SparepartitmasukController::class, 'create'])->name('sparepartitinmultiple.create');
+Route::post('/sparepart-IT/in/multiple/post', [SparepartitmasukController::class, 'store'])->name('sparepartitinmultiple.store');
+Route::get('/sparepart-IT/search', [SparepartitController::class, 'search']);
+
+
+Route::get('/sparepart-IT/{id}', [SparepartitmasukController::class, 'show'])->name('sparepartitinmultiple.show');
+
+// Riwayat Spare Part IT
+Route::get('/sparepartit/history', [SparepartittransactionController::class, 'history'])->name('sparepartithistory.index');
+// Route::get('/spareparthistory/pdf', [StockController::class, 'exportHistoryPDF'])->name('sparepart.history.pdf');
+// Route::get('/sparepart/history/{id}', [StockController::class, 'viewHistoryPerItem'])->name('sparepartdetail.history');
+// Route::get('/sparepart/{id}/history/pdf', [StockController::class, 'exportHistoryPerItemPDF'])->name('sparepartdetail.history.pdf');
+// Route::get('/sparepart/{id}/export-excel', [StockController::class, 'exportHistoryPerItemExcel'])->name('sparepartdetail.history.excel');
+// Route::get('/export-history-excel', [StockController::class, 'exportHistoryExcel'])->name('sparepart.history.excel');
+
+
+// Route::post('/sparepartin/{id}/batal', [ListSparePartMultipleController::class, 'batalmasuk'])
+//     ->name('spartpartmasuk.batal');
+
+// Route::get('/surat-pesanan/search', [ListSparePartMultipleController::class, 'searchsp'])
+//     ->name('suratpesanan.search');
 
 
 // web.php

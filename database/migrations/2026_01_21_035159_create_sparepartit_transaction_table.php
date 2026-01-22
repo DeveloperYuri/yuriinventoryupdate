@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sparepart_it', function (Blueprint $table) {
+        Schema::create('sparepartit_transaction', function (Blueprint $table) {
             $table->id();
-            $table->string('image');
-            $table->string('name');
-            $table->integer('stock');
-            $table->integer('satuan_id');
+            $table->integer('sparepartit_id');
+            $table->enum('type', ['in', 'out']);
+            $table->integer('quantity');
+            $table->integer('sparepartit_masuk_header_id');
+            $table->string('status');
+            $table->string('keterangan')->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sparepart_it');
+        Schema::dropIfExists('sparepartit_transaction');
     }
 };
