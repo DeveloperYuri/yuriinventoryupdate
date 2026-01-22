@@ -15,45 +15,20 @@
                                 enctype="multipart/form-data">
                                 {{ csrf_field() }}
 
-                                {{-- <div class="row mb-3">
+                                <div class="row mb-3">
                                     <label class="col-sm-2 col-form-label">
                                         Nomer Asset <span style="color:red">*</span>
                                     </label>
 
                                     <div class="col-sm-10">
-                                        <input type="text" id="asset_autocomplete" class="form-control"
-                                            placeholder="Ketik nomor / nama asset" autocomplete="off" required>
-
-                                        <input type="hidden" name="asset_id" id="asset_id">
-                                    </div>
-                                </div> --}}
-
-
-                                {{-- Ajax Jalan --}}
-                                <div class="row mb-3">
-                                    <label class="col-sm-2 col-form-label">
-                                        Nomer Asset <span style="color: red">*</span>
-                                    </label>
-
-                                    <div class="col-sm-10">
                                         <input type="text" id="nomer_asset" name="nomer_asset" class="form-control"
-                                            list="assetList" placeholder="Ketik / pilih nomer asset" required>
+                                            placeholder="Ketik nomor asset..." autocomplete="off" required>
 
-                                        <datalist id="assetList">
-                                            @foreach ($assets as $asset)
-                                                <option value="{{ $asset->nomer_asset }}"></option>
-                                            @endforeach
-                                        </datalist>
+                                        <ul id="assetDropdown" class="dropdown-menu w-99"
+                                            style="max-height: 220px; overflow-y: auto;">
+                                        </ul>
                                     </div>
                                 </div>
-
-
-                                {{-- <div class="row mb-3">
-                                    <label class="col-sm-2 col-form-label">Nomer Asset<span style="color: red">*</span></label>
-                                    <div class="col-sm-10">
-                                        <input type="text" id="nomer_asset" name="nomer_asset" class="form-control">
-                                    </div>
-                                </div> --}}
 
                                 <div class="row mb-3">
                                     <label class="col-sm-2 col-form-label">Nama Asset<span
@@ -163,56 +138,93 @@
 @endsection
 
 @push('scripts')
-    {{-- <script>
-        $(function() {
-            $("#asset_autocomplete").autocomplete({
-                minLength: 2,
-                source: function(request, response) {
-                    $.ajax({
-                        url: "{{ route('assetit.autocomplete') }}",
-                        dataType: "json",
-                        data: {
-                            q: request.term
-                        },
-                        success: function(data) {
-                            response(data);
+    <script>
+        const input = document.getElementById('nomer_asset');
+        const dropdown = document.getElementById('assetDropdown');
+
+        let timer = null;
+
+        // 🔹 fetch & show dropdown
+        input.addEventListener('input', function() {
+            const val = this.value.trim();
+
+            if (val.length < 2) {
+                dropdown.classList.remove('show');
+                return;
+            }
+
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                fetch(`{{ route('asset-it.suggest') }}?q=${val}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        dropdown.innerHTML = '';
+
+                        if (!data.length) {
+                            dropdown.classList.remove('show');
+                            return;
                         }
+
+                        data.forEach(item => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `
+                        <a class="dropdown-item" href="#">${item}</a>
+                    `;
+
+                            li.onclick = (e) => {
+                                e.preventDefault();
+                                input.value = item;
+                                dropdown.classList.remove('show');
+                                loadAssetDetail(item);
+                            };
+
+                            dropdown.appendChild(li);
+                        });
+
+                        dropdown.classList.add('show');
                     });
-                },
-                select: function(event, ui) {
-                    $('#asset_autocomplete').val(ui.item.label);
-                    $('#asset_id').val(ui.item.id);
-
-                    // 🔥 PANGGIL AJAX DETAIL DI SINI
-                    loadAssetDetail(ui.item.id);
-
-                    return false;
-                }
-            });
+            }, 250);
         });
 
-        // AJAX DETAIL
-        function loadAssetDetail(assetId) {
-            $.ajax({
-                url: "{{ route('asset-it.ajax-detail') }}",
-                type: "GET",
-                dataType: "json",
-                data: {
-                    asset_id: assetId
-                },
-                success: function(data) {
+        // 🔹 klik luar = tutup
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.position-relative')) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // 🔹 ENTER / PASTE tetap jalan
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                dropdown.classList.remove('show');
+                loadAssetDetail(this.value);
+            }
+        });
+
+        // 🔹 BLUR (paste mouse)
+        input.addEventListener('blur', function() {
+            setTimeout(() => {
+                dropdown.classList.remove('show');
+                loadAssetDetail(this.value);
+            }, 150);
+        });
+
+        // 🔹 function lama (TETAP)
+        function loadAssetDetail(nomerAsset) {
+            if (!nomerAsset) return;
+
+            fetch(`{{ route('asset-it.ajax-detail') }}?nomer_asset=${nomerAsset}`)
+                .then(res => res.json())
+                .then(data => {
                     if (!data) return;
 
-                    $('#nama').val(data.nama);
-                    $('#user').val(data.user);
-                    $('select[name="locations_id"]').val(data.location_id);
-                },
-                error: function(err) {
-                    console.error(err);
-                }
-            });
+                    document.getElementById('nama').value = data.nama;
+                    document.getElementById('user').value = data.user;
+                    document.querySelector('select[name="locations_id"]').value = data.location_id;
+                });
         }
-    </script> --}}
+    </script>
 
     {{-- // Ajax Jalan --}}
     <script>

@@ -449,3 +449,7 @@ Route::get('/asset-it/ajax-detail', [AssetItController::class, 'ajaxDetail'])
 
 Route::get('/assetit/autocomplete', [AssetItController::class, 'autocomplete'])
     ->name('assetit.autocomplete');
+
+Route::get('/asset-it/suggest', [AssetitController::class, 'suggest'])
+    ->name('asset-it.suggest');
+
