@@ -105,12 +105,29 @@ class SparepartitController extends Controller
 
     public function autocomplete(Request $request)
     {
-        $query = $request->get('term'); // jQuery UI pakai "term" sebagai key
-        $data = SparepartitModel::where('name', 'LIKE', "%{$query}%")
-            ->pluck('name'); // ambil hanya kolom name
+        $q = $request->get('term');
 
-        return response()->json($data);
+        return SparepartitModel::where('name', 'LIKE', "%{$q}%")
+            ->limit(10)
+            ->get()
+            ->map(function ($sp) {
+                return [
+                    'label' => $sp->name, // tampilan dropdown
+                    'value' => $sp->name, // isi input
+                    'id'    => $sp->id,   // opsional
+                ];
+            });
     }
+
+
+    // public function autocomplete(Request $request)
+    // {
+    //     $query = $request->get('term'); // jQuery UI pakai "term" sebagai key
+    //     $data = SparepartitModel::where('name', 'LIKE', "%{$query}%")
+    //         ->pluck('name'); // ambil hanya kolom name
+
+    //     return response()->json($data);
+    // }
 
     public function cetakPDF()
     {

@@ -15,7 +15,7 @@
                                 enctype="multipart/form-data">
                                 {{ csrf_field() }}
 
-                                <div class="row mb-3">
+                                {{-- <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Foto<span
                                             style="color: red">*</span></label>
                                     <div class="col-sm-10">
@@ -25,62 +25,20 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                </div>
-
-                                {{-- <div class="row mb-3">
-                                    <label class="col-sm-2 col-form-label">Nomor Asset<span
-                                            style="color:red">*</span></label>
-                                    <div class="col-sm-10">
-                                        <select id="asset_id" name="asset_id" class="form-control">
-                                            <option value="">-- Pilih Asset --</option>
-                                            @foreach ($assets as $asset)
-                                                <option value="{{ $asset->id }}">
-                                                    {{ $asset->nomer_asset }} - {{ $asset->nama_asset }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div> --}}
-
-
-                                {{-- generate otomatis numer asset IT --}}
-                                {{-- <div class="row mb-3">
-                                    <label for="nomor_asset" class="col-sm-2 col-form-label">Nomor Asset</label>
-                                    <div class="col-sm-10">
-                                        <!-- Tampil readonly di form -->
-                                        <input type="text" class="form-control" id="nomor_asset"
-                                            value="{{ $newNumber }}" readonly>
-
-                                        <!-- Input yang dikirim ke controller -->
-                                        <input type="hidden" name="nomor_asset" value="{{ $newNumber }}">
-
-                                        @error('nomor_asset')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div> --}}
-
-                                {{-- <div class="row mb-3">
-                                    <label class="col-sm-2 col-form-label">Nomer Asset</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" id="nomer_asset" name="nomer_asset" class="form-control">
-                                    </div>
                                 </div> --}}
 
                                 <div class="row mb-3">
                                     <label class="col-sm-2 col-form-label">
-                                        Nomer Asset <span style="color: red">*</span>
+                                        Nomer Asset <span style="color:red">*</span>
                                     </label>
 
                                     <div class="col-sm-10">
                                         <input type="text" id="nomer_asset" name="nomer_asset" class="form-control"
-                                            list="assetList" placeholder="Ketik / pilih nomer asset" required>
+                                            placeholder="Ketik nomor asset..." autocomplete="off" required>
 
-                                        <datalist id="assetList">
-                                            @foreach ($assets as $asset)
-                                                <option value="{{ $asset->nomer_asset }}"></option>
-                                            @endforeach
-                                        </datalist>
+                                        <ul id="assetDropdown" class="dropdown-menu w-99"
+                                            style="max-height: 220px; overflow-y: auto;">
+                                        </ul>
                                     </div>
                                 </div>
 
@@ -136,7 +94,7 @@
                                     </div>
                                 </div>
 
-                                <div class="row mb-3">
+                                {{-- <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Perbaikan</label>
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control @error('perbaikan') is-invalid @enderror"
@@ -145,7 +103,71 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
+                                </div> --}}
+
+                                <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">Spare Part</label>
+
+                                    <div class="col-sm-10">
+                                        <div id="sparepart-wrapper">
+
+                                            <div class="row g-2 sparepart-row mb-2">
+                                                <div class="col-md-6 position-relative">
+                                                    <!-- INPUT TEXT -->
+                                                    <input type="text" class="form-control sparepart-input"
+                                                        placeholder="Ketik nama spare part...">
+
+                                                    <!-- HIDDEN ID -->
+                                                    <input type="hidden" name="spareparts[0][sparepart_id]"
+                                                        class="sparepart-id">
+
+                                                    <!-- DROPDOWN -->
+                                                    <ul class="dropdown-menu w-100 sparepart-dropdown"></ul>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <input type="number" name="spareparts[0][qty]" class="form-control"
+                                                        min="1" placeholder="Qty">
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <button type="button" class="btn btn-danger remove-sparepart">
+                                                        Hapus
+                                                    </button>
+                                                </div>
+                                            </div>
+
+
+                                            {{-- <div class="row g-2 sparepart-row mb-2">
+                                                <div class="col-md-6">
+                                                    <select name="spareparts[0][sparepart_id]" class="form-control">
+                                                        <option value="">-- Pilih Spare Part --</option>
+                                                        @foreach ($spareparts as $sp)
+                                                            <option value="{{ $sp->id }}">{{ $sp->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <input type="number" name="spareparts[0][qty]" class="form-control"
+                                                        placeholder="Qty">
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <button type="button" class="btn btn-danger remove-sparepart">
+                                                        Hapus
+                                                    </button>
+                                                </div>
+                                            </div> --}}
+
+                                        </div>
+
+                                        <button type="button" id="add-sparepart" class="btn btn-sm btn-success">
+                                            + Tambah Spare Part
+                                        </button>
+                                    </div>
                                 </div>
+
 
                                 <div class="row mb-3">
                                     <label class="col-sm-2 col-form-label">Tanggal Mulai<span
@@ -224,6 +246,94 @@
 
 @push('scripts')
     <script>
+        const input = document.getElementById('nomer_asset');
+        const dropdown = document.getElementById('assetDropdown');
+
+        let timer = null;
+
+        // 🔹 fetch & show dropdown
+        input.addEventListener('input', function() {
+            const val = this.value.trim();
+
+            if (val.length < 2) {
+                dropdown.classList.remove('show');
+                return;
+            }
+
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                fetch(`{{ route('asset-it.suggest') }}?q=${val}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        dropdown.innerHTML = '';
+
+                        if (!data.length) {
+                            dropdown.classList.remove('show');
+                            return;
+                        }
+
+                        data.forEach(item => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `
+                        <a class="dropdown-item" href="#">${item}</a>
+                    `;
+
+                            li.onclick = (e) => {
+                                e.preventDefault();
+                                input.value = item;
+                                dropdown.classList.remove('show');
+                                loadAssetDetail(item);
+                            };
+
+                            dropdown.appendChild(li);
+                        });
+
+                        dropdown.classList.add('show');
+                    });
+            }, 250);
+        });
+
+        // 🔹 klik luar = tutup
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.position-relative')) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // 🔹 ENTER / PASTE tetap jalan
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                dropdown.classList.remove('show');
+                loadAssetDetail(this.value);
+            }
+        });
+
+        // 🔹 BLUR (paste mouse)
+        input.addEventListener('blur', function() {
+            setTimeout(() => {
+                dropdown.classList.remove('show');
+                loadAssetDetail(this.value);
+            }, 150);
+        });
+
+        // 🔹 function lama (TETAP)
+        function loadAssetDetail(nomerAsset) {
+            if (!nomerAsset) return;
+
+            fetch(`{{ route('asset-it.ajax-detail') }}?nomer_asset=${nomerAsset}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data) return;
+
+                    document.getElementById('nama').value = data.nama;
+                    document.getElementById('user').value = data.user;
+                    document.querySelector('select[name="locations_id"]').value = data.location_id;
+                });
+        }
+    </script>
+
+    <script>
         document.getElementById('nomer_asset').addEventListener('change', function() {
             let nomerAsset = this.value;
             if (!nomerAsset) return;
@@ -240,6 +350,168 @@
                 .catch(err => console.error(err));
         });
     </script>
+
+    <script>
+        const sparepartOptions = `
+        <option value="">-- Pilih Spare Part --</option>
+        @foreach ($spareparts as $sp)
+            <option value="{{ $sp->id }}">
+                {{ $sp->name }}
+            </option>
+        @endforeach
+    `;
+    </script>
+
+    <script>
+        let index = 1;
+
+        document.getElementById('add-sparepart').addEventListener('click', function() {
+            const wrapper = document.getElementById('sparepart-wrapper');
+
+            const html = `
+    <div class="row g-2 sparepart-row mb-2">
+        <div class="col-md-6 position-relative">
+            <input type="text"
+                   class="form-control sparepart-input"
+                   placeholder="Ketik nama spare part...">
+
+            <input type="hidden"
+                   name="spareparts[${index}][sparepart_id]"
+                   class="sparepart-id">
+
+            <ul class="dropdown-menu w-100 sparepart-dropdown"></ul>
+        </div>
+
+        <div class="col-md-3">
+            <input type="number"
+                   name="spareparts[${index}][qty]"
+                   class="form-control"
+                   min="1"
+                   placeholder="Qty">
+        </div>
+
+        <div class="col-md-3">
+            <button type="button" class="btn btn-danger remove-sparepart">
+                Hapus
+            </button>
+        </div>
+    </div>`;
+
+            wrapper.insertAdjacentHTML('beforeend', html);
+            index++;
+        });
+    </script>
+
+    <script>
+        document.addEventListener('input', function(e) {
+            if (!e.target.classList.contains('sparepart-input')) return;
+
+            const input = e.target;
+            const dropdown = input.closest('.position-relative')
+                .querySelector('.sparepart-dropdown');
+
+            const keyword = input.value.trim();
+
+            if (keyword.length < 2) {
+                dropdown.classList.remove('show');
+                return;
+            }
+
+            fetch(`{{ route('perbaikan-it.sparepart.autocomplete') }}?q=${keyword}`)
+                .then(res => res.json())
+                .then(data => {
+                    dropdown.innerHTML = '';
+
+                    if (!data.length) {
+                        dropdown.classList.remove('show');
+                        return;
+                    }
+
+                    data.forEach(item => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                    <a class="dropdown-item" href="#">
+                        ${item.name}
+                    </a>
+                `;
+
+                        li.onclick = (e) => {
+                            e.preventDefault();
+
+                            input.value = item.name;
+                            input.closest('.position-relative')
+                                .querySelector('.sparepart-id').value = item.id;
+
+                            dropdown.classList.remove('show');
+                        };
+
+                        dropdown.appendChild(li);
+                    });
+
+                    dropdown.classList.add('show');
+                });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('input', function(e) {
+            if (!e.target.classList.contains('sparepart-input')) return;
+
+            const input = e.target;
+            const dropdown = input.closest('.position-relative')
+                .querySelector('.sparepart-dropdown');
+            const keyword = input.value.trim();
+
+            if (keyword.length < 2) {
+                dropdown.classList.remove('show');
+                return;
+            }
+
+            fetch(`{{ route('perbaikan-it.sparepart.autocomplete') }}?q=${keyword}`)
+                .then(res => res.json())
+                .then(data => {
+                    dropdown.innerHTML = '';
+
+                    if (!data.length) {
+                        dropdown.classList.remove('show');
+                        return;
+                    }
+
+                    data.forEach(item => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                    <a class="dropdown-item" href="#">${item.name}</a>
+                `;
+
+                        li.onclick = (e) => {
+                            e.preventDefault();
+
+                            input.value = item.name;
+                            input.closest('.position-relative')
+                                .querySelector('.sparepart-id').value = item.id;
+
+                            dropdown.classList.remove('show');
+                        };
+
+                        dropdown.appendChild(li);
+                    });
+
+                    dropdown.classList.add('show');
+                })
+                .catch(err => console.error(err));
+        });
+    </script>
+
+    <script>
+        // 🔥 HAPUS ROW (dynamic)
+        document.getElementById('sparepart-wrapper').addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-sparepart')) {
+                e.target.closest('.sparepart-row').remove();
+            }
+        });
+    </script>
+
+
 
     <script>
         new Litepicker({

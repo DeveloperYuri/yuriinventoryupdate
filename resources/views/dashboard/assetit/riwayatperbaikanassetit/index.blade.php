@@ -101,7 +101,7 @@
                                 <table class="table table-hover align-middle">
                                     <thead>
                                         <tr>
-                                            <th class="text-center">Foto</th>
+                                            {{-- <th class="text-center">Foto</th> --}}
                                             <th class="text-center">Nomer</th>
                                             <th class="text-center">Nama</th>
                                             <th class="text-center">User</th>
@@ -120,7 +120,7 @@
                                     <tbody>
                                         @foreach ($getRecord as $index => $asset)
                                             <tr>
-                                                <td class="text-center">
+                                                {{-- <td class="text-center">
                                                     @if ($asset->image)
                                                         <a href="#" data-bs-toggle="modal"
                                                             data-bs-target="#imageModal{{ $asset->id }}">
@@ -144,7 +144,7 @@
                                                             </div>
                                                         </div>
                                                     @endif
-                                                </td>
+                                                </td> --}}
 
                                                 <td class="text-center">{{ $asset->nomer_asset }}</td>
                                                 <td class="text-center">{{ $asset->nama ?? '-' }}</td>

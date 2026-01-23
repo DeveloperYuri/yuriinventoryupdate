@@ -404,6 +404,11 @@ Route::put('/perbaikan/Asset-IT/edit/update/{id}', [RiwayatperbaikanassetitContr
 Route::get('/perbaikan/Asset-IT/show/{id}', [RiwayatperbaikanassetitController::class, 'show'])->name('perbaikanasset-it.show');
 Route::get('/asset-it/ajax-detail', [RiwayatperbaikanassetitController::class, 'ajaxDetail'])
     ->name('asset-it.ajax-detail');
+Route::get(
+    '/perbaikan-it/sparepart-autocomplete',
+    [RiwayatperbaikanassetitController::class, 'autocompleteSparepart']
+)->name('perbaikan-it.sparepart.autocomplete');
+
 
 // Spare Part IT
 Route::get('/sparepart-IT', [SparepartitController::class, 'index'])->name('sparepart-it.index');
@@ -452,4 +457,3 @@ Route::get('/assetit/autocomplete', [AssetItController::class, 'autocomplete'])
 
 Route::get('/asset-it/suggest', [AssetitController::class, 'suggest'])
     ->name('asset-it.suggest');
-

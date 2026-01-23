@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\AssetitModel;
 use App\Models\LocationsModel;
+use App\Models\PerbaikansparepartModel;
 use App\Models\RiwayatperbaikanassetitModel;
+use App\Models\SparepartitModel;
+use App\Models\SparepartittrasactionModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -21,8 +24,10 @@ class RiwayatperbaikanassetitController extends Controller
     {
         $assets    = AssetitModel::select('nomer_asset')->get();
         $locations = LocationsModel::all();
+        $spareparts = SparepartitModel::orderBy('name')->get();
 
-        return view('dashboard.assetit.riwayatperbaikanassetit.create', compact('assets', 'locations'));
+
+        return view('dashboard.assetit.riwayatperbaikanassetit.create', compact('assets', 'locations', 'spareparts'));
     }
 
     // public function create()
@@ -37,7 +42,7 @@ class RiwayatperbaikanassetitController extends Controller
     {
         // dd($request->all());
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+            // 'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
             'nomer_asset' => 'required|string',
             'nama' => 'required|string',
             'user' => 'required|string',
@@ -69,7 +74,34 @@ class RiwayatperbaikanassetitController extends Controller
             $data['image'] = $imageName;
         }
 
-        RiwayatperbaikanassetitModel::create($data);
+        $perbaikan = RiwayatperbaikanassetitModel::create($data);
+
+        if ($request->spareparts) {
+            foreach ($request->spareparts as $sp) {
+
+                if (empty($sp['sparepart_id'])) {
+                    continue;
+                }
+
+                $qty = $sp['qty'] ?? 1;
+
+                PerbaikansparepartModel::create([
+                    'perbaikan_id'   => $perbaikan->id,
+                    'sparepartit_id' => $sp['sparepart_id'],
+                    'qty'            => $qty,
+                ]);
+
+                // 2️⃣ CATAT RIWAYAT SPARE PART KELUAR (OUT)
+                SparepartittrasactionModel::create([
+                    'sparepartit_id' => $sp['sparepart_id'],
+                    'type'           => 'out',
+                    'quantity'       => $qty,
+                    'user'           => $request->user,
+                    'status'         => 'sukses',
+                    'keterangan'     => 'Digunakan untuk perbaikan asset: ' . $request->nomer_asset,
+                ]);
+            }
+        }
 
         AssetitModel::where('nomer_asset', $request->nomer_asset)
             ->update([
@@ -202,5 +234,18 @@ class RiwayatperbaikanassetitController extends Controller
             'lokasi' => $asset->location->name ?? '-',
             'status' => $asset->status,
         ]);
+    }
+
+    public function autocompleteSparepart(Request $request)
+    {
+        $q = $request->q;
+
+        if (!$q) {
+            return response()->json([]);
+        }
+
+        return SparepartitModel::where('name', 'LIKE', "%{$q}%")
+            ->limit(10)
+            ->get(['id', 'name']);
     }
 }
