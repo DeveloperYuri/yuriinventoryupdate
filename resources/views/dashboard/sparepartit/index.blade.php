@@ -171,7 +171,7 @@
                                                         <a href="{{ route('sparepart-it.edit', $part->id) }}"
                                                             class="btn btn-sm btn-warning mt-1">Edit</a>
 
-                                                        <a href="{{ route('sparepartdetail.history', ['id' => $part->id]) }}"
+                                                        <a href="{{ route('sparepartdetail-it.history', ['id' => $part->id]) }}"
                                                             class="btn btn-info btn-sm mt-1">
                                                             History Detail
                                                         </a>

@@ -120,16 +120,6 @@ class SparepartitController extends Controller
             });
     }
 
-
-    // public function autocomplete(Request $request)
-    // {
-    //     $query = $request->get('term'); // jQuery UI pakai "term" sebagai key
-    //     $data = SparepartitModel::where('name', 'LIKE', "%{$query}%")
-    //         ->pluck('name'); // ambil hanya kolom name
-
-    //     return response()->json($data);
-    // }
-
     public function cetakPDF()
     {
         $spareparts = SparepartitModel::all();
@@ -172,23 +162,18 @@ class SparepartitController extends Controller
     {
         $sparePart = SparepartitModel::findOrFail($id);
 
-        /* ===========================
-     * 1️⃣ HITUNG STOK (HANYA SUKSES)
-     * =========================== */
-        $calcQuery = SparepartittrasactionModel::where('spare_part_id', $id)
+        // 1️⃣ HITUNG STOK HANYA STATUS SUKSES
+        $calcQuery = SparepartittrasactionModel::where('sparepartit_id', $id)
             ->where('status', 'sukses');
 
         if ($request->start_date) {
             $calcQuery->whereDate('created_at', '>=', $request->start_date);
         }
-
         if ($request->end_date) {
             $calcQuery->whereDate('created_at', '<=', $request->end_date);
         }
 
-        $calcTransactions = $calcQuery
-            ->orderBy('created_at')
-            ->get();
+        $calcTransactions = $calcQuery->orderBy('created_at')->get();
 
         $runningStock = 0;
         $runningValue = 0;
@@ -196,35 +181,23 @@ class SparepartitController extends Controller
         foreach ($calcTransactions as $item) {
             if ($item->type === 'in') {
                 $runningStock += $item->quantity;
-                $runningValue += $item->quantity * $item->price;
+                $runningValue += $item->quantity * ($item->price ?? 0);
             } else {
                 $runningStock -= $item->quantity;
-                $runningValue -= $item->quantity * $item->price;
+                $runningValue -= $item->quantity * ($item->price ?? 0);
             }
         }
 
-        /* ===========================
-     * 2️⃣ HISTORY (SEMUA STATUS)
-     * =========================== */
-        $transactions = SparepartittrasactionModel::with([
-            'stockOutHeader.location',
-            'stockOutHeader.category',
-            'stockOutHeader.subcategory'
-        ])
-            ->where('spare_part_id', $id)
-            ->when(
-                $request->start_date,
-                fn($q) => $q->whereDate('created_at', '>=', $request->start_date)
-            )
-            ->when(
-                $request->end_date,
-                fn($q) => $q->whereDate('created_at', '<=', $request->end_date)
-            )
+        // 2️⃣ HISTORY SEMUA STATUS
+        $transactions = SparepartittrasactionModel::with('sparePart')
+            ->where('sparepartit_id', $id)
+            ->when($request->start_date, fn($q) => $q->whereDate('created_at', '>=', $request->start_date))
+            ->when($request->end_date, fn($q) => $q->whereDate('created_at', '<=', $request->end_date))
             ->orderByDesc('created_at')
             ->paginate(20)
             ->withQueryString();
 
-        return view('dashboard.sparepart.detailsparepart', [
+        return view('dashboard.sparepartit.detail', [
             'sparePart'        => $sparePart,
             'transactions'     => $transactions,
             'lastRunningStock' => $runningStock,

@@ -34,98 +34,85 @@ class RiwayatperbaikanassetitController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
         $request->validate([
-            // 'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
             'nomer_asset' => 'required|string',
             'nama' => 'required|string',
             'user' => 'required|string',
             'locations_id' => 'required|integer',
             'kerusakan' => 'required|string',
-            // 'perbaikan' => 'required|string',
             'tanggal_mulai' => 'required|date',
             'status' => 'required|string',
-        ], [
-            'image.required'   => 'File gambar harus diisi',
-            'image.image'   => 'File harus berupa gambar',
-            'image.mimes'   => 'File harus JPG, JPEG, PNG, atau GIF',
-            'image.max'     => 'Ukuran file maksimal 5MB',
-            'nomer_asset' => 'Nomor Asset IT wajib diisi',
-            'nama' => 'Nama Asset IT wajib diisi',
-            'user' => 'User Asset IT wajib diisi',
-            'locations_id' => 'Lokasi Asset IT wajib diisi',
-            'kerusakan' => 'Kerusakan Asset IT wajib diisi',
-            // 'perbaikan' => 'Perbaikan Asset IT wajib diisi',
-            'tanggal_mulai' => 'Tanggal mulai perbaikan wajib diisi',
-            'status' => 'Status Perbaikan Asset IT wajib diisi',
         ]);
 
-        $data = $request->only('nomer_asset', 'image', 'nama', 'user', 'locations_id', 'kerusakan', 'perbaikan', 'tanggal_mulai', 'tanggal_selesai', 'status', 'keterangan');
+        DB::transaction(function () use ($request) {
 
-        if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('images'), $imageName);
-            $data['image'] = $imageName;
-        }
+            // 1️⃣ VALIDASI SPAREPART DULU
+            if ($request->spareparts) {
+                foreach ($request->spareparts as $sp) {
+                    if (empty($sp['sparepart_id'])) continue;
 
-        $perbaikan = RiwayatperbaikanassetitModel::create($data);
+                    $qty = $sp['qty'] ?? 1;
+                    $sparepart = SparepartitModel::lockForUpdate()->findOrFail($sp['sparepart_id']);
 
-        if ($request->spareparts) {
-            foreach ($request->spareparts as $sp) {
+                    if ($sparepart->stock <= 0) {
+                        throw ValidationException::withMessages([
+                            'spareparts' => "Stok spare part '{$sparepart->name}' kosong",
+                        ]);
+                    }
 
-                if (empty($sp['sparepart_id'])) {
-                    continue;
+                    if ($sparepart->stock < $qty) {
+                        throw ValidationException::withMessages([
+                            'spareparts' => "Stok spare part '{$sparepart->name}' tidak mencukupi (tersedia {$sparepart->stock})",
+                        ]);
+                    }
                 }
-
-                $qty = $sp['qty'] ?? 1;
-
-                // 1️⃣ AMBIL SPARE PART + LOCK
-                $sparepart = SparepartitModel::lockForUpdate()
-                    ->findOrFail($sp['sparepart_id']);
-
-                // STOK KOSONG
-                if ($sparepart->stock <= 0) {
-                    throw ValidationException::withMessages([
-                        'spareparts' =>
-                        "Stok spare part IT '{$sparepart->name}' kosong",
-                    ]);
-                }
-
-                // STOK TIDAK CUKUP
-                if ($sparepart->stock < $qty) {
-                    throw ValidationException::withMessages([
-                        'spareparts' =>
-                        "Stok spare part IT '{$sparepart->name}' tidak mencukupi (tersedia {$sparepart->stock})",
-                    ]);
-                }
-
-                PerbaikansparepartModel::create([
-                    'perbaikan_id'   => $perbaikan->id,
-                    'sparepartit_id' => $sp['sparepart_id'],
-                    'qty'            => $qty,
-                ]);
-
-                // 2️⃣ CATAT RIWAYAT SPARE PART KELUAR (OUT)
-                SparepartittrasactionModel::create([
-                    'sparepartit_id' => $sp['sparepart_id'],
-                    'type'           => 'out',
-                    'quantity'       => $qty,
-                    'user'           => $request->user,
-                    'status'         => 'sukses',
-                    'keterangan'     => 'Digunakan untuk perbaikan asset: ' . $request->nomer_asset,
-                ]);
             }
-        }
 
-        AssetitModel::where('nomer_asset', $request->nomer_asset)
-            ->update([
-                'status' => $request->status === 'Sedang Perbaikan'
-                    ? 'Sedang Perbaikan'
-                    : 'DiPakai'
-            ]);
+            // 2️⃣ SIMPAN HEADER PERBAIKAN
+            $data = $request->only('nomer_asset', 'image', 'nama', 'user', 'locations_id', 'kerusakan', 'perbaikan', 'tanggal_mulai', 'tanggal_selesai', 'status', 'keterangan');
 
+            if ($request->hasFile('image')) {
+                $imageName = time() . '.' . $request->image->extension();
+                $request->image->move(public_path('images'), $imageName);
+                $data['image'] = $imageName;
+            }
 
-        return redirect()->route('perbaikanasset-it.index')->with('success', 'Data perbaikan asset IT berhasil ditambahkan.');
+            $perbaikan = RiwayatperbaikanassetitModel::create($data);
+
+            // 3️⃣ SIMPAN SPAREPART + KURANGI STOK + TRANSACTION
+            if ($request->spareparts) {
+                foreach ($request->spareparts as $sp) {
+                    if (empty($sp['sparepart_id'])) continue;
+
+                    $qty = $sp['qty'] ?? 1;
+                    $sparepart = SparepartitModel::findOrFail($sp['sparepart_id']);
+
+                    PerbaikansparepartModel::create([
+                        'perbaikan_id' => $perbaikan->id,
+                        'sparepartit_id' => $sp['sparepart_id'],
+                        'qty' => $qty,
+                    ]);
+
+                    SparepartittrasactionModel::create([
+                        'sparepartit_id' => $sp['sparepart_id'],
+                        'type' => 'out',
+                        'quantity' => $qty,
+                        'user' => $request->user,
+                        'status' => 'sukses',
+                        'keterangan' => 'Digunakan untuk perbaikan asset: ' . $request->nomer_asset,
+                    ]);
+                }
+            }
+
+            // 4️⃣ UPDATE STATUS ASSET
+            AssetitModel::where('nomer_asset', $request->nomer_asset)
+                ->update([
+                    'status' => $request->status === 'Sedang Perbaikan' ? 'Sedang Perbaikan' : 'DiPakai'
+                ]);
+        });
+
+        return redirect()->route('perbaikanasset-it.index')
+            ->with('success', 'Data perbaikan asset IT berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -246,7 +233,7 @@ class RiwayatperbaikanassetitController extends Controller
             AssetitModel::where('nomer_asset', trim($request->nomer_asset))
                 ->update(['status' => $statusAsset]);
         });
-        
+
         return redirect()
             ->route('perbaikanasset-it.index')
             ->with('success', 'Data Perbaikan Asset IT berhasil diperbarui.');
