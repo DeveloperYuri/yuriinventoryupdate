@@ -117,6 +117,14 @@
                                 <div class="row mb-3">
                                     <label class="col-sm-2 col-form-label">Spare Part</label>
                                     <div class="col-sm-10">
+
+                                        @if (session('error'))
+                                            <div class="alert alert-danger alert-dismissible fade show">
+                                                {{ session('error') }}
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                            </div>
+                                        @endif
+
                                         <div id="sparepart-wrapper">
                                             @foreach ($riwayatperbaikanassetit->spareparts as $i => $sp)
                                                 <div class="row mb-2 sparepart-row">
@@ -185,8 +193,8 @@
 
                                     <div class="col-sm-10">
                                         <!-- INPUT TAMPILAN -->
-                                        <input id="tanggalSelesai" type="text" class="form-control" autocomplete="off"
-                                            placeholder="Pilih tanggal..."
+                                        <input id="tanggalSelesai" type="text" class="form-control"
+                                            autocomplete="off" placeholder="Pilih tanggal..."
                                             value="{{ $riwayatperbaikanassetit->tanggal_selesai
                                                 ? \Carbon\Carbon::parse($riwayatperbaikanassetit->tanggal_selesai)->translatedFormat('d F Y')
                                                 : '' }}">

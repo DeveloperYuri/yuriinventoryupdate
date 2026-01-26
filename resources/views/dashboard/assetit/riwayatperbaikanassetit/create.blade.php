@@ -109,6 +109,13 @@
                                     <label class="col-sm-2 col-form-label">Spare Part</label>
 
                                     <div class="col-sm-10">
+                                        {{-- ERROR KHUSUS SPARE PART --}}
+                                        @error('spareparts')
+                                            <div class="alert alert-danger">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+
                                         <div id="sparepart-wrapper">
 
                                             <div class="row g-2 sparepart-row mb-2">
@@ -127,7 +134,12 @@
 
                                                 <div class="col-md-3">
                                                     <input type="number" name="spareparts[0][qty]" class="form-control"
-                                                        min="1" placeholder="Qty">
+                                                        min="1" step="1" placeholder="Qty" required
+                                                        onkeydown="return event.key !== '-'"
+                                                        oninput="this.value = Math.max(1, this.value)">
+
+                                                    {{-- <input type="number" name="spareparts[0][qty]" class="form-control"
+                                                        min="1" placeholder="Qty" required> --}}
                                                 </div>
 
                                                 <div class="col-md-3">
@@ -359,11 +371,11 @@
         </div>
 
         <div class="col-md-3">
-            <input type="number"
-                   name="spareparts[${index}][qty]"
-                   class="form-control"
-                   min="1"
-                   placeholder="Qty">
+             <input type="number"
+             name="spareparts[${index}][qty]"
+            class="form-control"
+            min="1"
+            placeholder="Qty">  
         </div>
 
         <div class="col-md-3">
@@ -523,6 +535,42 @@
                     const mysql = date.format('YYYY-MM-DD');
                     document.getElementById('tanggalSelesaiHidden').value = mysql;
                 });
+            }
+        });
+    </script>
+
+    <script>
+        document.getElementById('myForm').addEventListener('submit', function(e) {
+
+            const rows = document.querySelectorAll('.sparepart-row');
+            let errorMessage = '';
+
+            for (let i = 0; i < rows.length; i++) {
+
+                const row = rows[i];
+                const sparepartId = row.querySelector('.sparepart-id').value;
+                const qtyInput = row.querySelector('input[name*="[qty]"]');
+                const qty = Number(qtyInput.value);
+
+                // ❌ spare part belum dipilih
+                if (!sparepartId) {
+                    errorMessage = `Spare part ke-${i + 1} belum dipilih`;
+                    qtyInput.focus();
+                    break;
+                }
+
+                // ❌ qty kosong / 0 / minus
+                if (!qty || qty < 1) {
+                    errorMessage = `Qty spare part ke-${i + 1} harus minimal 1`;
+                    qtyInput.focus();
+                    break;
+                }
+            }
+
+            if (errorMessage) {
+                e.preventDefault();
+                alert(errorMessage);
+                return false;
             }
         });
     </script>
