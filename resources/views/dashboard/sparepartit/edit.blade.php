@@ -50,16 +50,13 @@
                                 <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Satuan</label>
                                     <div class="col-sm-10">
-                                        <select name="satuan" class="form-control">
-                                            <option value="Pcs" {{ $sparePart->satuan == 'Pcs' ? 'selected' : '' }}>Pcs
-                                            </option>
-                                            <option value="Pack" {{ $sparePart->satuan == 'Pack' ? 'selected' : '' }}>
-                                                Pack
-                                            </option>
-                                            <option value="Meter" {{ $sparePart->satuan == 'Meter' ? 'selected' : '' }}>
-                                                Meter</option>
-                                            <option value="Set" {{ $sparePart->satuan == 'Set' ? 'selected' : '' }}>
-                                                Set</option>
+                                        <select name="satuan_id" class="form-control">
+                                            @foreach ($satuans as $satuan)
+                                                <option value="{{ $satuan->id }}"
+                                                    {{ $sparePart->satuan_id == $satuan->id ? 'selected' : '' }}>
+                                                    {{ $satuan->name }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>

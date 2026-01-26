@@ -54,8 +54,9 @@ class SparepartitController extends Controller
     public function edit($id)
     {
         $sparePart = SparepartitModel::findOrFail($id);
+        $satuans = SatuanModel::all();
 
-        return view('dashboard.sparepartit.edit', compact('sparePart'));
+        return view('dashboard.sparepartit.edit', compact('sparePart', 'satuans'));
     }
 
     public function update(Request $request, $id)
@@ -73,7 +74,7 @@ class SparepartitController extends Controller
 
         $sparePart = SparepartitModel::findOrFail($id);
         $sparePart->name = $request->name;
-        $sparePart->satuan = $request->satuan;
+        $sparePart->satuan_id = $request->satuan_id;
 
         if ($request->hasFile('image')) {
             if ($sparePart->image && file_exists(public_path('images/' . $sparePart->image))) {

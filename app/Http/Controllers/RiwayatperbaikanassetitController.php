@@ -237,8 +237,16 @@ class RiwayatperbaikanassetitController extends Controller
                         ->decrement('stock', $qtyBaru);
                 }
             }
-        });
 
+            $statusAsset = match (trim($request->status)) {
+                'Sedang Perbaikan' => 'Sedang Perbaikan',
+                'Selesai'          => 'Dipakai',
+                default            => 'Tersedia',
+            };
+            AssetitModel::where('nomer_asset', trim($request->nomer_asset))
+                ->update(['status' => $statusAsset]);
+        });
+        
         return redirect()
             ->route('perbaikanasset-it.index')
             ->with('success', 'Data Perbaikan Asset IT berhasil diperbarui.');
