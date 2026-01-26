@@ -216,6 +216,17 @@ class RiwayatperbaikanassetitController extends Controller
 
                     $qtyBaru = $sp['qty'] ?? 1;
 
+                    // Update transaction lama sesuai sparepart + asset
+                    SparepartittrasactionModel::where('sparepartit_id', $sp['sparepart_id'])
+                        ->where('type', 'out')
+                        ->where('keterangan', 'like', '%' . $perbaikan->nomer_asset . '%')
+                        ->update([
+                            'quantity'   => $qtyBaru,
+                            'user'       => $request->user,
+                            'status'     => 'sukses',
+                            'updated_at' => now(),
+                        ]);
+
                     PerbaikansparepartModel::create([
                         'perbaikan_id'   => $perbaikan->id,
                         'sparepartit_id' => $sp['sparepart_id'],
