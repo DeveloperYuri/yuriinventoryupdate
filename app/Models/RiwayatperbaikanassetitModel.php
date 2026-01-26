@@ -45,4 +45,9 @@ class RiwayatperbaikanassetitModel extends Model
     {
         return $this->belongsTo(LocationsModel::class, 'locations_id');
     }
+
+    public function spareparts()
+    {
+        return $this->hasMany(PerbaikansparepartModel::class, 'perbaikan_id');
+    }
 }

@@ -136,30 +136,6 @@
                                                     </button>
                                                 </div>
                                             </div>
-
-
-                                            {{-- <div class="row g-2 sparepart-row mb-2">
-                                                <div class="col-md-6">
-                                                    <select name="spareparts[0][sparepart_id]" class="form-control">
-                                                        <option value="">-- Pilih Spare Part --</option>
-                                                        @foreach ($spareparts as $sp)
-                                                            <option value="{{ $sp->id }}">{{ $sp->name }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-
-                                                <div class="col-md-3">
-                                                    <input type="number" name="spareparts[0][qty]" class="form-control"
-                                                        placeholder="Qty">
-                                                </div>
-
-                                                <div class="col-md-3">
-                                                    <button type="button" class="btn btn-danger remove-sparepart">
-                                                        Hapus
-                                                    </button>
-                                                </div>
-                                            </div> --}}
-
                                         </div>
 
                                         <button type="button" id="add-sparepart" class="btn btn-sm btn-success">

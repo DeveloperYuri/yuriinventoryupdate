@@ -11,8 +11,7 @@
                             <h5 class="card-title">Detail Perbaikan Asset IT</h5>
 
                             <!-- Horizontal Form -->
-                            <form id="myForm" method="POST"
-                                enctype="multipart/form-data">
+                            <form id="myForm" method="POST" enctype="multipart/form-data">
                                 {{ csrf_field() }}
 
                                 {{-- <div class="row mb-3">
@@ -27,7 +26,7 @@
                                     </div>
                                 </div> --}}
 
-                                <div class="row mb-3">
+                                {{-- <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Foto</label>
                                     <div class="col-sm-10">
                                         @if ($riwayatperbaikanassetit->image)
@@ -37,7 +36,7 @@
                                             <span class="text-muted">Tidak ada</span>
                                         @endif
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <div class="row mb-3">
                                     <label class="col-sm-2 col-form-label">Nomer Asset</label>
@@ -75,7 +74,7 @@
                                     <div class="col-sm-10">
                                         <select name="locations_id"
                                             class="form-control @error('locations_id') is-invalid @enderror" disabled>
-                                            <option value="" >-- Pilih Lokasi --</option>
+                                            <option value="">-- Pilih Lokasi --</option>
                                             @foreach ($locations as $location)
                                                 <option value="{{ $location->id }}"
                                                     {{ old('locations_id', $riwayatperbaikanassetit->locations_id) == $location->id ? 'selected' : '' }}>
@@ -102,6 +101,37 @@
                                 </div>
 
                                 <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">Spare Part Digunakan</label>
+                                    <div class="col-sm-10">
+
+                                        @if ($riwayatperbaikanassetit->spareparts->count())
+                                            <table class="table table-bordered table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        {{-- <th>No</th> --}}
+                                                        <th>Nama Spare Part IT</th>
+                                                        <th>Qty</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($riwayatperbaikanassetit->spareparts as $i => $sp)
+                                                        <tr>
+                                                            {{-- <td>{{ $i + 1 }}</td> --}}
+                                                            <td>{{ $sp->sparepart->name ?? '-' }}</td>
+                                                            <td>{{ $sp->qty }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        @else
+                                            <span class="text-muted">Tidak ada spare part digunakan</span>
+                                        @endif
+
+                                    </div>
+                                </div>
+
+
+                                {{-- <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Perbaikan</label>
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control @error('perbaikan') is-invalid @enderror"
@@ -111,7 +141,7 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <div class="row mb-3">
                                     <label class="col-sm-2 col-form-label">
@@ -121,7 +151,8 @@
                                     <div class="col-sm-10">
                                         <!-- INPUT TAMPILAN -->
                                         <input id="tanggalMulai" type="text" class="form-control" autocomplete="off"
-                                            value="{{ \Carbon\Carbon::parse($riwayatperbaikanassetit->tanggal_mulai)->translatedFormat('d F Y') }}" disabled>
+                                            value="{{ \Carbon\Carbon::parse($riwayatperbaikanassetit->tanggal_mulai)->translatedFormat('d F Y') }}"
+                                            disabled>
 
                                         <!-- INPUT KE DB -->
                                         <input type="hidden" name="tanggal_mulai" id="tanggalMulaiHidden"
@@ -137,7 +168,8 @@
                                     <div class="col-sm-10">
                                         <!-- INPUT TAMPILAN -->
                                         <input id="tanggalSelesai" type="text" class="form-control" autocomplete="off"
-                                            value="{{ \Carbon\Carbon::parse($riwayatperbaikanassetit->tanggal_selesai)->translatedFormat('d F Y') }}" disabled>
+                                            value="{{ \Carbon\Carbon::parse($riwayatperbaikanassetit->tanggal_selesai)->translatedFormat('d F Y') }}"
+                                            disabled>
 
                                         <!-- INPUT KE DB -->
                                         <input type="hidden" name="tanggal_selesai" id="tanggalSelesaiHidden"

@@ -30,14 +30,6 @@ class RiwayatperbaikanassetitController extends Controller
         return view('dashboard.assetit.riwayatperbaikanassetit.create', compact('assets', 'locations', 'spareparts'));
     }
 
-    // public function create()
-    // {
-    //     $locations = LocationsModel::all();
-    //     $assets = AssetitModel::orderBy('nomer_asset')->get();
-
-    //     return view('dashboard.assetit.riwayatperbaikanassetit.create', compact('locations', 'assets'));
-    // }
-
     public function store(Request $request)
     {
         // dd($request->all());
@@ -116,10 +108,13 @@ class RiwayatperbaikanassetitController extends Controller
 
     public function edit($id)
     {
-        $riwayatperbaikanassetit = RiwayatperbaikanassetitModel::findOrFail($id);
+        // $riwayatperbaikanassetit = RiwayatperbaikanassetitModel::findOrFail($id);
+        $riwayatperbaikanassetit = RiwayatperbaikanassetitModel::with('spareparts.sparepart')
+            ->findOrFail($id);
         $locations = LocationsModel::all();
+        $spareparts = SparepartitModel::orderBy('name')->get();
 
-        return view('dashboard.assetit.riwayatperbaikanassetit.edit', compact('riwayatperbaikanassetit', 'locations'));
+        return view('dashboard.assetit.riwayatperbaikanassetit.edit', compact('riwayatperbaikanassetit', 'locations', 'spareparts'));
     }
 
     public function update(Request $request, $id)
@@ -130,39 +125,36 @@ class RiwayatperbaikanassetitController extends Controller
             'user' => 'required|string',
             'locations_id' => 'required|integer',
             'kerusakan' => 'required|string',
-            'perbaikan' => 'required|string',
+            // 'perbaikan' => 'required|string',
             'tanggal_mulai' => 'required|date',
             'status' => 'required|string',
-        ], [
-            'nomer_asset' => 'Nomor Asset IT wajib diisi',
-            'nama' => 'Nama Asset IT wajib diisi',
-            'user' => 'User Asset IT wajib diisi',
-            'locations_id' => 'Lokasi Asset IT wajib diisi',
-            'kerusakan' => 'Kerusakan Asset IT wajib diisi',
-            'perbaikan' => 'Perbaikan Asset IT wajib diisi',
-            'tanggal_mulai' => 'Tanggal mulai perbaikan wajib diisi',
-            'status' => 'Status Perbaikan Asset IT wajib diisi',
-
         ]);
-
-        // $riwayatperbaikanassetit = RiwayatperbaikanassetitModel::findOrFail($id);
-        // $riwayatperbaikanassetit->nomer_asset = $request->nomer_asset;
-        // $riwayatperbaikanassetit->nama = $request->nama;
-        // $riwayatperbaikanassetit->user = $request->user;
-        // $riwayatperbaikanassetit->locations_id = $request->locations_id;
-        // $riwayatperbaikanassetit->kerusakan = $request->kerusakan;
-        // $riwayatperbaikanassetit->perbaikan = $request->perbaikan;
-        // $riwayatperbaikanassetit->tanggal_mulai = $request->tanggal_mulai;
-        // $riwayatperbaikanassetit->tanggal_selesai = $request->tanggal_selesai;
-        // $riwayatperbaikanassetit->status = $request->status;
-        // $riwayatperbaikanassetit->keterangan = $request->keterangan;
 
         DB::transaction(function () use ($request, $id) {
 
-            // 1️⃣ Update riwayat perbaikan
-            $riwayatperbaikanassetit = RiwayatperbaikanassetitModel::findOrFail($id);
+            /** ===============================
+             * 1️⃣ AMBIL DATA PERBAIKAN + SPAREPART
+             * =============================== */
+            $perbaikan = RiwayatperbaikanassetitModel::with('spareparts')
+                ->findOrFail($id);
 
-            $riwayatperbaikanassetit->update([
+            /** ===============================
+             * 2️⃣ BALIKIN STOK SPAREPART LAMA
+             * =============================== */
+            foreach ($perbaikan->spareparts as $old) {
+                SparepartitModel::where('id', $old->sparepartit_id)
+                    ->increment('stock', $old->qty);
+            }
+
+            /** ===============================
+             * 3️⃣ HAPUS RELASI SPAREPART LAMA
+             * =============================== */
+            PerbaikansparepartModel::where('perbaikan_id', $perbaikan->id)->delete();
+
+            /** ===============================
+             * 4️⃣ UPDATE HEADER PERBAIKAN
+             * =============================== */
+            $perbaikan->update([
                 'nomer_asset'      => $request->nomer_asset,
                 'nama'             => $request->nama,
                 'user'             => $request->user,
@@ -175,35 +167,171 @@ class RiwayatperbaikanassetitController extends Controller
                 'keterangan'       => $request->keterangan,
             ]);
 
+            /** ===============================
+             * 5️⃣ UPDATE FOTO (OPSIONAL)
+             * =============================== */
             if ($request->hasFile('image')) {
-                if ($riwayatperbaikanassetit->image && file_exists(public_path('images/' . $riwayatperbaikanassetit->image))) {
-                    unlink(public_path('images/' . $riwayatperbaikanassetit->image));
+                if ($perbaikan->image && file_exists(public_path('images/' . $perbaikan->image))) {
+                    unlink(public_path('images/' . $perbaikan->image));
                 }
+
                 $imageName = time() . '.' . $request->image->extension();
                 $request->image->move(public_path('images'), $imageName);
-                $riwayatperbaikanassetit->image = $imageName;
+                $perbaikan->image = $imageName;
+                $perbaikan->save();
             }
 
+            /** ===============================
+             * 6️⃣ SIMPAN SPAREPART BARU + KURANGI STOK
+             * =============================== */
+
+            if ($request->spareparts) {
+
+                foreach ($request->spareparts as $sp) {
+
+                    if (empty($sp['sparepart_id'])) continue;
+
+                    $qtyBaru = $sp['qty'] ?? 1;
+
+                    // simpan relasi
+                    PerbaikansparepartModel::create([
+                        'perbaikan_id'   => $perbaikan->id,
+                        'sparepartit_id' => $sp['sparepart_id'],
+                        'qty'            => $qtyBaru,
+                    ]);
+
+                    /** ===============================
+                     * 🔥 UPDATE TRANSACTION LAMA
+                     * =============================== */
+                    SparepartittrasactionModel::where('sparepartit_id', $sp['sparepart_id'])
+                        ->where('type', 'out')
+                        ->where('keterangan', 'like', '%' . $perbaikan->nomer_asset . '%')
+                        ->update([
+                            'quantity' => $qtyBaru,
+                            'user'     => $request->user,
+                            'status'   => 'sukses',
+                            'updated_at' => now(),
+                        ]);
+
+                    /** ===============================
+                     * 🔻 KURANGI STOK SESUAI QTY BARU
+                     * =============================== */
+                    SparepartitModel::where('id', $sp['sparepart_id'])
+                        ->decrement('stock', $qtyBaru);
+                }
+            }
+            // if ($request->spareparts) {
+            //     foreach ($request->spareparts as $sp) {
+
+            //         if (empty($sp['sparepart_id'])) continue;
+
+            //         $qtyBaru = $sp['qty'] ?? 1;
+
+            //         // simpan relasi
+            //         PerbaikansparepartModel::create([
+            //             'perbaikan_id'   => $perbaikan->id,
+            //             'sparepartit_id' => $sp['sparepart_id'],
+            //             'qty'            => $qtyBaru,
+            //         ]);
+
+            //         // KURANGI stok sesuai qty baru (karena sebelumnya sudah dikembalikan)
+            //         SparepartitModel::where('id', $sp['sparepart_id'])
+            //             ->decrement('stock', $qtyBaru);
+            //     }
+            // }
+
+            /** ===============================
+             * 7️⃣ UPDATE STATUS ASSET
+             * =============================== */
             $statusAsset = match (trim($request->status)) {
-                'Sedang Perbaikan' => 'Perbaikan',
+                'Sedang Perbaikan' => 'Sedang Perbaikan',
                 'Selesai'          => 'Dipakai',
                 default            => 'Tersedia',
             };
 
             AssetitModel::where('nomer_asset', trim($request->nomer_asset))
-                ->update([
-                    'status' => $statusAsset
-                ]);
+                ->update(['status' => $statusAsset]);
         });
 
-        // $riwayatperbaikanassetit->save();
-
-        return redirect()->route('perbaikanasset-it.index')->with('success', 'Data Perbaikan Asset IT berhasil diperbarui.');
+        return redirect()
+            ->route('perbaikanasset-it.index')
+            ->with('success', 'Data Perbaikan Asset IT berhasil diperbarui.');
     }
+
+
+    // public function update(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'nomer_asset' => 'required|string',
+    //         'nama' => 'required|string',
+    //         'user' => 'required|string',
+    //         'locations_id' => 'required|integer',
+    //         'kerusakan' => 'required|string',
+    //         'perbaikan' => 'required|string',
+    //         'tanggal_mulai' => 'required|date',
+    //         'status' => 'required|string',
+    //     ], [
+    //         'nomer_asset' => 'Nomor Asset IT wajib diisi',
+    //         'nama' => 'Nama Asset IT wajib diisi',
+    //         'user' => 'User Asset IT wajib diisi',
+    //         'locations_id' => 'Lokasi Asset IT wajib diisi',
+    //         'kerusakan' => 'Kerusakan Asset IT wajib diisi',
+    //         'perbaikan' => 'Perbaikan Asset IT wajib diisi',
+    //         'tanggal_mulai' => 'Tanggal mulai perbaikan wajib diisi',
+    //         'status' => 'Status Perbaikan Asset IT wajib diisi',
+
+    //     ]);
+
+    //     DB::transaction(function () use ($request, $id) {
+
+    //         // 1️⃣ Update riwayat perbaikan
+    //         $riwayatperbaikanassetit = RiwayatperbaikanassetitModel::findOrFail($id);
+
+    //         $riwayatperbaikanassetit->update([
+    //             'nomer_asset'      => $request->nomer_asset,
+    //             'nama'             => $request->nama,
+    //             'user'             => $request->user,
+    //             'locations_id'     => $request->locations_id,
+    //             'kerusakan'        => $request->kerusakan,
+    //             'perbaikan'        => $request->perbaikan,
+    //             'tanggal_mulai'    => $request->tanggal_mulai,
+    //             'tanggal_selesai'  => $request->tanggal_selesai,
+    //             'status'           => $request->status,
+    //             'keterangan'       => $request->keterangan,
+    //         ]);
+
+    //         if ($request->hasFile('image')) {
+    //             if ($riwayatperbaikanassetit->image && file_exists(public_path('images/' . $riwayatperbaikanassetit->image))) {
+    //                 unlink(public_path('images/' . $riwayatperbaikanassetit->image));
+    //             }
+    //             $imageName = time() . '.' . $request->image->extension();
+    //             $request->image->move(public_path('images'), $imageName);
+    //             $riwayatperbaikanassetit->image = $imageName;
+    //         }
+
+    //         $statusAsset = match (trim($request->status)) {
+    //             'Sedang Perbaikan' => 'Perbaikan',
+    //             'Selesai'          => 'Dipakai',
+    //             default            => 'Tersedia',
+    //         };
+
+    //         AssetitModel::where('nomer_asset', trim($request->nomer_asset))
+    //             ->update([
+    //                 'status' => $statusAsset
+    //             ]);
+    //     });
+
+    //     // $riwayatperbaikanassetit->save();
+
+    //     return redirect()->route('perbaikanasset-it.index')->with('success', 'Data Perbaikan Asset IT berhasil diperbarui.');
+    // }
 
     public function show($id)
     {
-        $riwayatperbaikanassetit = RiwayatperbaikanassetitModel::findOrFail($id);
+        // $riwayatperbaikanassetit = RiwayatperbaikanassetitModel::findOrFail($id);
+        $riwayatperbaikanassetit = RiwayatperbaikanassetitModel::with([
+            'spareparts.sparepart'
+        ])->findOrFail($id);
         $locations = LocationsModel::all();
 
         return view('dashboard.assetit.riwayatperbaikanassetit.show', compact('riwayatperbaikanassetit', 'locations'));

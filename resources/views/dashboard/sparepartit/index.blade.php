@@ -157,10 +157,10 @@
                                                     </td>
                                                 @endif --}}
 
-                                                {{-- <td class="text-center">{{ $part->getTotalIn() }}</td>
-                                                <td class="text-center">{{ $part->getTotalOut() }}</td> --}}
-                                                <td class="text-center">{{ $part->stock }}</td>
-                                                <td class="text-center">{{ $part->stock }}</td>
+                                                <td class="text-center">{{ $part->getTotalIn() }}</td>
+                                                <td class="text-center">{{ $part->getTotalOut() }}</td>
+                                                {{-- <td class="text-center">{{ $part->stock }}</td>
+                                                <td class="text-center">{{ $part->stock }}</td> --}}
                                                 <td class="text-center">{{ $part->stock }}</td>
 
                                                 <td class="text-center">{{ $part->satuan->name ?? '-' }}</td>

@@ -16,4 +16,9 @@ class PerbaikansparepartModel extends Model
         'sparepartit_id',
         'qty',
     ];
+
+    public function sparepart()
+    {
+        return $this->belongsTo(SparepartitModel::class, 'sparepartit_id');
+    }
 }

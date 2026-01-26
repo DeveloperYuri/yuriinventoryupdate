@@ -37,4 +37,27 @@ class SparepartitModel extends Model
     {
         return $this->belongsTo(SatuanModel::class, 'satuan_id');
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(
+            SparepartittrasactionModel::class,
+            'sparepartit_id', // foreign key di stock_transactions
+            'id'             // primary key di spare_parts
+        );
+    }
+
+    public function getTotalIn()
+    {
+        return $this->transactions()
+            ->where('type', 'in')
+            ->sum('quantity');
+    }
+
+    public function getTotalOut()
+    {
+        return $this->transactions()
+            ->where('type', 'out')
+            ->sum('quantity');
+    }
 }

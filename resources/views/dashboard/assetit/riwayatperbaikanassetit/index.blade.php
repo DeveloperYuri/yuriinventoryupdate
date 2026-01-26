@@ -107,7 +107,7 @@
                                             <th class="text-center">User</th>
                                             <th class="text-center">Lokasi</th>
                                             <th class="text-center">Kerusakan</th>
-                                            <th class="text-center">Perbaikan</th>
+                                            {{-- <th class="text-center">Perbaikan</th> --}}
                                             <th class="text-center">Tanggal Mulai</th>
                                             <th class="text-center">Tanggal Selesai</th>
                                             <th class="text-center">Status</th>
@@ -151,7 +151,7 @@
                                                 <td class="text-center">{{ $asset->user ?? '-' }}</td>
                                                 <td class="text-center">{{ $asset->location->name ?? '-' }}</td>
                                                 <td class="text-center">{{ $asset->kerusakan ?? '-' }}</td>
-                                                <td class="text-center">{{ $asset->perbaikan ?? '-' }}</td>
+                                                {{-- <td class="text-center">{{ $asset->perbaikan ?? '-' }}</td> --}}
                                                 <td class="text-center">{{ $asset->tanggal_mulai }}</td>
                                                 <td class="text-center">{{ $asset->tanggal_selesai ?? '-' }}</td>
                                                 @php

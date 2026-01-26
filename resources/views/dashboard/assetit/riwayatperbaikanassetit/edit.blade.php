@@ -11,7 +11,8 @@
                             <h5 class="card-title">Edit Perbaikan Asset IT</h5>
 
                             <!-- Horizontal Form -->
-                            <form id="myForm" action="{{ route('perbaikanasset-it.update', $riwayatperbaikanassetit->id) }}" method="POST"
+                            <form id="myForm"
+                                action="{{ route('perbaikanasset-it.update', $riwayatperbaikanassetit->id) }}" method="POST"
                                 enctype="multipart/form-data">
                                 @method('PUT')
                                 {{ csrf_field() }}
@@ -28,7 +29,7 @@
                                     </div>
                                 </div> --}}
 
-                                <div class="row mb-3">
+                                {{-- <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Foto</label>
                                     <div class="col-sm-10">
                                         @if ($riwayatperbaikanassetit->image)
@@ -45,7 +46,7 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <div class="row mb-3">
                                     <label class="col-sm-2 col-form-label">Nomer Asset<span
@@ -114,6 +115,41 @@
                                 </div>
 
                                 <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">Spare Part</label>
+                                    <div class="col-sm-10">
+                                        <div id="sparepart-wrapper">
+                                            @foreach ($riwayatperbaikanassetit->spareparts as $i => $sp)
+                                                <div class="row mb-2 sparepart-row">
+                                                    <div class="col-md-6">
+                                                        <input type="hidden"
+                                                            name="spareparts[{{ $i }}][sparepart_id]"
+                                                            value="{{ $sp->sparepartit_id }}">
+
+                                                        <input type="text" class="form-control"
+                                                            value="{{ $sp->sparepart->name }}" readonly>
+                                                    </div>
+
+                                                    <div class="col-md-3">
+                                                        <input type="number" name="spareparts[{{ $i }}][qty]"
+                                                            class="form-control" value="{{ $sp->qty }}"
+                                                            min="1">
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <button type="button" class="btn btn-danger remove-sparepart">
+                                                            Hapus
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-sparepart" class="btn btn-sm btn-success">
+                                            + Tambah Spare Part
+                                        </button>
+                                    </div>
+                                </div>
+
+
+                                {{-- <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Perbaikan<span
                                             style="color: red">*</span></label>
                                     <div class="col-sm-10">
@@ -124,7 +160,7 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <div class="row mb-3">
                                     <label class="col-sm-2 col-form-label">
@@ -273,6 +309,272 @@
                 .catch(err => console.error(err));
         });
     </script> --}}
+
+    <script>
+        const input = document.getElementById('nomer_asset');
+        const dropdown = document.getElementById('assetDropdown');
+
+        let timer = null;
+
+        // 🔹 fetch & show dropdown
+        input.addEventListener('input', function() {
+            const val = this.value.trim();
+
+            if (val.length < 2) {
+                dropdown.classList.remove('show');
+                return;
+            }
+
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                fetch(`{{ route('asset-it.suggest') }}?q=${val}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        dropdown.innerHTML = '';
+
+                        if (!data.length) {
+                            dropdown.classList.remove('show');
+                            return;
+                        }
+
+                        data.forEach(item => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `
+                        <a class="dropdown-item" href="#">${item}</a>
+                    `;
+
+                            li.onclick = (e) => {
+                                e.preventDefault();
+                                input.value = item;
+                                dropdown.classList.remove('show');
+                                loadAssetDetail(item);
+                            };
+
+                            dropdown.appendChild(li);
+                        });
+
+                        dropdown.classList.add('show');
+                    });
+            }, 250);
+        });
+
+        // 🔹 klik luar = tutup
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.position-relative')) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // 🔹 ENTER / PASTE tetap jalan
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                dropdown.classList.remove('show');
+                loadAssetDetail(this.value);
+            }
+        });
+
+        // 🔹 BLUR (paste mouse)
+        input.addEventListener('blur', function() {
+            setTimeout(() => {
+                dropdown.classList.remove('show');
+                loadAssetDetail(this.value);
+            }, 150);
+        });
+
+        // 🔹 function lama (TETAP)
+        function loadAssetDetail(nomerAsset) {
+            if (!nomerAsset) return;
+
+            fetch(`{{ route('asset-it.ajax-detail') }}?nomer_asset=${nomerAsset}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data) return;
+
+                    document.getElementById('nama').value = data.nama;
+                    document.getElementById('user').value = data.user;
+                    document.querySelector('select[name="locations_id"]').value = data.location_id;
+                });
+        }
+    </script>
+
+    <script>
+        document.getElementById('nomer_asset').addEventListener('change', function() {
+            let nomerAsset = this.value;
+            if (!nomerAsset) return;
+
+            fetch("{{ route('asset-it.ajax-detail') }}?nomer_asset=" + nomerAsset)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data) return;
+
+                    document.getElementById('nama').value = data.nama;
+                    document.getElementById('user').value = data.user;
+                    document.querySelector('select[name="locations_id"]').value = data.location_id;
+                })
+                .catch(err => console.error(err));
+        });
+    </script>
+
+    <script>
+        const sparepartOptions = `
+        <option value="">-- Pilih Spare Part --</option>
+        @foreach ($spareparts as $sp)
+            <option value="{{ $sp->id }}">
+                {{ $sp->name }}
+            </option>
+        @endforeach
+    `;
+    </script>
+
+    <script>
+        let index = {{ $riwayatperbaikanassetit->spareparts->count() }};
+
+        document.getElementById('add-sparepart').addEventListener('click', function() {
+            const wrapper = document.getElementById('sparepart-wrapper');
+
+            const html = `
+    <div class="row g-2 sparepart-row mb-2">
+        <div class="col-md-6 position-relative">
+            <input type="text"
+                   class="form-control sparepart-input"
+                   placeholder="Ketik nama spare part...">
+
+            <input type="hidden"
+                   name="spareparts[${index}][sparepart_id]"
+                   class="sparepart-id">
+
+            <ul class="dropdown-menu w-100 sparepart-dropdown"></ul>
+        </div>
+
+        <div class="col-md-3">
+            <input type="number"
+                   name="spareparts[${index}][qty]"
+                   class="form-control"
+                   min="1"
+                   placeholder="Qty">
+        </div>
+
+        <div class="col-md-3">
+            <button type="button" class="btn btn-danger remove-sparepart">
+                Hapus
+            </button>
+        </div>
+    </div>`;
+
+            wrapper.insertAdjacentHTML('beforeend', html);
+            index++;
+        });
+    </script>
+
+    <script>
+        document.addEventListener('input', function(e) {
+            if (!e.target.classList.contains('sparepart-input')) return;
+
+            const input = e.target;
+            const dropdown = input.closest('.position-relative')
+                .querySelector('.sparepart-dropdown');
+
+            const keyword = input.value.trim();
+
+            if (keyword.length < 2) {
+                dropdown.classList.remove('show');
+                return;
+            }
+
+            fetch(`{{ route('perbaikan-it.sparepart.autocomplete') }}?q=${keyword}`)
+                .then(res => res.json())
+                .then(data => {
+                    dropdown.innerHTML = '';
+
+                    if (!data.length) {
+                        dropdown.classList.remove('show');
+                        return;
+                    }
+
+                    data.forEach(item => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                    <a class="dropdown-item" href="#">
+                        ${item.name}
+                    </a>
+                `;
+
+                        li.onclick = (e) => {
+                            e.preventDefault();
+
+                            input.value = item.name;
+                            input.closest('.position-relative')
+                                .querySelector('.sparepart-id').value = item.id;
+
+                            dropdown.classList.remove('show');
+                        };
+
+                        dropdown.appendChild(li);
+                    });
+
+                    dropdown.classList.add('show');
+                });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('input', function(e) {
+            if (!e.target.classList.contains('sparepart-input')) return;
+
+            const input = e.target;
+            const dropdown = input.closest('.position-relative')
+                .querySelector('.sparepart-dropdown');
+            const keyword = input.value.trim();
+
+            if (keyword.length < 2) {
+                dropdown.classList.remove('show');
+                return;
+            }
+
+            fetch(`{{ route('perbaikan-it.sparepart.autocomplete') }}?q=${keyword}`)
+                .then(res => res.json())
+                .then(data => {
+                    dropdown.innerHTML = '';
+
+                    if (!data.length) {
+                        dropdown.classList.remove('show');
+                        return;
+                    }
+
+                    data.forEach(item => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                    <a class="dropdown-item" href="#">${item.name}</a>
+                `;
+
+                        li.onclick = (e) => {
+                            e.preventDefault();
+
+                            input.value = item.name;
+                            input.closest('.position-relative')
+                                .querySelector('.sparepart-id').value = item.id;
+
+                            dropdown.classList.remove('show');
+                        };
+
+                        dropdown.appendChild(li);
+                    });
+
+                    dropdown.classList.add('show');
+                })
+                .catch(err => console.error(err));
+        });
+    </script>
+
+    <script>
+        // 🔥 HAPUS ROW (dynamic)
+        document.getElementById('sparepart-wrapper').addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-sparepart')) {
+                e.target.closest('.sparepart-row').remove();
+            }
+        });
+    </script>
 
     <script>
         new Litepicker({
