@@ -128,74 +128,77 @@ class RiwayatperbaikanassetitController extends Controller
 
     public function update(Request $request, $id)
     {
-        // 1️⃣ validasi form dasar
+        // 1️⃣ Validasi form dasar
         $request->validate([
-            'nomer_asset' => 'required|string',
-            'nama' => 'required|string',
-            'user' => 'required|string',
-            'locations_id' => 'required|integer',
-            'kerusakan' => 'required|string',
+            'nomer_asset'   => 'required|string',
+            'nama'          => 'required|string',
+            'user'          => 'required|string',
+            'locations_id'  => 'required|integer',
+            'kerusakan'     => 'required|string',
             'tanggal_mulai' => 'required|date',
-            'status' => 'required|string',
+            'status'        => 'required|string',
         ]);
 
-        // 2️⃣ VALIDASI STOK → DI SINI (SEBELUM TRANSACTION)
-        if ($request->spareparts) {
+        // 2️⃣ Ambil data perbaikan lama beserta spareparts
+        $perbaikan = RiwayatperbaikanassetitModel::with('spareparts')->findOrFail($id);
 
-            foreach ($request->spareparts as $index => $sp) {
+        // 3️⃣ VALIDASI STOK → sebelum transaction
+        if ($request->spareparts) {
+            foreach ($request->spareparts as $sp) {
 
                 if (empty($sp['sparepart_id'])) continue;
 
                 $qtyBaru = $sp['qty'] ?? 1;
 
                 $sparepart = SparepartitModel::find($sp['sparepart_id']);
-
                 if (!$sparepart) {
-                    return back()
-                        ->withInput()
-                        ->with('error', 'Spare part tidak ditemukan');
+                    return back()->withInput()->with('error', 'Spare part tidak ditemukan');
                 }
 
-                // ⚠️ KHUSUS UPDATE:
-                // stok lama SUDAH dibalikin → jadi stok sekarang valid
-                if ($qtyBaru > $sparepart->stock) {
-                    return back()
-                        ->withInput()
-                        ->with(
-                            'error',
-                            "Stok spare part '{$sparepart->name}' tidak mencukupi. Sisa: {$sparepart->stock}"
-                        );
+                // Ambil qty lama dari perbaikan ini (kalau ada)
+                $oldQty = $perbaikan->spareparts
+                    ->where('sparepartit_id', $sp['sparepart_id'])
+                    ->first()?->qty ?? 0;
+
+                // Stok efektif = stok saat ini + qty lama
+                $effectiveStock = $sparepart->stock + $oldQty;
+
+                if ($qtyBaru > $effectiveStock) {
+                    return back()->withInput()->with(
+                        'error',
+                        "Stok spare part '{$sparepart->name}' tidak mencukupi. Sisa: {$effectiveStock}"
+                    );
                 }
             }
         }
 
-        // 3️⃣ BARU TRANSACTION
-        DB::transaction(function () use ($request, $id) {
+        // 4️⃣ Transaction update
+        DB::transaction(function () use ($request, $perbaikan) {
 
-            $perbaikan = RiwayatperbaikanassetitModel::with('spareparts')->findOrFail($id);
-
-            // balikin stok lama
+            // 4a️⃣ Balikin stok lama
             foreach ($perbaikan->spareparts as $old) {
                 SparepartitModel::where('id', $old->sparepartit_id)
                     ->increment('stock', $old->qty);
             }
 
+            // 4b️⃣ Hapus relasi sparepart lama
             PerbaikansparepartModel::where('perbaikan_id', $perbaikan->id)->delete();
 
-            // update header
+            // 4c️⃣ Update header perbaikan
             $perbaikan->update([
-                'nomer_asset'   => $request->nomer_asset,
-                'nama'          => $request->nama,
-                'user'          => $request->user,
-                'locations_id'  => $request->locations_id,
-                'kerusakan'     => $request->kerusakan,
-                'tanggal_mulai' => $request->tanggal_mulai,
+                'nomer_asset'     => $request->nomer_asset,
+                'nama'            => $request->nama,
+                'user'            => $request->user,
+                'locations_id'    => $request->locations_id,
+                'kerusakan'       => $request->kerusakan,
+                'perbaikan'       => $request->perbaikan,
+                'tanggal_mulai'   => $request->tanggal_mulai,
                 'tanggal_selesai' => $request->tanggal_selesai,
-                'status'        => $request->status,
-                'keterangan'    => $request->keterangan,
+                'status'          => $request->status,
+                'keterangan'      => $request->keterangan,
             ]);
 
-            // simpan sparepart baru + potong stok
+            // 4d️⃣ Simpan sparepart baru + potong stok + update transaction lama
             if ($request->spareparts) {
                 foreach ($request->spareparts as $sp) {
 
@@ -214,17 +217,20 @@ class RiwayatperbaikanassetitController extends Controller
                             'updated_at' => now(),
                         ]);
 
+                    // Simpan relasi sparepart baru
                     PerbaikansparepartModel::create([
                         'perbaikan_id'   => $perbaikan->id,
                         'sparepartit_id' => $sp['sparepart_id'],
                         'qty'            => $qtyBaru,
                     ]);
 
+                    // Kurangi stok sesuai qty baru
                     SparepartitModel::where('id', $sp['sparepart_id'])
                         ->decrement('stock', $qtyBaru);
                 }
             }
 
+            // Update status asset
             $statusAsset = match (trim($request->status)) {
                 'Sedang Perbaikan' => 'Sedang Perbaikan',
                 'Selesai'          => 'Dipakai',
@@ -242,112 +248,82 @@ class RiwayatperbaikanassetitController extends Controller
 
     // public function update(Request $request, $id)
     // {
+    //     // 1️⃣ validasi form dasar
     //     $request->validate([
     //         'nomer_asset' => 'required|string',
     //         'nama' => 'required|string',
     //         'user' => 'required|string',
     //         'locations_id' => 'required|integer',
     //         'kerusakan' => 'required|string',
-    //         // 'perbaikan' => 'required|string',
     //         'tanggal_mulai' => 'required|date',
     //         'status' => 'required|string',
     //     ]);
 
+    //     // 2️⃣ VALIDASI STOK → DI SINI (SEBELUM TRANSACTION)
+    //     if ($request->spareparts) {
+
+    //         foreach ($request->spareparts as $index => $sp) {
+
+    //             if (empty($sp['sparepart_id'])) continue;
+
+    //             $qtyBaru = $sp['qty'] ?? 1;
+
+    //             $sparepart = SparepartitModel::find($sp['sparepart_id']);
+
+    //             if (!$sparepart) {
+    //                 return back()
+    //                     ->withInput()
+    //                     ->with('error', 'Spare part tidak ditemukan');
+    //             }
+
+    //             // ⚠️ KHUSUS UPDATE:
+    //             // stok lama SUDAH dibalikin → jadi stok sekarang valid
+    //             if ($qtyBaru > $sparepart->stock) {
+    //                 return back()
+    //                     ->withInput()
+    //                     ->with(
+    //                         'error',
+    //                         "Stok spare part '{$sparepart->name}' tidak mencukupi. Sisa: {$sparepart->stock}"
+    //                     );
+    //             }
+    //         }
+    //     }
+
+    //     // 3️⃣ BARU TRANSACTION
     //     DB::transaction(function () use ($request, $id) {
 
-    //         /** ===============================
-    //          * 1️⃣ AMBIL DATA PERBAIKAN + SPAREPART
-    //          * =============================== */
-    //         $perbaikan = RiwayatperbaikanassetitModel::with('spareparts')
-    //             ->findOrFail($id);
+    //         $perbaikan = RiwayatperbaikanassetitModel::with('spareparts')->findOrFail($id);
 
-    //         /** ===============================
-    //          * 2️⃣ BALIKIN STOK SPAREPART LAMA
-    //          * =============================== */
+    //         // balikin stok lama
     //         foreach ($perbaikan->spareparts as $old) {
     //             SparepartitModel::where('id', $old->sparepartit_id)
     //                 ->increment('stock', $old->qty);
     //         }
 
-    //         /** ===============================
-    //          * 3️⃣ HAPUS RELASI SPAREPART LAMA
-    //          * =============================== */
     //         PerbaikansparepartModel::where('perbaikan_id', $perbaikan->id)->delete();
 
-    //         /** ===============================
-    //          * 4️⃣ UPDATE HEADER PERBAIKAN
-    //          * =============================== */
+    //         // update header
     //         $perbaikan->update([
-    //             'nomer_asset'      => $request->nomer_asset,
-    //             'nama'             => $request->nama,
-    //             'user'             => $request->user,
-    //             'locations_id'     => $request->locations_id,
-    //             'kerusakan'        => $request->kerusakan,
-    //             'perbaikan'        => $request->perbaikan,
-    //             'tanggal_mulai'    => $request->tanggal_mulai,
-    //             'tanggal_selesai'  => $request->tanggal_selesai,
-    //             'status'           => $request->status,
-    //             'keterangan'       => $request->keterangan,
+    //             'nomer_asset'   => $request->nomer_asset,
+    //             'nama'          => $request->nama,
+    //             'user'          => $request->user,
+    //             'locations_id'  => $request->locations_id,
+    //             'kerusakan'     => $request->kerusakan,
+    //             'tanggal_mulai' => $request->tanggal_mulai,
+    //             'tanggal_selesai' => $request->tanggal_selesai,
+    //             'status'        => $request->status,
+    //             'keterangan'    => $request->keterangan,
     //         ]);
 
-    //         /** ===============================
-    //          * 5️⃣ UPDATE FOTO (OPSIONAL)
-    //          * =============================== */
-    //         if ($request->hasFile('image')) {
-    //             if ($perbaikan->image && file_exists(public_path('images/' . $perbaikan->image))) {
-    //                 unlink(public_path('images/' . $perbaikan->image));
-    //             }
-
-    //             $imageName = time() . '.' . $request->image->extension();
-    //             $request->image->move(public_path('images'), $imageName);
-    //             $perbaikan->image = $imageName;
-    //             $perbaikan->save();
-    //         }
-
-    //         /** ===============================
-    //          * 6️⃣ SIMPAN SPAREPART BARU + KURANGI STOK
-    //          * =============================== */
-
+    //         // simpan sparepart baru + potong stok
     //         if ($request->spareparts) {
-
     //             foreach ($request->spareparts as $sp) {
 
     //                 if (empty($sp['sparepart_id'])) continue;
 
-    //                 $qtyBaru = (int) ($sp['qty'] ?? 1);
+    //                 $qtyBaru = $sp['qty'] ?? 1;
 
-    //                 // 🔒 lock row sparepart (ANTI RACE CONDITION)
-    //                 $sparepart = SparepartitModel::where('id', $sp['sparepart_id'])
-    //                     ->lockForUpdate()
-    //                     ->first();
-
-    //                 if (!$sparepart) {
-    //                     throw new \Exception('Spare part tidak ditemukan');
-    //                 }
-
-    //                 /** ===============================
-    //                  * VALIDASI STOK (KHUSUS UPDATE)
-    //                  * =============================== */
-    //                 // karena stok lama sudah dikembalikan di step 2,
-    //                 // maka stock saat ini = stok valid
-    //                 if ($qtyBaru > $sparepart->stock) {
-    //                     throw new \Exception(
-    //                         "Stok spare part '{$sparepart->name}' tidak mencukupi. Sisa: {$sparepart->stock}"
-    //                     );
-    //                 }
-
-    //                 /** ===============================
-    //                  * SIMPAN RELASI
-    //                  * =============================== */
-    //                 PerbaikansparepartModel::create([
-    //                     'perbaikan_id'   => $perbaikan->id,
-    //                     'sparepartit_id' => $sp['sparepart_id'],
-    //                     'qty'            => $qtyBaru,
-    //                 ]);
-
-    //                 /** ===============================
-    //                  * UPDATE TRANSACTION LAMA
-    //                  * =============================== */
+    //                 // Update transaction lama sesuai sparepart + asset
     //                 SparepartittrasactionModel::where('sparepartit_id', $sp['sparepart_id'])
     //                     ->where('type', 'out')
     //                     ->where('keterangan', 'like', '%' . $perbaikan->nomer_asset . '%')
@@ -358,58 +334,22 @@ class RiwayatperbaikanassetitController extends Controller
     //                         'updated_at' => now(),
     //                     ]);
 
-    //                 /** ===============================
-    //                  * 🔻 KURANGI STOK
-    //                  * =============================== */
-    //                 $sparepart->decrement('stock', $qtyBaru);
+    //                 PerbaikansparepartModel::create([
+    //                     'perbaikan_id'   => $perbaikan->id,
+    //                     'sparepartit_id' => $sp['sparepart_id'],
+    //                     'qty'            => $qtyBaru,
+    //                 ]);
+
+    //                 SparepartitModel::where('id', $sp['sparepart_id'])
+    //                     ->decrement('stock', $qtyBaru);
     //             }
     //         }
 
-    //         // if ($request->spareparts) {
-
-    //         //     foreach ($request->spareparts as $sp) {
-
-    //         //         if (empty($sp['sparepart_id'])) continue;
-
-    //         //         $qtyBaru = $sp['qty'] ?? 1;
-
-    //         //         // simpan relasi
-    //         //         PerbaikansparepartModel::create([
-    //         //             'perbaikan_id'   => $perbaikan->id,
-    //         //             'sparepartit_id' => $sp['sparepart_id'],
-    //         //             'qty'            => $qtyBaru,
-    //         //         ]);
-
-    //         //         /** ===============================
-    //         //          * UPDATE TRANSACTION LAMA
-    //         //          * =============================== */
-    //         //         SparepartittrasactionModel::where('sparepartit_id', $sp['sparepart_id'])
-    //         //             ->where('type', 'out')
-    //         //             ->where('keterangan', 'like', '%' . $perbaikan->nomer_asset . '%')
-    //         //             ->update([
-    //         //                 'quantity' => $qtyBaru,
-    //         //                 'user'     => $request->user,
-    //         //                 'status'   => 'sukses',
-    //         //                 'updated_at' => now(),
-    //         //             ]);
-
-    //         //         /** ===============================
-    //         //          * 🔻 KURANGI STOK SESUAI QTY BARU
-    //         //          * =============================== */
-    //         //         SparepartitModel::where('id', $sp['sparepart_id'])
-    //         //             ->decrement('stock', $qtyBaru);
-    //         //     }
-    //         // }
-
-    //         /** ===============================
-    //          * UPDATE STATUS ASSET
-    //          * =============================== */
     //         $statusAsset = match (trim($request->status)) {
     //             'Sedang Perbaikan' => 'Sedang Perbaikan',
     //             'Selesai'          => 'Dipakai',
     //             default            => 'Tersedia',
     //         };
-
     //         AssetitModel::where('nomer_asset', trim($request->nomer_asset))
     //             ->update(['status' => $statusAsset]);
     //     });
