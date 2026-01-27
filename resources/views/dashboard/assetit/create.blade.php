@@ -18,10 +18,9 @@
                                 <div class="row mb-3">
                                     <label class="col-sm-2 col-form-label">Nomer Asset</label>
                                     <div class="col-sm-10">
-                                        <input type="text"
+                                        <input type="text" id="nomer_asset"
                                             class="form-control @error('nomer_asset') is-invalid @enderror"
-                                            name="nomer_asset" value="{{ old('nomer_asset', $newNumber) }}" readonly>
-
+                                            name="nomer_asset" value="{{ old('nomer_asset') }}" readonly>
                                         @error('nomer_asset')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -39,18 +38,47 @@
                                         @enderror
                                     </div>
                                 </div>
+
                                 <div class="row mb-3">
-                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Nama<span
-                                            style="color: red">*</span></label>
+                                    <label class="col-sm-2 col-form-label">
+                                        Category Asset <span style="color:red">*</span>
+                                    </label>
+
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control @error('nama') is-invalid @enderror"
-                                            id="inputText" name="nama" value="{{ old('nama') }}">
+                                        <select name="nama" id="category_asset"
+                                            class="form-control @error('nama') is-invalid @enderror">
+
+                                            <option value="">-- Pilih Category --</option>
+
+                                            @php
+                                                $listNama = [
+                                                    'KOMPUTER',
+                                                    'PRINTER',
+                                                    'LAPTOP',
+                                                    'PROYEKTOR',
+                                                    'INFRASTRUKTUR JARINGAN',
+                                                    'PC SERVER',
+                                                    'INFRASTRUKTUR TELPON',
+                                                    'INFRASTRUKTUR CCTV',
+                                                ];
+
+                                                $selectedNama = old('nama', $perbaikan->nama ?? '');
+                                            @endphp
+
+                                            @foreach ($listNama as $nama)
+                                                <option value="{{ $nama }}"
+                                                    {{ $selectedNama == $nama ? 'selected' : '' }}>
+                                                    {{ $nama }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+
                                         @error('nama')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
-
+                                
                                 <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Digunakan oleh</label>
                                     <div class="col-sm-10">
@@ -124,3 +152,26 @@
 
     </main><!-- End #main -->
 @endsection
+
+@push('scripts')
+    <script>
+        document.getElementById('category_asset').addEventListener('change', function() {
+            const nama = this.value;
+            const inputNomor = document.getElementById('nomer_asset');
+
+            if (!nama) {
+                inputNomor.value = '';
+                return;
+            }
+
+            fetch(`{{ route('assetit.generate-number') }}?nama=${encodeURIComponent(nama)}`)
+                .then(response => response.json())
+                .then(data => {
+                    inputNomor.value = data.number ?? '';
+                })
+                .catch(() => {
+                    inputNomor.value = '';
+                });
+        });
+    </script>
+@endpush

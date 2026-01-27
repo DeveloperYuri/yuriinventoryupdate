@@ -15,20 +15,47 @@ class AssetitController extends Controller
         return view('dashboard.assetit.listassetit', compact('getRecord'));
     }
 
+    public function generateNumber(Request $request)
+    {
+        $prefixMap = [
+            'KOMPUTER'               => 'PCINV',
+            'PRINTER'                => 'PRINV',
+            'LAPTOP'                 => 'LPINV',
+            'PROYEKTOR'              => 'PYINV',
+            'INFRASTRUKTUR JARINGAN' => 'IFJINV',
+            'PC SERVER'              => 'SVINV',
+            'INFRASTRUKTUR TELPON'   => 'IFTINV',
+            'INFRASTRUKTUR CCTV'    => 'IFCINV',
+        ];
+
+        $nama = $request->nama;
+
+        if (!isset($prefixMap[$nama])) {
+            return response()->json(['number' => '']);
+        }
+
+        $prefix = $prefixMap[$nama];
+
+        $lastAsset = AssetitModel::where('nomer_asset', 'like', $prefix . '%')
+            ->orderBy('nomer_asset', 'desc')
+            ->first();
+
+        if ($lastAsset) {
+            $lastNumber = (int) substr($lastAsset->nomer_asset, strlen($prefix));
+            $newNumber = $prefix . ($lastNumber + 1);
+        } else {
+            $newNumber = $prefix . '30001';
+        }
+
+        return response()->json(['number' => $newNumber]);
+    }
+
+
     public function create()
     {
         $locations = LocationsModel::all();
 
-        $lastAsset = AssetitModel::orderBy('nomer_asset', 'desc')->first();
-
-        if ($lastAsset) {
-            $lastNumber = (int) substr($lastAsset->nomer_asset, 5); // INVTR = 5 char
-            $newNumber = 'INVTR' . ($lastNumber + 1);
-        } else {
-            $newNumber = 'INVTR30001';
-        }
-
-        return view('dashboard.assetit.create', compact('locations', 'newNumber'));
+        return view('dashboard.assetit.create', compact('locations'));
     }
 
     public function store(Request $request)

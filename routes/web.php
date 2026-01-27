@@ -384,6 +384,9 @@ Route::delete('/Asset-IT/delete/{id}', [AssetitController::class, 'destroy'])->n
 Route::get('/Asset-IT/edit/{id}', [AssetitController::class, 'edit'])->name('asset-it.edit');
 Route::put('/Asset-IT/edit/update/{id}', [AssetitController::class, 'update'])->name('asset-it.update');
 Route::get('/Asset-IT/show/{id}', [AssetitController::class, 'show'])->name('asset-it.show');
+Route::get('/asset-it/generate-number', [AssetitController::class, 'generateNumber'])
+    ->name('assetit.generate-number');
+
 
 // Riwayat Peminjaman Asset IT
 Route::get('/peminjaman/Asset-IT', [RiwayatpeminjamanassetitController::class, 'index'])->name('peminjamanasset-it.index');
