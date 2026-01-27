@@ -50,7 +50,6 @@ class AssetitController extends Controller
         return response()->json(['number' => $newNumber]);
     }
 
-
     public function create()
     {
         $locations = LocationsModel::all();
@@ -196,6 +195,22 @@ class AssetitController extends Controller
                 ];
             })
         );
+    }
+
+    public function autocompleteSparepart(Request $request)
+    {
+        $q = $request->get('term');
+
+        return AssetitModel::where('nomer_asset', 'LIKE', "%{$q}%")
+            ->limit(10)
+            ->get()
+            ->map(function ($sp) {
+                return [
+                    'label' => $sp->nomer_asset, // tampilan dropdown
+                    'value' => $sp->nomer_asset, // isi input
+                    'id'    => $sp->id,   // opsional
+                ];
+            });
     }
 
     public function suggest(Request $request)

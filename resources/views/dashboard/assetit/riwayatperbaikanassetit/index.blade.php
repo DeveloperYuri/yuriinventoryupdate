@@ -250,7 +250,7 @@
     <script>
         $(function() {
             $("#searchingtitle").autocomplete({
-                source: "{{ route('atk.autocomplete') }}",
+                source: "{{ route('perbaikan-it.sparepart.autocomplete') }}",
                 minLength: 2, // mulai search setelah 2 karakter
             });
         });

@@ -18,7 +18,7 @@
                 </div>
                 <div class="col d-flex gap-2">
                     <button class="btn btn-primary">Filter</button>
-                    <a href="{{ route('sparepart.history') }}" class="btn btn-secondary">Reset</a>
+                    <a href="{{ route('sparepartithistory.index') }}" class="btn btn-secondary">Reset</a>
                 </div>
             </form>
 

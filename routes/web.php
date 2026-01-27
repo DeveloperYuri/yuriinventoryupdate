@@ -386,6 +386,8 @@ Route::put('/Asset-IT/edit/update/{id}', [AssetitController::class, 'update'])->
 Route::get('/Asset-IT/show/{id}', [AssetitController::class, 'show'])->name('asset-it.show');
 Route::get('/asset-it/generate-number', [AssetitController::class, 'generateNumber'])
     ->name('assetit.generate-number');
+Route::get('/asset-it/autocompletesearch', [AssetitController::class, 'autocompletesearch'])->name('asset-itsearch.autocomplete');
+
 
 
 // Riwayat Peminjaman Asset IT

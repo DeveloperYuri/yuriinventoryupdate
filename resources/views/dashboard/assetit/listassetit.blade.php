@@ -13,7 +13,7 @@
             <form method="get">
                 <div class="row g-2 align-items-center">
                     <div class="col">
-                        <input id="searchingtitle" type="text" class="form-control" value="{{ Request()->nomer_asset }}"
+                        <input id="searchingtitleassetIT" type="text" class="form-control" value="{{ Request()->nomer_asset }}"
                             placeholder="Cari Nomer Asset IT" name="nomer_asset">
                     </div>
                     <div class="col-auto">
@@ -254,8 +254,8 @@
 
     <script>
         $(function() {
-            $("#searchingtitle").autocomplete({
-                source: "{{ route('atk.autocomplete') }}",
+            $("#searchingtitleassetIT").autocomplete({
+                source: "{{ route('asset-itsearch.autocomplete') }}",
                 minLength: 2, // mulai search setelah 2 karakter
             });
         });
