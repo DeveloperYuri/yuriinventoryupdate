@@ -4,7 +4,7 @@
     <main id="main" class="main">
 
         <div class="pagetitle d-flex justify-content-between align-items-center">
-            @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 0)
+            @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 0 || Auth::user()->is_role == 1)
                 <a href="{{ route('suratpesanan.create') }}" class="btn btn-primary" dusk="addsparepart">Buat Surat
                     Pesanan</a>
             @endif
