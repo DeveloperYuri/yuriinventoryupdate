@@ -78,12 +78,12 @@ class SuratpesananController extends Controller
             'name'          => 'required|string|max:100',
             'locations_id'  => 'required|integer|exists:locations,id',
             'category_id'   => 'required|integer|exists:category,id',
-            'subcategory_id' => 'required|integer|exists:subcategory,id',
+            // 'subcategory_id' => 'required|integer|exists:subcategory,id',
         ], [
             'name.required'          => 'Form ini harus diisi',
             'locations_id.required'  => 'Lokasi wajib dipilih',
             'category_id.required'   => 'Kategori wajib dipilih',
-            'subcategory_id.required' => 'Subkategori wajib dipilih',
+            // 'subcategory_id.required' => 'Subkategori wajib dipilih',
         ]);
 
 

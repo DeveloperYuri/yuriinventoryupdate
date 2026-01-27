@@ -139,7 +139,7 @@
          <!-- End Asset Sidebar -->
 
          <!-- Start Asset IT Sidebar -->
-         @if (Auth::user()->is_role == 0 || Auth::user()->is_role == 4 || Auth::user()->is_role == 2)
+         @if (Auth::user()->is_role == 4 || Auth::user()->is_role == 2)
              @php
                  $isAssetITActive =
                      request()->routeIs('asset-it.*') ||
@@ -178,7 +178,7 @@
          <!-- End Asset IT Sidebar -->
 
          <!-- Start Spare Part IT Sidebar -->
-         @if (Auth::user()->is_role == 0 || Auth::user()->is_role == 4 || Auth::user()->is_role == 2)
+         @if (Auth::user()->is_role == 4 || Auth::user()->is_role == 2)
              @php
                  $isSparepartITActive =
                      request()->routeIs('sparepart-it.*') ||

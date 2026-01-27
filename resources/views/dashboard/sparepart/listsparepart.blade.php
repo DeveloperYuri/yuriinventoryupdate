@@ -4,7 +4,7 @@
     <main id="main" class="main">
 
         <div class="pagetitle d-flex justify-content-between align-items-center">
-            @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
+            @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1 || Auth::user()->is_role == 0)
                 <a href="{{ route('spare-parts.create') }}" class="btn btn-primary">Tambah Spare Part</a>
             @endif
 
@@ -143,7 +143,7 @@
                                             <th class="text-center">Satuan</th>
 
 
-                                            @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
+                                            @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1 || Auth::user()->is_role == 0)
                                                 <th class="text-center">Aksi</th>
                                             @endif
                                         </tr>
@@ -195,7 +195,7 @@
 
 
                                                 <td class="text-center">
-                                                    @if (Auth::user()->is_role == 1 || Auth::user()->is_role == 2)
+                                                    @if (Auth::user()->is_role == 1 || Auth::user()->is_role == 2 || Auth::user()->is_role == 0)
                                                         <a href="{{ route('spare-parts.edit', $part->id) }}"
                                                             class="btn btn-sm btn-warning mt-1">Edit</a>
 
