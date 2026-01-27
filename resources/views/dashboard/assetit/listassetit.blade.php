@@ -103,7 +103,7 @@
                                         <tr>
                                             <th class="text-center">Foto</th>
                                             <th class="text-center">Nomor</th>
-                                            <th class="text-center">Nama</th>
+                                            <th class="text-center">Category</th>
                                             <th class="text-center">User</th>
                                             <th class="text-center">Lokasi</th>
                                             <th class="text-center">Status</th>

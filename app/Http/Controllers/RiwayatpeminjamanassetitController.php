@@ -157,4 +157,13 @@ class RiwayatpeminjamanassetitController extends Controller
 
         return redirect()->route('peminjamanasset-it.index')->with('success', 'Data peminjaman Asset IT berhasil dihapus.');
     }
+
+    public function autocompletesearch(Request $request)
+    {
+        $query = $request->get('term'); // jQuery UI pakai "term" sebagai key
+        $data = RiwayatpeminjamanassetitModel::where('nomer_asset', 'LIKE', "%{$query}%")
+            ->pluck('nomer_asset'); // ambil hanya kolom name
+
+        return response()->json($data);
+    }
 }

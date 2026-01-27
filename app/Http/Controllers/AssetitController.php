@@ -197,20 +197,13 @@ class AssetitController extends Controller
         );
     }
 
-    public function autocompleteSparepart(Request $request)
+    public function autocompletesearch(Request $request)
     {
-        $q = $request->get('term');
+        $query = $request->get('term'); // jQuery UI pakai "term" sebagai key
+        $data = AssetitModel::where('nomer_asset', 'LIKE', "%{$query}%")
+            ->pluck('nomer_asset'); // ambil hanya kolom name
 
-        return AssetitModel::where('nomer_asset', 'LIKE', "%{$q}%")
-            ->limit(10)
-            ->get()
-            ->map(function ($sp) {
-                return [
-                    'label' => $sp->nomer_asset, // tampilan dropdown
-                    'value' => $sp->nomer_asset, // isi input
-                    'id'    => $sp->id,   // opsional
-                ];
-            });
+        return response()->json($data);
     }
 
     public function suggest(Request $request)

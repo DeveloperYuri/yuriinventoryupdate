@@ -218,7 +218,7 @@
     <script>
         $(function() {
             $("#searchingtitle").autocomplete({
-                source: "{{ route('atk.autocomplete') }}",
+                source: "{{ route('peminjamanasset-itsearch.autocomplete') }}",
                 minLength: 2, // mulai search setelah 2 karakter
             });
         });

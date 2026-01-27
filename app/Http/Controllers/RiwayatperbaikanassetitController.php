@@ -409,4 +409,13 @@ class RiwayatperbaikanassetitController extends Controller
             ->limit(10)
             ->get(['id', 'name']);
     }
+
+    public function autocompletesearch(Request $request)
+    {
+        $query = $request->get('term'); // jQuery UI pakai "term" sebagai key
+        $data = RiwayatperbaikanassetitModel::where('nomer_asset', 'LIKE', "%{$query}%")
+            ->pluck('nomer_asset'); // ambil hanya kolom name
+
+        return response()->json($data);
+    }
 }

@@ -388,8 +388,6 @@ Route::get('/asset-it/generate-number', [AssetitController::class, 'generateNumb
     ->name('assetit.generate-number');
 Route::get('/asset-it/autocompletesearch', [AssetitController::class, 'autocompletesearch'])->name('asset-itsearch.autocomplete');
 
-
-
 // Riwayat Peminjaman Asset IT
 Route::get('/peminjaman/Asset-IT', [RiwayatpeminjamanassetitController::class, 'index'])->name('peminjamanasset-it.index');
 Route::get('/peminjaman/Asset-IT/create', [RiwayatpeminjamanassetitController::class, 'create'])->name('peminjamanasset-it.create');
@@ -398,6 +396,7 @@ Route::delete('/peminjaman/Asset-IT/delete/{id}', [RiwayatpeminjamanassetitContr
 Route::get('/peminjaman/Asset-IT/edit/{id}', [RiwayatpeminjamanassetitController::class, 'edit'])->name('peminjamanasset-it.edit');
 Route::put('/peminjaman/Asset-IT/edit/update/{id}', [RiwayatpeminjamanassetitController::class, 'update'])->name('peminjamanasset-it.update');
 Route::get('/peminjaman/Asset-IT/show/{id}', [RiwayatpeminjamanassetitController::class, 'show'])->name('peminjamanasset-it.show');
+Route::get('/peminjaman/Asset-IT/autocompletesearch', [RiwayatpeminjamanassetitController::class, 'autocompletesearch'])->name('peminjamanasset-itsearch.autocomplete');
 
 // Riwayat Perbaikan Asset IT
 Route::get('/perbaikan/Asset-IT', [RiwayatperbaikanassetitController::class, 'index'])->name('perbaikanasset-it.index');
@@ -413,6 +412,8 @@ Route::get(
     '/perbaikan-it/sparepart-autocomplete',
     [RiwayatperbaikanassetitController::class, 'autocompleteSparepart']
 )->name('perbaikan-it.sparepart.autocomplete');
+Route::get('/perbaikan/Asset-IT/autocompletesearch', [RiwayatperbaikanassetitController::class, 'autocompletesearch'])->name('perbaikanasset-itsearch.autocomplete');
+
 
 
 // Spare Part IT
