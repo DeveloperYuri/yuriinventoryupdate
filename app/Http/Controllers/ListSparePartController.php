@@ -6,6 +6,7 @@ use App\Exports\SparepartExport;
 use App\Imports\SparePartImport;
 use App\Models\CategoryModel;
 use App\Models\ListSparePartModel;
+use App\Models\SatuanModel;
 use App\Models\SubCategoryModel;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -33,13 +34,16 @@ class ListSparePartController extends Controller
     {
         $categories = CategoryModel::all();
         $subcategories = SubCategoryModel::all();
+        $satuan = SatuanModel::all();
 
-        return view('dashboard.sparepart.createlistsparepart', compact('categories', 'subcategories'));
+        return view('dashboard.sparepart.createlistsparepart', compact('categories', 'subcategories', 'satuan'));
     }
-    
+
 
     public function store(Request $request)
     {
+
+        // dd($request -> all());
         $request->validate([
             'name' => 'required|unique:spare_parts,name',
             // 'price' => 'required|integer',
@@ -55,7 +59,7 @@ class ListSparePartController extends Controller
             'image.max'     => 'Ukuran file maksimal 10MB',
         ]);
 
-        $data = $request->only('name', 'price', 'satuan', 'numbers', 'category_id', 'subcategory_id');
+        $data = $request->only('name', 'price', 'satuan', 'numbers', 'category_id', 'subcategory_id', 'satuan_id');
 
         // ✅ Generate part_number berdasarkan kata pertama dari name
         $jenis = strtolower(strtok($request->name, ' ')); // ambil kata pertama

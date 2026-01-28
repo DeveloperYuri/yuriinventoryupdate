@@ -121,16 +121,20 @@
                                                     @endif
                                                 </td> --}}
                                                 <td class="text-center">{{ $asset->name }}</td>
-<td class="text-center">
-    {{ $asset->latestStockTransaction?->user ?? '-' }}
-</td>
-<td class="text-center">
-    {{ $asset->latestStockTransaction?->location?->name ?? '-' }}
-</td>
+                                                <td class="text-center">
+                                                    {{ $asset->latestStockTransaction?->user ?? '-' }}
+                                                </td>
+                                                <td class="text-center">
+                                                    {{ $asset->latestStockTransaction?->location?->name ?? '-' }}
+                                                </td>
                                                 {{-- <td class="text-center">Rp {{ number_format($asset->price, 0, ',', '.') }} --}}
                                                 </td>
                                                 <td class="text-center">{{ $asset->stock }}</td>
-                                                <td class="text-center">{{ $asset->satuan }}</td>
+                                                <td class="text-center">
+                                                    {{ $asset->satuan->name ?? '-' }}
+
+                                                    {{-- {{ $asset->satuan }} --}}
+                                                </td>
 
 
                                                 <td class="text-center">

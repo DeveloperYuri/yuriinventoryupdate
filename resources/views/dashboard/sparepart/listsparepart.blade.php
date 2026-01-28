@@ -15,10 +15,10 @@
             <form method="get">
                 <div class="row g-2 align-items-center">
                     <div class="col-4">
-                        <input type="text" id="searchingtitle" name="name" class="form-control" value="{{ request('name') }}"
-                            placeholder="Nama Spare Part">
+                        <input type="text" id="searchingtitle" name="name" class="form-control"
+                            value="{{ request('name') }}" placeholder="Nama Spare Part">
 
-                            
+
                     </div>
                     <div class="col-3">
                         <select id="category_id" name="category_id"
@@ -190,8 +190,11 @@
                                                 <td class="text-center">{{ $part->getTotalIn() }}</td>
                                                 <td class="text-center">{{ $part->getTotalOut() }}</td>
                                                 <td class="text-center">{{ $part->stock }}</td>
+                                                <td class="text-center">
+                                                    {{ $part->satuan->name ?? '-' }}
+                                                </td>
 
-                                                <td class="text-center">{{ $part->satuan }}</td>
+                                                {{-- <td class="text-center">{{ $part->satuan }}</td> --}}
 
 
                                                 <td class="text-center">

@@ -13,7 +13,7 @@ class ListSparePartModel extends Model
 
     protected $table = 'spare_parts';
 
-    protected $fillable = ['name', 'stock', 'image', 'price', 'satuan', 'numbers', 'category_id', 'subcategory_id'];
+    protected $fillable = ['name', 'stock', 'image', 'price', 'satuan', 'numbers', 'category_id', 'subcategory_id', 'satuan_id'];
 
     // public function transactions()
     // {
@@ -32,7 +32,7 @@ class ListSparePartModel extends Model
 
     static public function getRecord($request)
     {
-        $query = self::with(['category', 'subcategory'])
+        $query = self::with(['category', 'subcategory', 'satuan'])
             ->orderBy('id', 'desc');
 
         // 🔍 Search Nama
@@ -90,6 +90,11 @@ class ListSparePartModel extends Model
     public function subcategory()
     {
         return $this->belongsTo(SubCategoryModel::class, 'subcategory_id');
+    }
+
+    public function satuan()
+    {
+        return $this->belongsTo(SatuanModel::class, 'satuan_id');
     }
 
     public function getTotalIn()

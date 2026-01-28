@@ -12,7 +12,7 @@ class ListAssetToolsModel extends Model
 
     protected $table = 'asset_tools';
 
-    protected $fillable = ['name', 'stock', 'image', 'price', 'satuan'];
+    protected $fillable = ['name', 'stock', 'image', 'price', 'satuan', 'satuan_id'];
 
     public function transactions()
     {
@@ -39,9 +39,9 @@ class ListAssetToolsModel extends Model
             //->where('status', '=', 'active')
             ->orderBy('id', 'desc');
 
-            if (!empty(Request::get('name'))) {
-                $return = $return->where('asset_tools.name', 'like', '%' . Request::get('name') . '%');
-            }
+        if (!empty(Request::get('name'))) {
+            $return = $return->where('asset_tools.name', 'like', '%' . Request::get('name') . '%');
+        }
 
         $return = $return->paginate(9);
         return $return;
@@ -87,5 +87,10 @@ class ListAssetToolsModel extends Model
     {
         return $this->hasOne(StockAssetTransactionModel::class, 'asset_tools_id')
             ->latestOfMany();
+    }
+
+    public function satuan()
+    {
+        return $this->belongsTo(SatuanModel::class, 'satuan_id');
     }
 }

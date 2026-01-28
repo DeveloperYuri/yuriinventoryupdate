@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\AssetToolsExport;
 use App\Models\ListAssetToolsModel;
+use App\Models\SatuanModel;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
@@ -24,7 +25,8 @@ class ListAssetToolsController extends Controller
 
     public function create()
     {
-        return view('dashboard.assettools.createassettools');
+        $satuan = SatuanModel::all();
+        return view('dashboard.assettools.createassettools', compact('satuan'));
     }
 
     public function store(Request $request)
@@ -43,7 +45,7 @@ class ListAssetToolsController extends Controller
             'image.max'     => 'Ukuran file maksimal 5MB',
         ]);
 
-        $data = $request->only('name', 'price', 'satuan');
+        $data = $request->only('name', 'price', 'satuan', 'satuan_id');
 
         if ($request->hasFile('image')) {
             $imageName = time() . '.' . $request->image->extension();
