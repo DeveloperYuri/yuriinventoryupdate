@@ -92,8 +92,10 @@ class ListSparePartController extends Controller
 
         $categories = CategoryModel::all();
         $subcategories = SubCategoryModel::all();
+        $satuans = SatuanModel::all();
 
-        return view('dashboard.sparepart.editsparepart', compact('sparePart', 'categories', 'subcategories'));
+
+        return view('dashboard.sparepart.editsparepart', compact('sparePart', 'categories', 'subcategories', 'satuans'));
     }
 
     public function update(Request $request, $id)
@@ -115,7 +117,7 @@ class ListSparePartController extends Controller
         $sparePart = ListSparePartModel::findOrFail($id);
         $sparePart->name = $request->name;
         $sparePart->price = $request->price;
-        $sparePart->satuan = $request->satuan;
+        $sparePart->satuan_id = $request->satuan_id;
         $sparePart->numbers = $request->numbers;
         $sparePart->category_id = $request->category_id;
         $sparePart->subcategory_id = $request->subcategory_id;

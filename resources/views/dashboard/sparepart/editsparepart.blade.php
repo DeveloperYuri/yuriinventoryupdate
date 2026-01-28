@@ -14,7 +14,7 @@
                                 enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
-                                
+
 
                                 <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">IMAGE</label>
@@ -114,6 +114,21 @@
                                 </div>
 
                                 <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">Satuan</label>
+                                    <div class="col-sm-10">
+                                        <select name="satuan_id" class="form-control" required>
+                                            <option value="">-- Pilih Satuan --</option>
+                                            @foreach ($satuans as $satuan)
+                                                <option value="{{ $satuan->id }}"
+                                                    {{ $sparePart->satuan_id == $satuan->id ? 'selected' : '' }}>
+                                                    {{ $satuan->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {{-- <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Satuan</label>
                                     <div class="col-sm-10">
                                         <select name="satuan" class="form-control" required dusk="sparepartintoggle"
@@ -129,7 +144,7 @@
                                                 Set</option>
                                         </select>
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <div class="col-sm-10">
                                     <button type="submit" class="btn btn-primary">Save</button>
@@ -181,4 +196,3 @@
         });
     </script>
 @endpush
-

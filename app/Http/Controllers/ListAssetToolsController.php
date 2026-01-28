@@ -61,7 +61,9 @@ class ListAssetToolsController extends Controller
     public function edit($id)
     {
         $assetTools = ListAssetToolsModel::findOrFail($id);
-        return view('dashboard.assettools.editassettools', compact('assetTools'));
+        $satuans = SatuanModel::all();
+
+        return view('dashboard.assettools.editassettools', compact('assetTools', 'satuans'));
     }
 
     public function update(Request $request, $id)
@@ -75,7 +77,7 @@ class ListAssetToolsController extends Controller
         $assetTools = ListAssetToolsModel::findOrFail($id);
         $assetTools->name = $request->name;
         $assetTools->price = $request->price;
-        $assetTools->satuan = $request->satuan;
+        $assetTools->satuan_id = $request->satuan_id;
 
         if ($request->hasFile('image')) {
             if ($assetTools->image && file_exists(public_path('images/' . $assetTools->image))) {

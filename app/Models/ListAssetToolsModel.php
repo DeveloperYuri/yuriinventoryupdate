@@ -12,7 +12,7 @@ class ListAssetToolsModel extends Model
 
     protected $table = 'asset_tools';
 
-    protected $fillable = ['name', 'stock', 'image', 'price', 'satuan', 'satuan_id'];
+    protected $fillable = ['name', 'stock', 'image', 'price', 'satuan_lama', 'satuan_id'];
 
     public function transactions()
     {
