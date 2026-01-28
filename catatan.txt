@@ -63,5 +63,272 @@ HAVING total > 0
 ORDER BY total DESC
 LIMIT 5;
 
+create masuk
+@extends('dashboard.layouts.main')
+
+@section('content')
+    <main id="main" class="main">
+
+        <section class="section">
+            <div class="row">
+                <div class="col-lg-12">
+
+                    <div class="card">
+                        <div class="card-body">
+
+                            <h2 class="mt-4">Form Penerimaan Barang</h2>
+
+                            <form id="myForm" class="mt-4" action="{{ route('sparepartinmultiple.store') }}"
+                                method="POST">
+                                @csrf
+                                <div class="row mb-3">
+                                    <!-- Kiri -->
+                                    <div class="col-md-6">
+                                        <div class="row mb-3">
+                                            <label class="col-sm-4 col-form-label">No Dokumen</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" name="no_dokumen"
+                                                    value="{{ $noDokumen }}" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <label class="col-sm-4 col-form-label">Di terima dari</label>
+                                            <div class="col-sm-8">
+                                                <input type="text"
+                                                    class="form-control @error('diterima_dari') is-invalid @enderror"
+                                                    name="diterima_dari" value="{{ old('diterima_dari') }}">
+                                                @error('diterima_dari')
+                                                    <div class="text-danger small">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <label class="col-sm-4 col-form-label">Supplier</label>
+                                            <div class="col-sm-8">
+                                                <select name="supplier_id" class="form-control">
+                                                    <option value="">-- Pilih Supplier --</option>
+                                                    @foreach ($suppliers as $supplier)
+                                                        <option value="{{ $supplier->id }}"
+                                                            {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>
+                                                            {{ $supplier->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Kanan -->
+                                    <div class="col-md-6">
+                                        <div class="row mb-3">
+                                            <label class="col-sm-4 col-form-label">Tanggal</label>
+                                            <div class="col-sm-8">
+                                                <input id="tanggalMulai" type="text" class="form-control"
+                                                    autocomplete="off" value="{{ now()->format('Y-m-d') }}">
+                                                <input type="hidden" name="tanggal" id="tanggalHidden"
+                                                    value="{{ now()->format('Y-m-d') }}">
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <label class="col-sm-4 col-form-label">Di terima oleh</label>
+                                            <div class="col-sm-8">
+                                                <input type="text"
+                                                    class="form-control @error('diterima_oleh') is-invalid @enderror"
+                                                    name="diterima_oleh" value="{{ old('diterima_oleh') }}">
+                                                @error('diterima_oleh')
+                                                    <div class="text-danger small">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <label class="col-sm-4 col-form-label">No. SP</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="po_autocomplete"
+                                                    name="po_numbers" value="{{ old('po_numbers') }}"
+                                                    placeholder="Cari No SP">
+                                                <input type="hidden" name="po_id" id="po_id">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tabel Spare Part -->
+                                <div class="tab-content" id="myTabContent">
+                                    <div class="tab-pane fade show active" id="operations" role="tabpanel">
+                                        <table class="table" id="productTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Spare Part</th>
+                                                    <th>Qty</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="3">
+                                                        <a href="#" id="addLineBtn">Add Spare Part</a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <button type="submit" class="btn btn-primary" id="saveBtn"><span
+                                            id="btnText">Save</span></button>
+                                    <a href="{{ route('sparepartinmultiple.index') }}" class="btn btn-secondary">Cancel</a>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+@endsection
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js"></script>
+    <script>
+        let itemIndex = 0;
+
+        // 1. Litepicker Initialization
+        new Litepicker({
+            element: document.getElementById('tanggalMulai'),
+            lang: 'id',
+            format: 'DD MMMM YYYY',
+            dropdowns: {
+                minYear: 2020,
+                maxYear: new Date().getFullYear() + 5,
+                months: true,
+                years: true
+            },
+            setup: picker => picker.on('selected', date => {
+                document.getElementById('tanggalHidden').value = date.format('YYYY-MM-DD');
+            })
+        });
+
+        // 2. Build Row Function (Disesuaikan dengan field database)
+        function buildRow({
+            sparepart_id = '',
+            nama = '',
+            qty = 1,
+            maxQty = null,
+            source = 'manual'
+        }) {
+            const index = itemIndex++;
+            return `
+    <tr class="data-row">
+        <td>
+            <input type="hidden" name="items[${index}][sparepart_id]" value="${sparepart_id}">
+            <input type="hidden" name="items[${index}][source]" value="${source}">
+            <input type="text" name="items[${index}][nama_real]" class="form-control" value="${nama}" ${source === 'sp' ? '' : ''}>
+        </td>
+        <td>
+            <input type="number" name="items[${index}][qty_terima]" class="form-control" min="1" ${maxQty ? `max="${maxQty}"` : ''} value="${qty}">
+        </td>
+        <td>
+            <button type="button" class="btn btn-danger btn-sm removeLine">Remove</button>
+        </td>
+    </tr>`;
+        }
+
+        // 3. Add Manual Spare Part
+        $('#addLineBtn').on('click', function(e) {
+            e.preventDefault();
+            const $row = $(buildRow({
+                source: 'manual'
+            }));
+            $('#productTable tbody').find('tr:last').before($row);
+
+            // Terapkan autocomplete hanya pada input teks di baris baru ini
+            applyAutocomplete($row.find('input[name$="[nama_real]"]'));
+
+            $row.find('.removeLine').on('click', function() {
+                $row.remove();
+            });
+        });
+
+        // 4. Autocomplete Manual Input
+        function applyAutocomplete(el) {
+            el.autocomplete({
+                source: function(request, response) {
+                    $.getJSON('/spareparts/search', {
+                        q: request.term
+                    }, response);
+                },
+                minLength: 1,
+                select: function(event, ui) {
+                    $(this).val(ui.item.label);
+                    $(this).siblings('input[name$="[sparepart_id]"]').val(ui.item.id);
+                    return false;
+                }
+            });
+        }
+
+        // 5. SP Autocomplete (Generate Rows Otomatis)
+        $('#po_autocomplete').autocomplete({
+            source: function(request, response) {
+                $.getJSON("{{ route('suratpesanan.search') }}", {
+                    q: request.term
+                }, response);
+            },
+            minLength: 1,
+            select: function(event, ui) {
+                $('#po_autocomplete').val(ui.item.label);
+                $('#po_id').val(ui.item.id);
+
+                // Loader sederhana
+                const tbody = $('#productTable tbody');
+                tbody.find('tr.data-row').remove();
+
+                $.getJSON(`/surat-pesanan/${ui.item.id}/items`, function(items) {
+                    if (items.length === 0) {
+                        alert("Tidak ada item sisa pada SP ini.");
+                        return;
+                    }
+
+                    items.forEach(item => {
+                        const $row = $(buildRow({
+                            sparepart_id: item
+                            .sparepart_id, // Dari mapping controller: spare_part_id
+                            nama: item.nama, // Dari mapping controller: nama_item
+                            qty: item
+                            .qty_sisa, // Dari mapping controller: qty_kurang
+                            maxQty: item.qty_sisa,
+                            source: 'sp'
+                        }));
+
+                        tbody.find('tr:last').before($row);
+                        $row.find('.removeLine').on('click', function() {
+                            $row.remove();
+                        });
+                    });
+                }).fail(function() {
+                    alert("Gagal mengambil data item SP. Pastikan koneksi/route benar.");
+                });
+
+                return false;
+            }
+        });
+
+        // 6. Submit Button Loading
+        $('#myForm').on('submit', function() {
+            $('#saveBtn').prop('disabled', true);
+            $('#btnText').html('<span class="spinner-border spinner-border-sm"></span> Saving...');
+        });
+
+        // 7. Prevent Enter Submit
+        $("#myForm").on("keydown", function(event) {
+            if (event.key === "Enter" && event.target.tagName !== "TEXTAREA") {
+                event.preventDefault();
+            }
+        });
+    </script>
+@endpush
+
+
 
 

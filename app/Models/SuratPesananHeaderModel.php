@@ -54,4 +54,10 @@ class SuratPesananHeaderModel extends Model
     {
         return $this->hasMany(SuratPesananDetailModel::class, 'surat_pesanan_header_id', 'id');
     }
+
+    public function items()
+    {
+        // Gunakan class SuratPesananDetailModel dan foreign key surat_pesanan_header_id
+        return $this->hasMany(SuratPesananDetailModel::class, 'surat_pesanan_header_id', 'id');
+    }
 }

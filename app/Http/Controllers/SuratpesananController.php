@@ -276,4 +276,27 @@ class SuratpesananController extends Controller
 
         return back()->with('success', 'Surat pesanan ditolak.');
     }
+
+    public function items($id)
+    {
+        try {
+            // 1. Eager load relasi sparePart (P besar)
+            $sp = SuratPesananHeaderModel::with(['items.sparePart'])->findOrFail($id);
+
+            $data = $sp->items->map(function ($item) {
+                // 2. Ambil nama dari kolom 'name' di ListSparePartModel melalui relasi sparePart
+                $namaItem = $item->sparePart->name ?? "Spare Part ID: " . $item->spare_part_id;
+
+                return [
+                    'sparepart_id' => $item->spare_part_id,
+                    'nama'         => $namaItem,
+                    'qty_sisa'     => $item->qty_kurang ?? $item->qty, // Menggunakan qty_kurang dari tabel detail
+                ];
+            });
+
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }

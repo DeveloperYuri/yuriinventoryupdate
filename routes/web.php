@@ -292,6 +292,7 @@ Route::get('/show/suratpesanan/{id}', [SuratpesananController::class, 'show'])->
 
 Route::get('suratpesanan/{id}/pdf', [SuratpesananController::class, 'printPdf'])->name('suratpesanan.pdf');
 Route::get('/spareparts/{id}/stock', [SuratpesananController::class, 'getStock']);
+Route::get('/surat-pesanan/{id}/items', [SuratPesananController::class, 'items']);
 
 Route::prefix('suratpesanan')->name('suratpesanan.')->group(function () {
     Route::post('{id}/submit', [SuratPesananController::class, 'submit'])->name('submit');
