@@ -304,7 +304,7 @@ Route::prefix('suratpesanan')->name('suratpesanan.')->group(function () {
 Route::get('/suratpesananbaru', [SuratPesananBaruController::class, 'index'])->name('suratpesananbaru.index');
 Route::get('/create/suratpesananbaru', [SuratPesananBaruController::class, 'create'])->name('suratpesananbaru.create');
 Route::post('/create/suratpesananbaru/post', [SuratPesananBaruController::class, 'store'])->name('suratpesananbaru.store');
-Route::get('/create/suratpesananbaru/{id}', [SuratPesananBaruController::class, 'edit'])->name('suratpesananbaru.edit');
+Route::get('/edit/suratpesananbaru/{id}', [SuratPesananBaruController::class, 'edit'])->name('suratpesananbaru.edit');
 Route::put('/create/suratpesananbaru/{id}', [SuratPesananBaruController::class, 'update'])->name('suratpesananbaru.update');
 Route::delete('/delete/suratpesananbaru/{id}', [SuratPesananBaruController::class, 'destroy'])->name('suratpesananbaru.delete');
 Route::get('/show/suratpesananbaru/{id}', [SuratPesananBaruController::class, 'show'])->name('suratpesananbaru.show');

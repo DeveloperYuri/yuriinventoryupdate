@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CategoryModel;
 use App\Models\DepartmentModel;
+use App\Models\ListSparePartModel;
 use App\Models\LocationsModel;
 use App\Models\SubCategoryModel;
 use App\Models\SuratPesananBaruDetailModel;
@@ -121,6 +122,33 @@ class SuratPesananBaruController extends Controller
         });
     }
 
+    public function edit($id)
+    {
+        $transaction = SuratPesananBaruHeaderModel::with([
+            'details.item',
+            'category',
+            'subcategory',
+            'location',
+            'department'
+        ])->findOrFail($id);
+
+        $locations = LocationsModel::orderBy('name')->get();
+        $categories = CategoryModel::orderBy('name')->get();
+        $subcategories = SubCategoryModel::orderBy('name')->get();
+        $departments = DepartmentModel::orderBy('name')->get();
+        $spareparts = ListSparePartModel::orderBy('name')->get();
+
+        return view('dashboard.suratpesananbaru.edit', compact(
+            'transaction',
+            'spareparts',
+            'locations',
+            'categories',
+            'subcategories',
+            'departments'
+        ));
+    }
+
+
     public function destroy($id)
     {
         $suratpesanan = SuratPesananBaruHeaderModel::findorFail($id);
@@ -142,6 +170,44 @@ class SuratPesananBaruController extends Controller
         // dd($transaction->details->first()); 
 
         return view('dashboard.suratpesananbaru.show', compact('transaction'));
+    }
+
+    public function submit($id)
+    {
+        $header = SuratPesananBaruHeaderModel::findOrFail($id);
+        $header->status = 'onprogress';
+        $header->save();
+
+        return back()->with('success', 'Surat pesanan diajukan untuk approval.');
+    }
+
+    public function approve($id)
+    {
+        $header = SuratPesananBaruHeaderModel::findOrFail($id);
+        $header->status = 'approved';
+        $header->save();
+
+        return back()->with('success', 'Surat pesanan disetujui.');
+    }
+
+    public function reject($id)
+    {
+        $header = SuratPesananBaruHeaderModel::findOrFail($id);
+        $header->status = 'rejected';
+        $header->save();
+
+        return back()->with('success', 'Surat pesanan ditolak.');
+    }
+
+    public function printPdf($id)
+    {
+        // $transaction = SuratPesananBaruHeaderModel::with('details.sparePart')->findOrFail($id);
+        $transaction = SuratPesananBaruHeaderModel::with('details')->findOrFail($id);
+
+
+        $pdf = Pdf::loadView('dashboard.suratpesananbaru.pdf', compact('transaction'));
+
+        return $pdf->stream(); // buka di browser
     }
 
 

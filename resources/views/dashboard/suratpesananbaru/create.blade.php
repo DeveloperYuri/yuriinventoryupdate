@@ -10,7 +10,7 @@
                     <div class="card">
                         <div class="card-body">
 
-                            <h2 class="mt-4">Form Pemesanan Baru</h2>
+                            <h2 class="mt-4">Form Pesanan Barang</h2>
 
                             <form id="myForm" class="mt-4" action="{{ route('suratpesananbaru.store') }}" method="POST">
                                 @csrf
