@@ -10,6 +10,7 @@ use App\Models\SatuanModel;
 use App\Models\SubCategoryModel;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ListSparePartController extends Controller
@@ -18,10 +19,53 @@ class ListSparePartController extends Controller
     {
         $getRecord = ListSparePartModel::getRecord($request);
 
+        $period = $request->period; // jangan pakai default bulan ini
+
+        if ($period) {
+            $start = $period . '-01';
+            $end   = \Carbon\Carbon::parse($start)->endOfMonth()->toDateString();
+        }
+
+        foreach ($getRecord as $part) {
+
+            if ($period) {
+                // Mode laporan bulanan
+                $stockAwal = $part->getInBefore($start) - $part->getOutBefore($start);
+                $masuk     = $part->getInPeriod($start, $end);
+                $keluar    = $part->getOutPeriod($start, $end);
+            } else {
+                // Mode normal (tanpa periode)
+                $stockAwal = 0;
+                $masuk     = $part->getTotalIn();
+                $keluar    = $part->getTotalOut();
+            }
+
+            $part->stock_awal  = $stockAwal;
+            $part->masuk       = $masuk;
+            $part->keluar      = $keluar;
+            $part->stock_akhir = $stockAwal + $masuk - $keluar;
+        }
+        
+        // periode
+        // $period = $request->period ?? now()->format('Y-m');
+        // $start = $period . '-01';
+        // $end   = \Carbon\Carbon::parse($start)->endOfMonth()->toDateString();
+
+        // foreach ($getRecord as $part) {
+        //     $stockAwal = $part->getInBefore($start) - $part->getOutBefore($start);
+        //     $masuk     = $part->getInPeriod($start, $end);
+        //     $keluar    = $part->getOutPeriod($start, $end);
+
+        //     $part->stock_awal  = $stockAwal;
+        //     $part->masuk       = $masuk;
+        //     $part->keluar      = $keluar;
+        //     $part->stock_akhir = $stockAwal + $masuk - $keluar;
+        // }
+
         $categories = CategoryModel::all();
         $subcategories = SubCategoryModel::all();
 
-        return view('dashboard.sparepart.listsparepart', compact('getRecord', 'categories', 'subcategories'));
+        return view('dashboard.sparepart.listsparepart', compact('getRecord', 'categories', 'subcategories', 'period'));
     }
 
     public function cardindex(Request $request)

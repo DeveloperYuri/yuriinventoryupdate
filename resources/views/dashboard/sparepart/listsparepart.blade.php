@@ -41,6 +41,11 @@
                         </select>
                     </div>
 
+                    <div class="col-2">
+                        <input type="month" name="period" class="form-control" value="{{ request('period') }}">
+                    </div>
+
+
                     <div class="col-auto">
                         <button type="submit" class="btn btn-primary">Cari</button>
                         <a href="{{ route('spare-parts.index') }}" class="btn btn-secondary">Reset</a>
@@ -137,9 +142,10 @@
 
                                             <th class="text-center">Kategori</th>
                                             <th class="text-center">Sub Kategori</th>
+                                            <th class="text-center">Stok Awal</th>
                                             <th class="text-center">Masuk</th>
                                             <th class="text-center">Keluar</th>
-                                            <th class="text-center">Stok</th>
+                                            <th class="text-center">Stok Akhir</th>
                                             <th class="text-center">Satuan</th>
 
 
@@ -187,9 +193,13 @@
 
                                                 <td class="text-center">{{ $part->category->name ?? '-' }}</td>
                                                 <td class="text-center">{{ $part->subcategory->name ?? '-' }}</td>
-                                                <td class="text-center">{{ $part->getTotalIn() }}</td>
-                                                <td class="text-center">{{ $part->getTotalOut() }}</td>
-                                                <td class="text-center">{{ $part->stock }}</td>
+                                                <td class="text-center">{{ $part->stock_awal }}</td>
+                                                <td class="text-center">{{ $part->masuk  }}</td>
+                                                <td class="text-center">{{ $part->keluar }}</td>
+                                                <td class="text-center">{{ $part->stock_akhir }}</td>
+                                                {{-- <td class="text-center">{{ $part->getTotalIn() }}</td>
+                                                <td class="text-center">{{ $part->getTotalOut() }}</td> --}}
+                                                {{-- <td class="text-center">{{ $part->stock }}</td> --}}
                                                 <td class="text-center">
                                                     {{ $part->satuan->name ?? '-' }}
                                                 </td>
