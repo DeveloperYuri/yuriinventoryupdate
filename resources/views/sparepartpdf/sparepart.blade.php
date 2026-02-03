@@ -65,9 +65,8 @@
 <body>
 
     <div class="header">
-        <img src="{{ public_path('assets/img/logobaru.png') }}" 
-         alt="Logo Perusahaan" 
-         style="width:80px; height:auto; display:block; margin:0 auto 10px auto;">
+        <img src="{{ public_path('assets/img/logobaru.png') }}" alt="Logo Perusahaan"
+            style="width:80px; height:auto; display:block; margin:0 auto 10px auto;">
 
         <h1>PT. Joenoes Ikamulya</h1>
         <p>Jl. Pulogadung No.43, Jatinegara, Kec. Cakung</p>
@@ -79,11 +78,20 @@
 
     <h3 style="text-align: center;">Laporan Daftar Stock Spare Part</h3>
 
+    <p style="text-align: left; font-size: 12px;">
+        @if ($period)
+            Periode: {{ \Carbon\Carbon::parse($period . '-01')->translatedFormat('F Y') }}
+        @else
+            Periode: Semua Periode (Stok Global)
+        @endif
+    </p>
+
     <table>
         <thead>
             <tr>
                 <th>No</th>
                 <th>Nama Spare Part</th>
+                <th>Stok Awal (PCS)</th>
                 <th>Jumlah Masuk (PCS)</th>
                 <th>Jumlah Keluar (PCS)</th>
                 {{-- <th>Harga (Rp)</th> --}}
@@ -95,10 +103,15 @@
                 <tr>
                     <td>{{ $no + 1 }}</td>
                     <td>{{ $item->name }}</td>
-                    <td>{{ $item->getTotalIn() }}</td>
-                    <td>{{ $item->getTotalOut() }}</td>
+                    <td>{{ $item->stock_awal }}</td>
+                    <td>{{ $item->masuk }}</td>
+                    <td>{{ $item->keluar }}</td>
+                    <td>{{ $item->stock_akhir }}</td>
+
+                    {{-- <td>{{ $item->getTotalIn() }}</td>
+                    <td>{{ $item->getTotalOut() }}</td> --}}
                     {{-- <td>Rp {{ number_format($item->price, 0, ',', '.') }}</td> --}}
-                    <td>{{ $item->stock }}</td>
+                    {{-- <td>{{ $item->stock }}</td> --}}
                 </tr>
             @endforeach
         </tbody>

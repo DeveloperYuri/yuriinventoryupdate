@@ -15,24 +15,76 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ListSparePartController extends Controller
 {
+
+    // public function index(Request $request)
+    // {
+    //     $getRecord = ListSparePartModel::getRecord($request);
+
+    //     $period = $request->period; // bisa null
+
+    //     if ($period) {
+    //         $start = $period . '-01';
+    //         $end   = \Carbon\Carbon::parse($start)->endOfMonth()->toDateString();
+    //         $prevMonthEnd = \Carbon\Carbon::parse($start)->subDay()->toDateString(); // terakhir bulan sebelumnya
+    //     }
+
+    //     foreach ($getRecord as $part) {
+
+    //         if ($period) {
+    //             // Ambil stock akhir bulan sebelumnya langsung dari transaksi
+    //             $stockAwal = $part->transactions()
+    //                 ->where('created_at', '<=', $prevMonthEnd)
+    //                 ->sum(DB::raw("CASE WHEN type='in' THEN quantity ELSE 0 END"))
+    //                 - $part->transactions()
+    //                 ->where('created_at', '<=', $prevMonthEnd)
+    //                 ->sum(DB::raw("CASE WHEN type='out' THEN quantity ELSE 0 END"));
+
+    //             $masuk  = $part->getInPeriod($start, $end);
+    //             $keluar = $part->getOutPeriod($start, $end);
+    //         } else {
+    //             // Mode normal (tanpa periode)
+    //             $stockAwal = 0;
+    //             $masuk     = $part->getTotalIn();
+    //             $keluar    = $part->getTotalOut();
+    //         }
+
+    //         $part->stock_awal  = $stockAwal;
+    //         $part->masuk       = $masuk;
+    //         $part->keluar      = $keluar;
+    //         $part->stock_akhir = $stockAwal + $masuk - $keluar;
+    //     }
+
+    //     $categories = CategoryModel::all();
+    //     $subcategories = SubCategoryModel::all();
+
+    //     return view('dashboard.sparepart.listsparepart', compact('getRecord', 'categories', 'subcategories', 'period'));
+    // }
+
     public function index(Request $request)
     {
         $getRecord = ListSparePartModel::getRecord($request);
 
-        $period = $request->period; // jangan pakai default bulan ini
+        $period = $request->period; // bisa null
 
         if ($period) {
             $start = $period . '-01';
             $end   = \Carbon\Carbon::parse($start)->endOfMonth()->toDateString();
+            $prevMonthEnd = \Carbon\Carbon::parse($start)->subDay()->toDateString(); // terakhir bulan sebelumnya
         }
 
         foreach ($getRecord as $part) {
 
             if ($period) {
-                // Mode laporan bulanan
-                $stockAwal = $part->getInBefore($start) - $part->getOutBefore($start);
-                $masuk     = $part->getInPeriod($start, $end);
-                $keluar    = $part->getOutPeriod($start, $end);
+                // Ambil stock akhir bulan sebelumnya sebagai stock awal
+                $stockAwal = $part->transactions()
+                    ->where('created_at', '<=', $prevMonthEnd)
+                    ->sum(DB::raw("CASE WHEN type='in' THEN quantity ELSE 0 END"))
+                    - $part->transactions()
+                    ->where('created_at', '<=', $prevMonthEnd)
+                    ->sum(DB::raw("CASE WHEN type='out' THEN quantity ELSE 0 END"));
+
+                $masuk  = $part->getInPeriod($start, $end);
+                $keluar = $part->getOutPeriod($start, $end);
             } else {
                 // Mode normal (tanpa periode)
                 $stockAwal = 0;
@@ -45,28 +97,65 @@ class ListSparePartController extends Controller
             $part->keluar      = $keluar;
             $part->stock_akhir = $stockAwal + $masuk - $keluar;
         }
-        
-        // periode
-        // $period = $request->period ?? now()->format('Y-m');
-        // $start = $period . '-01';
-        // $end   = \Carbon\Carbon::parse($start)->endOfMonth()->toDateString();
-
-        // foreach ($getRecord as $part) {
-        //     $stockAwal = $part->getInBefore($start) - $part->getOutBefore($start);
-        //     $masuk     = $part->getInPeriod($start, $end);
-        //     $keluar    = $part->getOutPeriod($start, $end);
-
-        //     $part->stock_awal  = $stockAwal;
-        //     $part->masuk       = $masuk;
-        //     $part->keluar      = $keluar;
-        //     $part->stock_akhir = $stockAwal + $masuk - $keluar;
-        // }
 
         $categories = CategoryModel::all();
         $subcategories = SubCategoryModel::all();
 
         return view('dashboard.sparepart.listsparepart', compact('getRecord', 'categories', 'subcategories', 'period'));
     }
+
+    // public function index(Request $request)
+    // {
+    //     $getRecord = ListSparePartModel::getRecord($request);
+
+    //     $period = $request->period; // jangan pakai default bulan ini
+
+    //     if ($period) {
+    //         $start = $period . '-01';
+    //         $end   = \Carbon\Carbon::parse($start)->endOfMonth()->toDateString();
+    //     }
+
+    //     foreach ($getRecord as $part) {
+
+    //         if ($period) {
+    //             // Mode laporan bulanan
+    //             $stockAwal = $part->getInBefore($start) - $part->getOutBefore($start);
+    //             $masuk     = $part->getInPeriod($start, $end);
+    //             $keluar    = $part->getOutPeriod($start, $end);
+    //         } else {
+    //             // Mode normal (tanpa periode)
+    //             $stockAwal = 0;
+    //             $masuk     = $part->getTotalIn();
+    //             $keluar    = $part->getTotalOut();
+    //         }
+
+    //         $part->stock_awal  = $stockAwal;
+    //         $part->masuk       = $masuk;
+    //         $part->keluar      = $keluar;
+    //         $part->stock_akhir = $stockAwal + $masuk - $keluar;
+    //     }
+
+    //     // periode
+    //     // $period = $request->period ?? now()->format('Y-m');
+    //     // $start = $period . '-01';
+    //     // $end   = \Carbon\Carbon::parse($start)->endOfMonth()->toDateString();
+
+    //     // foreach ($getRecord as $part) {
+    //     //     $stockAwal = $part->getInBefore($start) - $part->getOutBefore($start);
+    //     //     $masuk     = $part->getInPeriod($start, $end);
+    //     //     $keluar    = $part->getOutPeriod($start, $end);
+
+    //     //     $part->stock_awal  = $stockAwal;
+    //     //     $part->masuk       = $masuk;
+    //     //     $part->keluar      = $keluar;
+    //     //     $part->stock_akhir = $stockAwal + $masuk - $keluar;
+    //     // }
+
+    //     $categories = CategoryModel::all();
+    //     $subcategories = SubCategoryModel::all();
+
+    //     return view('dashboard.sparepart.listsparepart', compact('getRecord', 'categories', 'subcategories', 'period'));
+    // }
 
     public function cardindex(Request $request)
     {
@@ -195,17 +284,78 @@ class ListSparePartController extends Controller
         return redirect()->route('spare-parts.index')->with('success', 'Spare part berhasil dihapus.');
     }
 
-    public function cetakPDF()
+    // public function cetakPDF()
+    // {
+    //     $spareparts = ListSparePartModel::all();
+    //     $pdf = Pdf::loadView('sparepartpdf.sparepart', compact('spareparts'));
+    //     return $pdf->download('laporan_sparepart.pdf');
+    // }
+
+    // public function exportExcel()
+    // {
+    //     return Excel::download(new SparepartExport, 'laporan_sparepart.xlsx');
+    // }
+
+    public function cetakPDF(Request $request)
     {
+        $period = $request->period; // boleh null
+
         $spareparts = ListSparePartModel::all();
-        $pdf = Pdf::loadView('sparepartpdf.sparepart', compact('spareparts'));
-        return $pdf->download('laporan_sparepart.pdf');
+
+        if ($period) {
+            $start = $period . '-01';
+            $end   = \Carbon\Carbon::parse($start)->endOfMonth()->toDateString();
+
+            foreach ($spareparts as $part) {
+                $stockAwal = $part->getInBefore($start) - $part->getOutBefore($start);
+                $masuk     = $part->getInPeriod($start, $end);
+                $keluar    = $part->getOutPeriod($start, $end);
+
+                $part->stock_awal  = $stockAwal;
+                $part->masuk       = $masuk;
+                $part->keluar      = $keluar;
+                $part->stock_akhir = $stockAwal + $masuk - $keluar;
+            }
+
+            $filename = 'laporan_sparepart_' . $period . '.pdf';
+        } else {
+            // MODE GLOBAL
+            foreach ($spareparts as $part) {
+                $masuk  = $part->getTotalIn();
+                $keluar = $part->getTotalOut();
+
+                $part->stock_awal  = 0;
+                $part->masuk       = $masuk;
+                $part->keluar      = $keluar;
+                $part->stock_akhir = $masuk - $keluar;
+            }
+
+            $filename = 'stok_sparepart_global.pdf';
+        }
+
+        $pdf = Pdf::loadView('sparepartpdf.sparepart', [
+            'spareparts' => $spareparts,
+            'period' => $period
+        ])->setPaper('A4', 'portrait');
+
+        return $pdf->download($filename);
     }
 
-    public function exportExcel()
+
+    public function exportExcel(Request $request)
     {
-        return Excel::download(new SparepartExport, 'laporan_sparepart.xlsx');
+        // $request->validate([
+        //     'period' => 'required'
+        // ]);
+
+        $period = $request->period; // boleh null
+
+        return Excel::download(
+            new SparepartExport($request->period),
+            'laporan_' . $request->period . '.xlsx'
+        );
     }
+
 
     public function import(Request $request)
     {

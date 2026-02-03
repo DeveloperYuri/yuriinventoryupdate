@@ -15,12 +15,14 @@
             <form method="get">
                 <div class="row g-2 align-items-center">
                     <div class="col-4">
+                        <small class="text-muted">Nama Spare Part</small>
                         <input type="text" id="searchingtitle" name="name" class="form-control"
-                            value="{{ request('name') }}" placeholder="Nama Spare Part">
+                            value="{{ request('name') }}">
 
 
                     </div>
                     <div class="col-3">
+                        <small class="text-muted">Category</small>
                         <select id="category_id" name="category_id"
                             class="form-control @error('category_id') is-invalid @enderror">
                             <option value="">-- Pilih Category --</option>
@@ -33,6 +35,7 @@
                         </select>
                     </div>
                     <div class="col-3">
+                        <small class="text-muted">Sub Category</small>
                         <select id="subcategory_id" name="subcategory_id"
                             class="form-control @error('subcategory_id') is-invalid @enderror">
                             <option value="">-- Pilih Sub Category --</option>
@@ -41,9 +44,22 @@
                         </select>
                     </div>
 
+                    {{-- <div class="col-2">
+                        <input type="text" class="form-control" id="period" name="period"
+                            value="{{ request('period') }}" placeholder="Pilih Periode" onfocus="this.type='month'"
+                            onblur="if(!this.value)this.type='text'">
+                    </div> --}}
+
+
                     <div class="col-2">
+                        <small class="text-muted">Pilih Periode</small>
                         <input type="month" name="period" class="form-control" value="{{ request('period') }}">
                     </div>
+
+
+                    {{-- <div class="col-2">
+                        <input type="month" name="period" class="form-control" value="{{ request('period') }}" placeholder="Pilih Periode">
+                    </div> --}}
 
 
                     <div class="col-auto">
@@ -106,9 +122,18 @@
                                             </div>
                                         </div>
 
-                                        <a href="{{ route('sparepart.cetakpdf') }}" class="btn btn-success"
-                                            target="_blank">Print PDF</a>
-                                        <a href="{{ route('sparepart.export') }}" class="btn btn-success">Export Excel</a>
+                                        {{-- <a href="{{ route('sparepart.cetakpdf') }}" class="btn btn-success"
+                                            target="_blank">Print PDF</a> --}}
+                                        <a href="{{ route('sparepart.cetakpdf', ['period' => request('period')]) }}"
+                                            class="btn btn-success">
+                                            Cetak PDF
+                                        </a>
+
+                                        <a href="{{ route('sparepart.export', ['period' => $period]) }}"
+                                            class="btn btn-success">
+                                            Export Excel
+                                        </a>
+                                        {{-- <a href="{{ route('sparepart.export') }}" class="btn btn-success">Export Excel</a> --}}
                                     </div>
                                 @endif
 
@@ -194,7 +219,7 @@
                                                 <td class="text-center">{{ $part->category->name ?? '-' }}</td>
                                                 <td class="text-center">{{ $part->subcategory->name ?? '-' }}</td>
                                                 <td class="text-center">{{ $part->stock_awal }}</td>
-                                                <td class="text-center">{{ $part->masuk  }}</td>
+                                                <td class="text-center">{{ $part->masuk }}</td>
                                                 <td class="text-center">{{ $part->keluar }}</td>
                                                 <td class="text-center">{{ $part->stock_akhir }}</td>
                                                 {{-- <td class="text-center">{{ $part->getTotalIn() }}</td>
