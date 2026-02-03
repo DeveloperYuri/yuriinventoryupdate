@@ -187,6 +187,10 @@ class ListSparePartController extends Controller
 
     public function cetakPDF(Request $request)
     {
+
+        ini_set('memory_limit', '1024M'); // Naikkan ke 1GB sementara
+        set_time_limit(300); // Beri waktu 5 menit
+
         $period = $request->period; // boleh null
         $spareparts = ListSparePartModel::all();
 

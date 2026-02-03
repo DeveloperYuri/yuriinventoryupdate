@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\DB;
 
 class SparepartExport implements FromView
 {
-
     protected $period;
 
     public function __construct($period = null)
