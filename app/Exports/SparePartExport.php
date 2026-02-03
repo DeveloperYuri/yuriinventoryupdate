@@ -24,12 +24,24 @@ class SparepartExport implements FromView
         if ($this->period) {
             // MODE BULANAN
             $start = $this->period . '-01';
-            $end   = \Carbon\Carbon::parse($start)->endOfMonth()->toDateString();
+
+            // GUNAKAN DateTime agar jam 23:59:59 tercover
+            $end = \Carbon\Carbon::parse($start)->endOfMonth()->toDateTimeString();
 
             foreach ($spareparts as $part) {
-                $stockAwal = $part->getInBefore($start) - $part->getOutBefore($start);
-                $masuk     = $part->getInPeriod($start, $end);
-                $keluar    = $part->getOutPeriod($start, $end);
+                // Pastikan method getInBefore & getOutBefore di Model 
+                // menggunakan operator '<=' terhadap $prevMonthEnd (23:59:59)
+                // Atau langsung hitung manual seperti di Controller index:
+
+                $prevMonthEnd = \Carbon\Carbon::parse($start)->subSecond()->toDateTimeString();
+
+                $stockAwal = $part->transactions()
+                    ->where('created_at', '<=', $prevMonthEnd)
+                    ->selectRaw("SUM(CASE WHEN type='in' THEN quantity ELSE -quantity END) as balance")
+                    ->value('balance') ?? 0;
+
+                $masuk  = $part->getInPeriod($start, $end);
+                $keluar = $part->getOutPeriod($start, $end);
 
                 $part->stock_awal  = $stockAwal;
                 $part->masuk       = $masuk;
@@ -51,43 +63,7 @@ class SparepartExport implements FromView
 
         return view('sparepartexcel.sparepart', [
             'spareparts' => $spareparts,
-            'period' => $this->period   // ← INI yang kurang
+            'period' => $this->period
         ]);
-
-        // return view('sparepartexcel.sparepart', compact('spareparts'));
     }
-
-    // protected $period;
-
-    // public function __construct($period)
-    // {
-    //     $this->period = $period;
-    // }
-
-    // public function view(): View
-    // {
-    //     $start = $this->period . '-01';
-    //     $end   = \Carbon\Carbon::parse($start)->endOfMonth()->toDateString();
-
-    //     $spareparts = ListSparePartModel::all();
-
-    //     foreach ($spareparts as $part) {
-    //         $stockAwal = $part->getInBefore($start) - $part->getOutBefore($start);
-    //         $masuk     = $part->getInPeriod($start, $end);
-    //         $keluar    = $part->getOutPeriod($start, $end);
-
-    //         $part->stock_awal  = $stockAwal;
-    //         $part->masuk       = $masuk;
-    //         $part->keluar      = $keluar;
-    //         $part->stock_akhir = $stockAwal + $masuk - $keluar;
-    //     }
-
-    //     return view('sparepartexcel.sparepart', compact('spareparts'));
-    // }
-    // public function view(): View
-    // {
-    //     return view('sparepartexcel.sparepart', [
-    //         'spareparts' => ListSparePartModel::all()
-    //     ]);
-    // }
 }

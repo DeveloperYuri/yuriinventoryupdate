@@ -15,73 +15,27 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ListSparePartController extends Controller
 {
-
-    // public function index(Request $request)
-    // {
-    //     $getRecord = ListSparePartModel::getRecord($request);
-
-    //     $period = $request->period; // bisa null
-
-    //     if ($period) {
-    //         $start = $period . '-01';
-    //         $end   = \Carbon\Carbon::parse($start)->endOfMonth()->toDateString();
-    //         $prevMonthEnd = \Carbon\Carbon::parse($start)->subDay()->toDateString(); // terakhir bulan sebelumnya
-    //     }
-
-    //     foreach ($getRecord as $part) {
-
-    //         if ($period) {
-    //             // Ambil stock akhir bulan sebelumnya langsung dari transaksi
-    //             $stockAwal = $part->transactions()
-    //                 ->where('created_at', '<=', $prevMonthEnd)
-    //                 ->sum(DB::raw("CASE WHEN type='in' THEN quantity ELSE 0 END"))
-    //                 - $part->transactions()
-    //                 ->where('created_at', '<=', $prevMonthEnd)
-    //                 ->sum(DB::raw("CASE WHEN type='out' THEN quantity ELSE 0 END"));
-
-    //             $masuk  = $part->getInPeriod($start, $end);
-    //             $keluar = $part->getOutPeriod($start, $end);
-    //         } else {
-    //             // Mode normal (tanpa periode)
-    //             $stockAwal = 0;
-    //             $masuk     = $part->getTotalIn();
-    //             $keluar    = $part->getTotalOut();
-    //         }
-
-    //         $part->stock_awal  = $stockAwal;
-    //         $part->masuk       = $masuk;
-    //         $part->keluar      = $keluar;
-    //         $part->stock_akhir = $stockAwal + $masuk - $keluar;
-    //     }
-
-    //     $categories = CategoryModel::all();
-    //     $subcategories = SubCategoryModel::all();
-
-    //     return view('dashboard.sparepart.listsparepart', compact('getRecord', 'categories', 'subcategories', 'period'));
-    // }
-
     public function index(Request $request)
     {
         $getRecord = ListSparePartModel::getRecord($request);
 
-        $period = $request->period; // bisa null
+        $period = $request->period;
 
         if ($period) {
             $start = $period . '-01';
-            $end   = \Carbon\Carbon::parse($start)->endOfMonth()->toDateString();
-            $prevMonthEnd = \Carbon\Carbon::parse($start)->subDay()->toDateString(); // terakhir bulan sebelumnya
+            $end   = \Carbon\Carbon::parse($start)->endOfMonth()->toDateTimeString(); // Sampai 23:59:59
+
+            // AMBIL SAMPAI DETIK TERAKHIR BULAN LALU
+            $prevMonthEnd = \Carbon\Carbon::parse($start)->subSecond()->toDateTimeString();
         }
 
         foreach ($getRecord as $part) {
 
             if ($period) {
-                // Ambil stock akhir bulan sebelumnya sebagai stock awal
                 $stockAwal = $part->transactions()
                     ->where('created_at', '<=', $prevMonthEnd)
-                    ->sum(DB::raw("CASE WHEN type='in' THEN quantity ELSE 0 END"))
-                    - $part->transactions()
-                    ->where('created_at', '<=', $prevMonthEnd)
-                    ->sum(DB::raw("CASE WHEN type='out' THEN quantity ELSE 0 END"));
+                    ->selectRaw("SUM(CASE WHEN type='in' THEN quantity ELSE -quantity END) as balance")
+                    ->value('balance') ?? 0;
 
                 $masuk  = $part->getInPeriod($start, $end);
                 $keluar = $part->getOutPeriod($start, $end);
@@ -103,59 +57,6 @@ class ListSparePartController extends Controller
 
         return view('dashboard.sparepart.listsparepart', compact('getRecord', 'categories', 'subcategories', 'period'));
     }
-
-    // public function index(Request $request)
-    // {
-    //     $getRecord = ListSparePartModel::getRecord($request);
-
-    //     $period = $request->period; // jangan pakai default bulan ini
-
-    //     if ($period) {
-    //         $start = $period . '-01';
-    //         $end   = \Carbon\Carbon::parse($start)->endOfMonth()->toDateString();
-    //     }
-
-    //     foreach ($getRecord as $part) {
-
-    //         if ($period) {
-    //             // Mode laporan bulanan
-    //             $stockAwal = $part->getInBefore($start) - $part->getOutBefore($start);
-    //             $masuk     = $part->getInPeriod($start, $end);
-    //             $keluar    = $part->getOutPeriod($start, $end);
-    //         } else {
-    //             // Mode normal (tanpa periode)
-    //             $stockAwal = 0;
-    //             $masuk     = $part->getTotalIn();
-    //             $keluar    = $part->getTotalOut();
-    //         }
-
-    //         $part->stock_awal  = $stockAwal;
-    //         $part->masuk       = $masuk;
-    //         $part->keluar      = $keluar;
-    //         $part->stock_akhir = $stockAwal + $masuk - $keluar;
-    //     }
-
-    //     // periode
-    //     // $period = $request->period ?? now()->format('Y-m');
-    //     // $start = $period . '-01';
-    //     // $end   = \Carbon\Carbon::parse($start)->endOfMonth()->toDateString();
-
-    //     // foreach ($getRecord as $part) {
-    //     //     $stockAwal = $part->getInBefore($start) - $part->getOutBefore($start);
-    //     //     $masuk     = $part->getInPeriod($start, $end);
-    //     //     $keluar    = $part->getOutPeriod($start, $end);
-
-    //     //     $part->stock_awal  = $stockAwal;
-    //     //     $part->masuk       = $masuk;
-    //     //     $part->keluar      = $keluar;
-    //     //     $part->stock_akhir = $stockAwal + $masuk - $keluar;
-    //     // }
-
-    //     $categories = CategoryModel::all();
-    //     $subcategories = SubCategoryModel::all();
-
-    //     return view('dashboard.sparepart.listsparepart', compact('getRecord', 'categories', 'subcategories', 'period'));
-    // }
 
     public function cardindex(Request $request)
     {
@@ -284,32 +185,30 @@ class ListSparePartController extends Controller
         return redirect()->route('spare-parts.index')->with('success', 'Spare part berhasil dihapus.');
     }
 
-    // public function cetakPDF()
-    // {
-    //     $spareparts = ListSparePartModel::all();
-    //     $pdf = Pdf::loadView('sparepartpdf.sparepart', compact('spareparts'));
-    //     return $pdf->download('laporan_sparepart.pdf');
-    // }
-
-    // public function exportExcel()
-    // {
-    //     return Excel::download(new SparepartExport, 'laporan_sparepart.xlsx');
-    // }
-
     public function cetakPDF(Request $request)
     {
         $period = $request->period; // boleh null
-
         $spareparts = ListSparePartModel::all();
 
         if ($period) {
             $start = $period . '-01';
-            $end   = \Carbon\Carbon::parse($start)->endOfMonth()->toDateString();
+
+            // 1. Ambil titik potong detik terakhir bulan lalu (23:59:59)
+            $prevMonthEnd = \Carbon\Carbon::parse($start)->subSecond()->toDateTimeString();
+
+            // 2. Ambil titik potong detik terakhir bulan ini (23:59:59)
+            $end = \Carbon\Carbon::parse($start)->endOfMonth()->toDateTimeString();
 
             foreach ($spareparts as $part) {
-                $stockAwal = $part->getInBefore($start) - $part->getOutBefore($start);
-                $masuk     = $part->getInPeriod($start, $end);
-                $keluar    = $part->getOutPeriod($start, $end);
+                // Gunakan query manual agar jam (timestamp) terhitung akurat
+                $stockAwal = $part->transactions()
+                    ->where('created_at', '<=', $prevMonthEnd)
+                    ->selectRaw("SUM(CASE WHEN type='in' THEN quantity ELSE -quantity END) as balance")
+                    ->value('balance') ?? 0;
+
+                // Pastikan method ini di Model sudah support jam di variabel $end
+                $masuk  = $part->getInPeriod($start, $end);
+                $keluar = $part->getOutPeriod($start, $end);
 
                 $part->stock_awal  = $stockAwal;
                 $part->masuk       = $masuk;
@@ -319,7 +218,7 @@ class ListSparePartController extends Controller
 
             $filename = 'laporan_sparepart_' . $period . '.pdf';
         } else {
-            // MODE GLOBAL
+            // MODE GLOBAL (tetap sama)
             foreach ($spareparts as $part) {
                 $masuk  = $part->getTotalIn();
                 $keluar = $part->getTotalOut();
@@ -344,9 +243,6 @@ class ListSparePartController extends Controller
 
     public function exportExcel(Request $request)
     {
-        // $request->validate([
-        //     'period' => 'required'
-        // ]);
 
         $period = $request->period; // boleh null
 
