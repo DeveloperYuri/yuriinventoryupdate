@@ -75,9 +75,9 @@
                                             </div>
                                         </div> --}}
 
-                                        <a href="{{ route('atk.cetakpdf') }}" class="btn btn-success" target="_blank">Print
+                                        <a href="{{ route('asset-it.cetakpdf') }}" class="btn btn-success" target="_blank">Print
                                             PDF</a>
-                                        <a href="{{ route('atk.export') }}" class="btn btn-success">Export Excel</a>
+                                        <a href="{{ route('asset-it.export') }}" class="btn btn-success">Export Excel</a>
                                     </div>
                                 @endif
 

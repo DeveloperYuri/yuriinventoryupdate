@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\AssetITExport;
 use App\Models\AssetitModel;
 use App\Models\LocationsModel;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AssetitController extends Controller
 {
@@ -219,5 +222,17 @@ class AssetitController extends Controller
             ->get();
 
         return response()->json($assets->pluck('nomer_asset'));
+    }
+
+    public function cetakPDF()
+    {
+        $assetit = AssetitModel::with('location')->get();
+        $pdf = Pdf::loadView('dashboard.assetit.pdf', compact('assetit'));
+        return $pdf->download('laporan_asset_it.pdf');
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new AssetITExport, 'laporan_assetit.xlsx');
     }
 }

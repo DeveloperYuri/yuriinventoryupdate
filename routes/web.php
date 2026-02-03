@@ -170,8 +170,6 @@ Route::get(
     [DashboardsparepartController::class, 'exportExcel']
 )->name('dashboardsparepart.export.excel');
 
-
-
 Route::get('/sparepart', [ListSparePartController::class, 'index'])->name('spare-parts.index');
 Route::get('/cardlistsparepart', [ListSparePartController::class, 'cardindex'])->name('card-list-spare-parts.index');
 
@@ -388,6 +386,8 @@ Route::get('/Asset-IT/show/{id}', [AssetitController::class, 'show'])->name('ass
 Route::get('/asset-it/generate-number', [AssetitController::class, 'generateNumber'])
     ->name('assetit.generate-number');
 Route::get('/asset-it/autocompletesearch', [AssetitController::class, 'autocompletesearch'])->name('asset-itsearch.autocomplete');
+Route::get('/asset-it/pdf', [AssetitController::class, 'cetakPDF'])->name('asset-it.cetakpdf');
+Route::get('/export-asset-it', [AssetitController::class, 'exportExcel'])->name('asset-it.export');
 
 // Riwayat Peminjaman Asset IT
 Route::get('/peminjaman/Asset-IT', [RiwayatpeminjamanassetitController::class, 'index'])->name('peminjamanasset-it.index');
