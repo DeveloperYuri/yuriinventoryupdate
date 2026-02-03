@@ -16,11 +16,21 @@
             <form method="get">
                 <div class="row g-2 align-items-center">
                     <div class="col">
+                        <small class="text-muted">Nama Asset Tools</small>
                         <input id="searchingtitle" type="text" class="form-control" value="{{ Request()->name }}"
-                            placeholder="Searching Asset" name="name">
+                            name="name">
                     </div>
+
+                    <div class="col-2">
+                        <small class="text-muted">Pilih Periode</small>
+                        <input type="month" name="period" class="form-control" value="{{ request('period') }}">
+                    </div>
+
                     <div class="col-auto">
-                        <button type="submit" class="btn btn-dark">Cari</button>
+                        <small class="text-muted d-block">&nbsp;</small> <button type="submit"
+                            class="btn btn-dark">Cari</button>
+                        <a href="{{ route('asset-tools.index') }}" class="btn btn-secondary">Reset</a>
+
                     </div>
                 </div>
             </form>
@@ -72,8 +82,12 @@
                                             <th class="text-center">Nama</th>
                                             <th class="text-center">Digunakan oleh</th>
                                             <th class="text-center">Lokasi</th>
+                                            <th class="text-center">Stok Awal</th>
+                                            <th class="text-center">Masuk</th>
+                                            <th class="text-center">Keluar</th>
+                                            <th class="text-center">Stok Akhir</th>
                                             {{-- <th class="text-center">Harga</th> --}}
-                                            <th class="text-center">Stok</th>
+                                            {{-- <th class="text-center">Stok</th> --}}
                                             <th class="text-center">Satuan</th>
 
                                             @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
@@ -129,7 +143,10 @@
                                                 </td>
                                                 {{-- <td class="text-center">Rp {{ number_format($asset->price, 0, ',', '.') }} --}}
                                                 </td>
-                                                <td class="text-center">{{ $asset->stock }}</td>
+                                                <td class="text-center">{{ $asset->stock_awal }}</td>
+                                                <td class="text-center">{{ $asset->masuk }}</td>
+                                                <td class="text-center">{{ $asset->keluar }}</td>
+                                                <td class="text-center">{{ $asset->stock_akhir }}</td>
                                                 <td class="text-center">
                                                     {{ $asset->satuan->name ?? '-' }}
 

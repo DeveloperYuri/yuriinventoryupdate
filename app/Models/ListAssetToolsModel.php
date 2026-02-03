@@ -93,4 +93,50 @@ class ListAssetToolsModel extends Model
     {
         return $this->belongsTo(SatuanModel::class, 'satuan_id');
     }
+
+    public function getTotalIn()
+    {
+        return $this->stockTransactions()
+            ->where('type', 'in')
+            ->sum('quantity');
+    }
+
+    public function getTotalOut()
+    {
+        return $this->stockTransactions()
+            ->where('type', 'out')
+            ->sum('quantity');
+    }
+
+    public function getInBefore($date)
+    {
+        return $this->stockTransactions()
+            ->where('type', 'in')
+            ->where('created_at', '<', $date)
+            ->sum('quantity');
+    }
+
+    public function getOutBefore($date)
+    {
+        return $this->stockTransactions()
+            ->where('type', 'out')
+            ->where('created_at', '<', $date)
+            ->sum('quantity');
+    }
+
+    public function getInPeriod($start, $end)
+    {
+        return $this->stockTransactions()
+            ->where('type', 'in')
+            ->whereBetween('created_at', [$start, $end])
+            ->sum('quantity');
+    }
+
+    public function getOutPeriod($start, $end)
+    {
+        return $this->stockTransactions()
+            ->where('type', 'out')
+            ->whereBetween('created_at', [$start, $end])
+            ->sum('quantity');
+    }
 }

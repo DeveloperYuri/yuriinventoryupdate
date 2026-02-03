@@ -18,6 +18,7 @@
 
         <tr>
             <th style="text-align: center;">No</th>
+            <th style="text-align: center;">Kode</th>
             <th style="text-align: center;">Nama</th>
             <th style="text-align: center;">Stok Awal (PCS)</th>
             <th style="text-align: center;">Jumlah Masuk (PCS)</th>
@@ -29,6 +30,7 @@
         @foreach ($spareparts as $index => $item)
             <tr>
                 <td style="text-align: center;">{{ $index + 1 }}</td>
+                <td style="text-align: center;">{{ $item->numbers }}</td>
                 <td style="text-align: center;">{{ $item->name }}</td>
                 <td class="text-center">{{ $item->stock_awal }}</td>
                 <td class="text-center">{{ $item->masuk }}</td>

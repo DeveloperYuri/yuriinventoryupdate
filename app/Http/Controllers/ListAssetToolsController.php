@@ -11,10 +11,54 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ListAssetToolsController extends Controller
 {
+    // public function index(Request $request)
+    // {
+    //     $data['getRecord'] = ListAssetToolsModel::getRecord($request);
+    //     return view('dashboard.assettools.listassettools', $data);
+    // }
+
     public function index(Request $request)
     {
-        $data['getRecord'] = ListAssetToolsModel::getRecord($request);
-        return view('dashboard.assettools.listassettools', $data);
+        // 1. Ambil data dasar
+        $getRecord = ListAssetToolsModel::getRecord($request);
+        $period = $request->period; // format: YYYY-MM
+
+        // 2. Siapkan variabel waktu jika ada filter periode
+        if ($period) {
+            $start = $period . '-01';
+            // Sampai detik terakhir bulan ini
+            $end = \Carbon\Carbon::parse($start)->endOfMonth()->toDateTimeString();
+            // Titik potong untuk stok awal (detik terakhir bulan sebelumnya)
+            $prevMonthEnd = \Carbon\Carbon::parse($start)->subSecond()->toDateTimeString();
+        }
+
+        // 3. Loop untuk menghitung angka-angka stok
+        foreach ($getRecord as $tool) {
+            if ($period) {
+                // Hitung saldo kumulatif dari awal waktu sampai bulan lalu
+                $stockAwal = $tool->stockTransactions() // Pastikan relasi transactions() ada di model
+                    ->where('created_at', '<=', $prevMonthEnd)
+                    ->selectRaw("SUM(CASE WHEN type='in' THEN quantity ELSE -quantity END) as balance")
+                    ->value('balance') ?? 0;
+
+                // Hitung mutasi di bulan terpilih
+                $masuk  = $tool->getInPeriod($start, $end);
+                $keluar = $tool->getOutPeriod($start, $end);
+            } else {
+                // Mode normal (Global)
+                $stockAwal = 0;
+                $masuk     = $tool->getTotalIn();
+                $keluar    = $tool->getTotalOut();
+            }
+
+            // Tempelkan hasil hitungan ke objek
+            $tool->stock_awal  = $stockAwal;
+            $tool->masuk       = $masuk;
+            $tool->keluar      = $keluar;
+            $tool->stock_akhir = $stockAwal + $masuk - $keluar;
+        }
+
+        return view('dashboard.assettools.listassettools', compact('getRecord', 'period'));
     }
 
     public function cardindex(Request $request)
@@ -35,7 +79,7 @@ class ListAssetToolsController extends Controller
             'name' => 'required|string',
             'price' => 'required|integer',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120'
-        ],[
+        ], [
             'name' => 'Nama Asset Tools wajib diisi',
             'price.required' => 'Harga Asset Tools wajib diisi',
             'price.integer' => 'Harga Asset Tools harus berupa angka',

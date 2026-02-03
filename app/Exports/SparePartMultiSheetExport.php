@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Exports;
+
+use App\Models\CategoryModel;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+
+class SparePartMultiSheetExport implements WithMultipleSheets
+{
+    protected $period;
+
+    public function __construct($period)
+    {
+        // Kita tangkap periode dari Controller (misal: 2024-05)
+        $this->period = $period;
+    }
+
+    public function sheets(): array
+    {
+        $sheets = [];
+
+        // 1. Ambil kategori yang ada di database
+        // $categories = CategoryModel::all();
+        $categories = CategoryModel::has('spareparts')->get();
+
+        foreach ($categories as $category) {
+            $sheets[] = new SparePartPerCategorySheet($category, $this->period);
+        }
+
+        // 2. TAMBAHKAN SHEET UNTUK YANG TANPA KATEGORI (NULL)
+        // Kita kirim null sebagai pengganti object category
+        $sheets[] = new SparePartPerCategorySheet(null, $this->period);
+
+        return $sheets;
+    }
+}

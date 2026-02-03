@@ -180,6 +180,7 @@ Route::put('/spare-parts/{id}', [ListSparePartController::class, 'update'])->nam
 Route::delete('/spare-parts/{id}', [ListSparePartController::class, 'destroy'])->name('spare-parts.destroy');
 Route::get('/sparepart/pdf', [ListSparePartController::class, 'cetakPDF'])->name('sparepart.cetakpdf');
 Route::get('/export-sparepart', [ListSparePartController::class, 'exportExcel'])->name('sparepart.export');
+Route::get('/exportmultiple-sparepart', [ListSparePartController::class, 'exportmultipleExcel'])->name('sparepart.exportmultiple');
 
 Route::get('/spare-parts/autocomplete', [ListSparePartController::class, 'autocomplete'])->name('spare-parts.autocomplete');
 

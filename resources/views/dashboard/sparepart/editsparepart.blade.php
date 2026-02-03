@@ -35,17 +35,17 @@
                                     </div>
                                 </div>
 
-                                <div class="row mb-3">
+                                {{-- <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Serial Number</label>
                                     <div class="col-sm-10">
                                         <input type="text" name="numbers" class="form-control"
                                             value="{{ $sparePart->numbers }}">
 
-                                        {{-- @error('name')
+                                        @error('name')
                                             <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror --}}
+                                        @enderror
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Description</label>

@@ -133,6 +133,11 @@
                                             class="btn btn-success">
                                             Export Excel
                                         </a>
+
+                                        <a href="{{ route('sparepart.exportmultiple', ['period' => $period]) }}"
+                                            class="btn btn-success">
+                                            Export Excel by Category
+                                        </a>
                                         {{-- <a href="{{ route('sparepart.export') }}" class="btn btn-success">Export Excel</a> --}}
                                     </div>
                                 @endif

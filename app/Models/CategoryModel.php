@@ -22,9 +22,9 @@ class CategoryModel extends Model
             //->where('status', '=', 'active')
             ->orderBy('id', 'desc');
 
-            if (!empty(Request::get('name'))) {
-                $return = $return->where('category.name', 'like', '%' . Request::get('name') . '%');
-            }
+        if (!empty(Request::get('name'))) {
+            $return = $return->where('category.name', 'like', '%' . Request::get('name') . '%');
+        }
 
         $return = $return->paginate(10);
         return $return;
@@ -33,5 +33,11 @@ class CategoryModel extends Model
     public function subcategories()
     {
         return $this->hasMany(SubCategoryModel::class, 'category_id');
+    }
+
+    public function spareparts()
+    {
+        // Pastikan 'category_id' adalah nama kolom di tabel list_spare_part kamu
+        return $this->hasMany(ListSparePartModel::class, 'category_id');
     }
 }

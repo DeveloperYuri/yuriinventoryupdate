@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\SparepartExport;
+use App\Exports\SparePartMultiSheetExport;
 use App\Imports\SparePartImport;
 use App\Models\CategoryModel;
 use App\Models\ListSparePartModel;
@@ -134,6 +135,7 @@ class ListSparePartController extends Controller
 
     public function update(Request $request, $id)
     {
+        // dd($request->all());
         $request->validate([
             'name' => 'required|string',
             // 'price' => 'required|integer',
@@ -149,10 +151,27 @@ class ListSparePartController extends Controller
         ]);
 
         $sparePart = ListSparePartModel::findOrFail($id);
+
+        // 1. Ambil prefix dari nama (kata pertama)
+        $jenis = strtolower(strtok($request->name, ' ')); // Hasil: "seal"
+
+        // 2. CEK: Jika numbers masih kosong ATAU nama depannya berubah
+        // Kita pakai substr untuk ambil kata depan dari numbers lama (misal "seal-001" ambil "seal")
+        $prefixLama = strtolower(strtok($sparePart->numbers, '-'));
+
+        if (empty($sparePart->numbers) || $jenis !== $prefixLama) {
+            $count = ListSparePartModel::where('numbers', 'like', $jenis . '-%')
+                ->where('id', '!=', $id)
+                ->count() + 1;
+
+            $increment = str_pad($count, 3, '0', STR_PAD_LEFT);
+            $sparePart->numbers = $jenis . '-' . $increment;
+        }
+
+        // Update data lainnya
         $sparePart->name = $request->name;
         $sparePart->price = $request->price;
         $sparePart->satuan_id = $request->satuan_id;
-        $sparePart->numbers = $request->numbers;
         $sparePart->category_id = $request->category_id;
         $sparePart->subcategory_id = $request->subcategory_id;
 
@@ -189,7 +208,7 @@ class ListSparePartController extends Controller
     {
 
         ini_set('memory_limit', '1024M'); // Naikkan ke 1GB sementara
-        set_time_limit(300); // Beri waktu 5 menit
+        set_time_limit(50); // Beri waktu 5 menit
 
         $period = $request->period; // boleh null
         $spareparts = ListSparePartModel::all();
@@ -254,6 +273,21 @@ class ListSparePartController extends Controller
             new SparepartExport($request->period),
             'laporan_' . $request->period . '.xlsx'
         );
+    }
+
+    public function exportmultipleExcel(Request $request)
+    {
+        // 1. Ambil periode dari request (misal: 2026-02)
+        $period = $request->period;
+
+        // 2. Tentukan nama file
+        // Jika ada periode, nama file: Laporan_Sparepart_2026-02.xlsx
+        // Jika tidak ada, nama file: Laporan_Sparepart_Global.xlsx
+        $filename = 'Laporan_Sparepart_' . ($period ?: 'Global') . '.xlsx';
+
+        // 3. Eksekusi Download
+        // Kita kirim variabel $period ke dalam constructor SparePartMultiSheetExport
+        return Excel::download(new SparePartMultiSheetExport($period), $filename);
     }
 
 
