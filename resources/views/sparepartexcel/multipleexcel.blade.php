@@ -36,8 +36,8 @@
                 <td style="border: 1px solid #000000;">{{ $item->numbers }}</td>
                 <td style="border: 1px solid #000000;">{{ $item->name }}</td>
                 <td style="border: 1px solid #000000; text-align: center;">{{ $item->stock_awal ?? 0 }}</td>
-                <td style="border: 1px solid #000000; text-align: center; color: #008000;">{{ $item->masuk ?? 0 }}</td>
-                <td style="border: 1px solid #000000; text-align: center; color: #FF0000;">{{ $item->keluar ?? 0 }}</td>
+                <td style="border: 1px solid #000000; text-align: center;">{{ $item->masuk ?? 0 }}</td>
+                <td style="border: 1px solid #000000; text-align: center;">{{ $item->keluar ?? 0 }}</td>
                 <td style="border: 1px solid #000000; text-align: center; font-weight: bold;">
                     {{ $item->stock_akhir ?? 0 }}</td>
             </tr>
