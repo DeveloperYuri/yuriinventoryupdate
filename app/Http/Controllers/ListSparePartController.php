@@ -82,7 +82,9 @@ class ListSparePartController extends Controller
         $request->validate([
             'name' => 'required|unique:spare_parts,name',
             // 'price' => 'required|integer',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240'
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
+            'category_id' => 'required|exists:category,id',
+            'satuan_id' => 'required|exists:satuan,id',
         ], [
             'name' => 'Nama Spare Part wajib diisi',
             'name.unique'     => 'Nama Spare Part sudah ada',
@@ -92,6 +94,9 @@ class ListSparePartController extends Controller
             'image.image'   => 'File harus berupa gambar',
             'image.mimes'   => 'File harus JPG, JPEG, PNG, atau GIF',
             'image.max'     => 'Ukuran file maksimal 10MB',
+            'category_id.required' => 'Kategori wajib dipilih',
+            'category_id.exists'   => 'Kategori tidak valid',
+            'satuan_id.required' => 'Satuan wajib dipilih',
         ]);
 
         $data = $request->only('name', 'price', 'satuan', 'numbers', 'category_id', 'subcategory_id', 'satuan_id');
