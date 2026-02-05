@@ -1,6 +1,26 @@
 @extends('dashboard.layouts.main')
 
 @section('content')
+    <style>
+        /* Sembunyikan kolom secara default saat halaman dimuat (Refresh) */
+        /* Kolom 6: Stok Awal, 7: Masuk, 8: Keluar, dan Kolom Status (sesuaikan index jika ada) */
+        .table th:nth-child(6),
+        .table td:nth-child(6),
+        .table th:nth-child(7),
+        .table td:nth-child(7),
+        .table th:nth-child(8),
+        .table td:nth-child(8),
+        .table th:nth-child(11),
+        .table td:nth-child(11) {
+            display: none;
+        }
+
+        /* .table tbody tr {
+            height: 400px;
+            /* Ubah angka ini sesuai keinginan */
+        } */
+    </style>
+
     <main id="main" class="main">
 
         <div class="pagetitle d-flex justify-content-between align-items-center">
@@ -44,25 +64,26 @@
                         </select>
                     </div>
 
-                    {{-- <div class="col-2">
-                        <input type="text" class="form-control" id="period" name="period"
-                            value="{{ request('period') }}" placeholder="Pilih Periode" onfocus="this.type='month'"
-                            onblur="if(!this.value)this.type='text'">
-                    </div> --}}
-
+                    <div class="col-2">
+                        <small class="text-muted">Status</small>
+                        <select name="produk_status_id" class="form-control">
+                            <option value="">-- Semua Status --</option>
+                            @foreach ($produkstatus as $status)
+                                <option value="{{ $status->id }}"
+                                    {{ request('produk_status_id') == $status->id ? 'selected' : '' }}>
+                                    {{ $status->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
                     <div class="col-2">
                         <small class="text-muted">Pilih Periode</small>
                         <input type="month" name="period" class="form-control" value="{{ request('period') }}">
                     </div>
 
-
-                    {{-- <div class="col-2">
-                        <input type="month" name="period" class="form-control" value="{{ request('period') }}" placeholder="Pilih Periode">
-                    </div> --}}
-
-
                     <div class="col-auto">
+                        <small class="d-block">&nbsp;</small>
                         <button type="submit" class="btn btn-primary">Cari</button>
                         <a href="{{ route('spare-parts.index') }}" class="btn btn-secondary">Reset</a>
                     </div>
@@ -94,7 +115,8 @@
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="importModalLabel">Import Spare Part dari
+                                                        <h5 class="modal-title" id="importModalLabel">Import Spare Part
+                                                            dari
                                                             Excel</h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                             aria-label="Close"></button>
@@ -157,7 +179,7 @@
                             @endif
 
                             <!-- Default Table -->
-                            <div class="table-responsive">
+                            <div class="table-responsive" style="min-height: 300px;">
 
                                 <table class="table table-hover align-middle">
                                     <thead>
@@ -177,11 +199,63 @@
                                             <th class="text-center">Keluar</th>
                                             <th class="text-center">Stok Akhir</th>
                                             <th class="text-center">Satuan</th>
+                                            <th class="text-center">Status</th>
 
 
                                             @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1 || Auth::user()->is_role == 0)
                                                 <th class="text-center">Aksi</th>
                                             @endif
+
+                                            <th class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="javascript:void(0)" id="filterColumn"
+                                                        data-bs-toggle="dropdown" data-bs-auto-close="outside"
+                                                        aria-expanded="false" class="text-dark">
+                                                        <i class="bi bi-filter"></i>
+                                                    </a>
+                                                    <ul class="dropdown-menu shadow-sm p-3" aria-labelledby="filterColumn"
+                                                        style="min-width: 200px; font-size: 14px;">
+                                                        <li>
+                                                            <h6 class="dropdown-header px-0 text-dark">Tampilkan Kolom</h6>
+                                                        </li>
+
+                                                        @php
+                                                            $columns = [
+                                                                ['id' => 5, 'name' => 'Stok Awal'],
+                                                                ['id' => 6, 'name' => 'Masuk'],
+                                                                ['id' => 7, 'name' => 'Keluar'],
+                                                                ['id' => 10, 'name' => 'Status'],
+                                                            ];
+                                                        @endphp
+
+                                                        @foreach ($columns as $col)
+                                                            <li>
+                                                                <div class="form-check mb-1">
+                                                                    <input class="form-check-input toggle-vis"
+                                                                        type="checkbox" value="{{ $col['id'] }}"
+                                                                        id="check{{ $col['id'] }}">
+                                                                    {{-- Tanpa atribut 'checked' --}}
+                                                                    <label class="form-check-label"
+                                                                        for="check{{ $col['id'] }}">
+                                                                        {{ $col['name'] }}
+                                                                    </label>
+                                                                </div>
+                                                            </li>
+                                                        @endforeach
+
+                                                        {{-- <hr class="dropdown-divider">
+                                                        <li>
+                                                            <a class="dropdown-item d-flex align-items-center px-0 text-primary"
+                                                                href="#">
+                                                                <i class="bi bi-plus-lg me-2"></i> Tambahkan Field Kustom
+                                                            </a>
+                                                        </li> --}}
+                                                    </ul>
+                                                </div>
+                                            </th>
+
+                                            {{-- <th class="text-center"><i class="bi bi-filter"></i></th> --}}
+
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -232,6 +306,17 @@
                                                 {{-- <td class="text-center">{{ $part->stock }}</td> --}}
                                                 <td class="text-center">
                                                     {{ $part->satuan->name ?? '-' }}
+                                                </td>
+
+                                                <td class="text-center">
+                                                    @if ($part->produkstatus)
+                                                        <span
+                                                            class="badge {{ strtolower($part->produkstatus->name) == 'active' ? 'bg-success' : 'bg-danger' }}">
+                                                            {{ $part->produkstatus->name }}
+                                                        </span>
+                                                    @else
+                                                        <span class="badge bg-secondary">-</span>
+                                                    @endif
                                                 </td>
 
                                                 {{-- <td class="text-center">{{ $part->satuan }}</td> --}}
@@ -356,6 +441,23 @@
                 loadSubcategories(oldCategoryId, oldSubcategoryId);
             }
 
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('.toggle-vis').on('change', function() {
+                var colIndex = parseInt($(this).val()) + 1;
+                // Gunakan selector yang lebih spesifik ke tabel sparepart
+                var cells = $('table.table').find('th:nth-child(' + colIndex + '), td:nth-child(' +
+                    colIndex + ')');
+
+                if ($(this).is(':checked')) {
+                    cells.show();
+                } else {
+                    cells.hide();
+                }
+            });
         });
     </script>
 @endpush

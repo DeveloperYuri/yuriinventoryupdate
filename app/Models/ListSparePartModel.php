@@ -13,7 +13,7 @@ class ListSparePartModel extends Model
 
     protected $table = 'spare_parts';
 
-    protected $fillable = ['name', 'stock', 'image', 'price', 'satuan_lama', 'numbers', 'category_id', 'subcategory_id', 'satuan_id'];
+    protected $fillable = ['name', 'stock', 'image', 'price', 'satuan_lama', 'numbers', 'category_id', 'subcategory_id', 'satuan_id', 'produk_status_id'];
 
     // public function transactions()
     // {
@@ -35,38 +35,27 @@ class ListSparePartModel extends Model
         $query = self::with(['category', 'subcategory', 'satuan'])
             ->orderBy('id', 'desc');
 
-        // 🔍 Search Nama
+        // Search Nama
         if ($request->filled('name')) {
             $query->where('spare_parts.name', 'like', '%' . $request->name . '%');
         }
 
-        // 📂 Filter Category
+        // Filter Category
         if ($request->filled('category_id')) {
             $query->where('spare_parts.category_id', $request->category_id);
         }
 
-        // 📁 Filter Sub Category
+        // Filter Sub Category
         if ($request->filled('subcategory_id')) {
             $query->where('spare_parts.subcategory_id', $request->subcategory_id);
         }
 
+        if ($request->filled('produk_status_id')) {
+            $query->where('spare_parts.produk_status_id', $request->produk_status_id);
+        }
+
         return $query->paginate(10)->withQueryString();
     }
-
-
-    // static public function getRecord($request)
-    // {
-    //     $return = self::select('spare_parts.*')
-    //         //->where('status', '=', 'active')
-    //         ->orderBy('id', 'desc');
-
-    //     if (!empty(Request::get('name'))) {
-    //         $return = $return->where('spare_parts.name', 'like', '%' . Request::get('name') . '%');
-    //     }
-
-    //     $return = $return->paginate(10)->withQueryString();;
-    //     return $return;
-    // }
 
     static public function getRecordCard($request)
     {
@@ -95,6 +84,11 @@ class ListSparePartModel extends Model
     public function satuan()
     {
         return $this->belongsTo(SatuanModel::class, 'satuan_id');
+    }
+
+    public function produkstatus()
+    {
+        return $this->belongsTo(ProdukstatusModel::class, 'produk_status_id');
     }
 
     public function getTotalIn()

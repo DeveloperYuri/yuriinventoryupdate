@@ -15,6 +15,7 @@ use App\Http\Controllers\ListAssetToolsController;
 use App\Http\Controllers\ListSparePartController;
 use App\Http\Controllers\ListSparePartMultipleController;
 use App\Http\Controllers\LocationsController;
+use App\Http\Controllers\ProdukstatusController;
 use App\Http\Controllers\RiwayatmesinController;
 use App\Http\Controllers\RiwayatpeminjamanassetitController;
 use App\Http\Controllers\RiwayatperbaikanassetitController;
@@ -465,3 +466,11 @@ Route::get('/assetit/autocomplete', [AssetItController::class, 'autocomplete'])
 
 Route::get('/asset-it/suggest', [AssetitController::class, 'suggest'])
     ->name('asset-it.suggest');
+
+// Produk Status
+Route::get('/produkstatus', [ProdukstatusController::class, 'index'])->name('produkstatus.index');
+Route::get('/create/produkstatus', [ProdukstatusController::class, 'create'])->name('produkstatus.create');
+Route::post('/create/produkstatus/post', [ProdukstatusController::class, 'store'])->name('produkstatus.store');
+Route::get('/edit/produkstatus/{id}', [ProdukstatusController::class, 'edit'])->name('produkstatus.edit');
+Route::put('/create/produkstatus/{id}', [ProdukstatusController::class, 'update'])->name('produkstatus.update');
+Route::delete('/delete/produkstatus/{id}', [ProdukstatusController::class, 'destroy'])->name('produkstatus.delete');

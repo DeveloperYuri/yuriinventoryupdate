@@ -7,6 +7,7 @@ use App\Exports\SparePartMultiSheetExport;
 use App\Imports\SparePartImport;
 use App\Models\CategoryModel;
 use App\Models\ListSparePartModel;
+use App\Models\ProdukstatusModel;
 use App\Models\SatuanModel;
 use App\Models\SubCategoryModel;
 use Illuminate\Http\Request;
@@ -55,8 +56,9 @@ class ListSparePartController extends Controller
 
         $categories = CategoryModel::all();
         $subcategories = SubCategoryModel::all();
+        $produkstatus = ProdukstatusModel::all();
 
-        return view('dashboard.sparepart.listsparepart', compact('getRecord', 'categories', 'subcategories', 'period'));
+        return view('dashboard.sparepart.listsparepart', compact('getRecord', 'categories', 'subcategories', 'period', 'produkstatus'));
     }
 
     public function cardindex(Request $request)
@@ -70,8 +72,9 @@ class ListSparePartController extends Controller
         $categories = CategoryModel::all();
         $subcategories = SubCategoryModel::all();
         $satuan = SatuanModel::all();
+        $produkstatus = ProdukstatusModel::all();
 
-        return view('dashboard.sparepart.createlistsparepart', compact('categories', 'subcategories', 'satuan'));
+        return view('dashboard.sparepart.createlistsparepart', compact('categories', 'subcategories', 'satuan', 'produkstatus'));
     }
 
 
@@ -99,7 +102,7 @@ class ListSparePartController extends Controller
             'satuan_id.required' => 'Satuan wajib dipilih',
         ]);
 
-        $data = $request->only('name', 'price', 'satuan', 'numbers', 'category_id', 'subcategory_id', 'satuan_id');
+        $data = $request->only('name', 'price', 'satuan', 'numbers', 'category_id', 'subcategory_id', 'satuan_id', 'produk_status_id');
 
         // ✅ Generate part_number berdasarkan kata pertama dari name
         $jenis = strtolower(strtok($request->name, ' ')); // ambil kata pertama
@@ -133,9 +136,9 @@ class ListSparePartController extends Controller
         $categories = CategoryModel::all();
         $subcategories = SubCategoryModel::all();
         $satuans = SatuanModel::all();
+        $produkstatus = ProdukstatusModel::all();
 
-
-        return view('dashboard.sparepart.editsparepart', compact('sparePart', 'categories', 'subcategories', 'satuans'));
+        return view('dashboard.sparepart.editsparepart', compact('sparePart', 'categories', 'subcategories', 'satuans', 'produkstatus'));
     }
 
     public function update(Request $request, $id)
@@ -177,6 +180,7 @@ class ListSparePartController extends Controller
         $sparePart->name = $request->name;
         $sparePart->price = $request->price;
         $sparePart->satuan_id = $request->satuan_id;
+        $sparePart->produk_status_id = $request->produk_status_id;
         $sparePart->category_id = $request->category_id;
         $sparePart->subcategory_id = $request->subcategory_id;
 
@@ -326,10 +330,23 @@ class ListSparePartController extends Controller
 
     public function autocomplete(Request $request)
     {
-        $query = $request->get('term'); // jQuery UI pakai "term" sebagai key
+        $query = $request->get('term');
+
         $data = ListSparePartModel::where('name', 'LIKE', "%{$query}%")
-            ->pluck('name'); // ambil hanya kolom name
+            ->whereHas('produkstatus', function ($q) {
+                $q->where('name', 'Active'); // Pastikan teks 'Active' sesuai dengan di database
+            })
+            ->pluck('name');
 
         return response()->json($data);
     }
+
+    // public function autocomplete(Request $request)
+    // {
+    //     $query = $request->get('term'); // jQuery UI pakai "term" sebagai key
+    //     $data = ListSparePartModel::where('name', 'LIKE', "%{$query}%")
+    //         ->pluck('name'); // ambil hanya kolom name
+
+    //     return response()->json($data);
+    // }
 }

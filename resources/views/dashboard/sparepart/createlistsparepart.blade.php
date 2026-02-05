@@ -89,8 +89,7 @@
                                 </div>
 
                                 <div class="row mb-3">
-                                    <label class="col-sm-2 col-form-label">Satuan<span
-                                                style="color: red">*</span></label>
+                                    <label class="col-sm-2 col-form-label">Satuan<span style="color: red">*</span></label>
                                     <div class="col-sm-10">
                                         <select name="satuan_id"
                                             class="form-control @error('satuan_id') is-invalid @enderror">
@@ -108,17 +107,25 @@
                                     </div>
                                 </div>
 
-                                {{-- <div class="row mb-3">
-                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Satuan</label>
+                                <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">Status<span style="color: red">*</span></label>
                                     <div class="col-sm-10">
-                                        <select name="satuan" class="form-control">
-                                            <option value="Pcs">Pcs</option>
-                                            <option value="Pack">Pack</option>
-                                            <option value="Meter">Meter</option>
-                                            <option value="Set">Set</option>
+                                        <select name="produk_status_id"
+                                            class="form-control @error('produk_status_id') is-invalid @enderror">
+                                            <option value="">-- Pilih Status --</option>
+                                            @foreach ($produkstatus as $ps)
+                                                <option value="{{ $ps->id }}"
+                                                    {{ old('produk_status_id', 1) == $ps->id ? 'selected' : '' }}>
+                                                    {{ $ps->name }}
+                                                </option>
+                                            @endforeach
                                         </select>
+
+                                        @error('produk_status_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
-                                </div> --}}
+                                </div>
 
                                 <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label"></label>

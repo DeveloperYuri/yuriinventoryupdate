@@ -339,6 +339,7 @@
                  request()->routeIs('indexsubcategory') ||
                  request()->routeIs('index.satuan') ||
                  request()->routeIs('index.department') ||
+                 request()->routeIs('produkstatus.index') ||
                  request()->routeIs('indexprofile');
          @endphp
 
@@ -391,6 +392,14 @@
                          <i class="bi bi-circle"></i><span>Department</span>
                      </a>
                  </li>
+                 @if (Auth::user()->is_role == 2)
+                     <li>
+                         <a href="{{ route('produkstatus.index') }}"
+                             class="{{ request()->routeIs('produkstatus.index') ? 'active' : '' }}">
+                             <i class="bi bi-circle"></i><span>Produk Status</span>
+                         </a>
+                     </li>
+                 @endif
                  <li>
                      <a href="{{ route('indexprofile') }}"
                          class="{{ request()->routeIs('indexprofile') ? 'active' : '' }}">

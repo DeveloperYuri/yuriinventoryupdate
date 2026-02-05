@@ -35,20 +35,8 @@
                                     </div>
                                 </div>
 
-                                {{-- <div class="row mb-3">
-                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Serial Number</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" name="numbers" class="form-control"
-                                            value="{{ $sparePart->numbers }}">
-
-                                        @error('name')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div> --}}
-
                                 <div class="row mb-3">
-                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Description</label>
+                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Description<span style="color: red">*</span></label>
                                     <div class="col-sm-10">
                                         <input type="text" name="name"
                                             class="form-control @error('name') is-invalid @enderror"
@@ -60,7 +48,7 @@
                                     </div>
                                 </div>
 
-                                @if (Auth::user()->is_role == 2)
+                                {{-- @if (Auth::user()->is_role == 2)
                                     <div class="row mb-3">
                                         <label for="inputEmail3" class="col-sm-2 col-form-label">Price</label>
                                         <div class="col-sm-10">
@@ -72,10 +60,10 @@
                                             @enderror
                                         </div>
                                     </div>
-                                @endif
+                                @endif --}}
 
                                 <div class="row mb-3">
-                                    <label class="col-sm-2 col-form-label">Category</label>
+                                    <label class="col-sm-2 col-form-label">Category<span style="color: red">*</span></label>
                                     <div class="col-sm-10">
                                         <select id="category_id" name="category_id"
                                             class="form-control @error('category_id') is-invalid @enderror">
@@ -114,7 +102,7 @@
                                 </div>
 
                                 <div class="row mb-3">
-                                    <label class="col-sm-2 col-form-label">Satuan</label>
+                                    <label class="col-sm-2 col-form-label">Satuan<span style="color: red">*</span></label>
                                     <div class="col-sm-10">
                                         <select name="satuan_id" class="form-control" required>
                                             <option value="">-- Pilih Satuan --</option>
@@ -128,23 +116,25 @@
                                     </div>
                                 </div>
 
-                                {{-- <div class="row mb-3">
-                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Satuan</label>
+                                <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">Status<span style="color: red">*</span></label>
                                     <div class="col-sm-10">
-                                        <select name="satuan" class="form-control" required dusk="sparepartintoggle"
-                                            value="{{ $sparePart->satuan }}">
-                                            <option value="Pcs" {{ $sparePart->satuan == 'Pcs' ? 'selected' : '' }}>Pcs
-                                            </option>
-                                            <option value="Pack" {{ $sparePart->satuan == 'Pack' ? 'selected' : '' }}>
-                                                Pack
-                                            </option>
-                                            <option value="Meter" {{ $sparePart->satuan == 'Meter' ? 'selected' : '' }}>
-                                                Meter</option>
-                                            <option value="Set" {{ $sparePart->satuan == 'Set' ? 'selected' : '' }}>
-                                                Set</option>
+                                        <select name="produk_status_id"
+                                            class="form-control @error('produk_status_id') is-invalid @enderror">
+                                            <option value="">-- Pilih Status --</option>
+                                            @foreach ($produkstatus as $ps)
+                                                <option value="{{ $ps->id }}"
+                                                    {{ old('produk_status_id', $sparePart->produk_status_id) == $ps->id ? 'selected' : '' }}>
+                                                    {{ $ps->name }}
+                                                </option>
+                                            @endforeach
                                         </select>
+
+                                        @error('produk_status_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
-                                </div> --}}
+                                </div>
 
                                 <div class="col-sm-10">
                                     <button type="submit" class="btn btn-primary">Save</button>
