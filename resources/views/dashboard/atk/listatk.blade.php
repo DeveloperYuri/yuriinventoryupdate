@@ -15,11 +15,30 @@
             <form method="get">
                 <div class="row g-2 align-items-center">
                     <div class="col">
+                        <small class="text-muted">Nama ATK</small>
                         <input id="searchingtitle" type="text" class="form-control" value="{{ Request()->name }}"
-                            placeholder="Cari ATK" name="name">
+                            placeholder="Cari Nama ATK" name="name">
                     </div>
+
+                    <div class="col-3">
+                        <small class="text-muted">Category</small>
+                        <select id="category_id" name="category_id"
+                            class="form-control @error('category_id') is-invalid @enderror">
+                            <option value="">-- Pilih Category --</option>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}"
+                                    {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <div class="col-auto">
+                        <small class="d-block">&nbsp;</small>
                         <button type="submit" class="btn btn-dark">Cari</button>
+                        <a href="{{ route('atk.index') }}" class="btn btn-secondary">Reset</a>
+
                     </div>
                 </div>
             </form>
@@ -106,6 +125,7 @@
                                             {{-- <th class="text-center">No</th> --}}
                                             <th class="text-center">Gambar</th>
                                             <th class="text-center">Nama</th>
+                                            <th class="text-center">Kategori</th>
                                             {{-- @if (Auth::user()->is_role == 2)
                                                 <th class="text-center">Harga</th>
                                             @endif --}}
@@ -175,6 +195,7 @@
 
 
                                                 <td class="text-center">{{ $atk->name }}</td>
+                                                <td class="text-center">{{ $atk->category->name ?? '-' }}</td>
                                                 {{-- @if (Auth::user()->is_role == 2)
                                                     <td class="text-center">Rp
                                                         {{ number_format($atk->price, 0, ',', '.') }}

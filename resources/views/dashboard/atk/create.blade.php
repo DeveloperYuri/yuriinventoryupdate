@@ -39,7 +39,26 @@
                                     </div>
                                 </div>
 
-                                @if (Auth::user()->is_role == 2)
+                                <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">Kategori<span style="color: red">*</span></label>
+                                    <div class="col-sm-10">
+                                        <select id="category_id" name="category_id"
+                                            class="form-control @error('category_id') is-invalid @enderror">
+                                            <option value="">-- Pilih Category --</option>
+                                            @foreach ($categories as $category)
+                                                <option value="{{ $category->id }}"
+                                                    {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                                    {{ $category->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('category_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                {{-- @if (Auth::user()->is_role == 2)
                                     <div class="row mb-3">
                                         <label for="inputEmail3" class="col-sm-2 col-form-label">Price<span
                                                 style="color: red">*</span></label>
@@ -51,10 +70,10 @@
                                             @enderror
                                         </div>
                                     </div>
-                                @endif
+                                @endif --}}
 
                                 <div class="row mb-3">
-                                    <label class="col-sm-2 col-form-label">Satuan</label>
+                                    <label class="col-sm-2 col-form-label">Satuan<span style="color: red">*</span></label>
                                     <div class="col-sm-10">
                                         <select name="satuan_id"
                                             class="form-control @error('satuan_id') is-invalid @enderror">

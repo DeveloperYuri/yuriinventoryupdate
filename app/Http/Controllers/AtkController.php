@@ -6,6 +6,7 @@ use App\Exports\AtkExport;
 use App\Exports\AtkHistoryExport;
 use App\Models\AtkModel;
 use App\Models\AtktransactionModel;
+use App\Models\CategoryModel;
 use App\Models\SatuanModel;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -14,10 +15,22 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class AtkController extends Controller
 {
+    // public function index(Request $request)
+    // {
+    //     $data['getRecord'] = AtkModel::getRecord($request);
+    //     $categories = CategoryModel::all();
+
+    //     return view('dashboard.atk.listatk', compact('data', 'categories'));
+    // }
+
     public function index(Request $request)
     {
-        $data['getRecord'] = AtkModel::getRecord($request);
-        return view('dashboard.atk.listatk', $data);
+        // Langsung masukkan ke variabel sendiri
+        $getRecord = AtkModel::getRecord($request);
+        $categories = CategoryModel::all();
+
+        // Kirimkan variabel secara terpisah
+        return view('dashboard.atk.listatk', compact('getRecord', 'categories'));
     }
 
     public function cardindex(Request $request)
@@ -29,7 +42,9 @@ class AtkController extends Controller
     public function create()
     {
         $satuan = SatuanModel::all();
-        return view('dashboard.atk.create', compact('satuan'));
+        $categories = CategoryModel::all();
+
+        return view('dashboard.atk.create', compact('satuan', 'categories'));
     }
 
     public function store(Request $request)
@@ -39,19 +54,25 @@ class AtkController extends Controller
 
         $request->validate([
             'name' => 'required|string',
+            'category_id' => 'required|exists:category,id',
+            'satuan_id' => 'required|exists:satuan,id',
             // 'price' => 'required|integer',
-            // 'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240'
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240'
         ], [
             'name' => 'Nama Spare Part wajib diisi',
-            'price.required' => 'Harga Spare Part wajib diisi',
-            'price.integer' => 'Harga Spare Part harus berupa angka',
-            // 'image.required'   => 'File gambar harus diisi',
-            // 'image.image'   => 'File harus berupa gambar',
-            // 'image.mimes'   => 'File harus JPG, JPEG, PNG, atau GIF',
-            // 'image.max'     => 'Ukuran file maksimal 10MB',
+            'category_id.required' => 'Kategori wajib dipilih',
+            'satuan_id.required' => 'Satuan wajib dipilih',
+
+
+            // 'price.required' => 'Harga Spare Part wajib diisi',
+            // 'price.integer' => 'Harga Spare Part harus berupa angka',
+            'image.required'   => 'File gambar harus diisi',
+            'image.image'   => 'File harus berupa gambar',
+            'image.mimes'   => 'File harus JPG, JPEG, PNG, atau GIF',
+            'image.max'     => 'Ukuran file maksimal 10MB',
         ]);
 
-        $data = $request->only('name', 'price', 'satuan_id', 'stock');
+        $data = $request->only('name', 'price', 'satuan_id', 'stock', 'category_id');
 
         if ($request->hasFile('image')) {
             $imageName = time() . '.' . $request->image->extension();
@@ -68,8 +89,9 @@ class AtkController extends Controller
     {
         $atk = AtkModel::findOrFail($id);
         $satuans = SatuanModel::all();
+        $categories = CategoryModel::all();
 
-        return view('dashboard.atk.edit', compact('atk', 'satuans'));
+        return view('dashboard.atk.edit', compact('atk', 'satuans', 'categories'));
     }
 
     public function update(Request $request, $id)
@@ -77,10 +99,14 @@ class AtkController extends Controller
         $request->validate([
             'name' => 'required|string',
             // 'price' => 'required|integer',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+            'category_id' => 'required|exists:category,id',
+            'satuan_id' => 'required|exists:satuan,id',
         ], [
             'name' => 'Nama Spare Part wajib diisi',
-            'price.required' => 'Harga Spare Part wajib diisi',
+            'category_id.required' => 'Kategori wajib dipilih',
+            'satuan_id.required' => 'Satuan wajib dipilih',
+            // 'price.required' => 'Harga Spare Part wajib diisi',
             // 'price.integer' => 'Harga Spare Part harus berupa angka',
             'image.required'   => 'File gambar harus diisi',
             'image.image'   => 'File harus berupa gambar',
@@ -92,6 +118,7 @@ class AtkController extends Controller
         $atk->name = $request->name;
         $atk->price = $request->price;
         $atk->satuan_id = $request->satuan_id;
+        $atk->category_id = $request->category_id;
 
         if ($request->hasFile('image')) {
             if ($atk->image && file_exists(public_path('images/' . $atk->image))) {
