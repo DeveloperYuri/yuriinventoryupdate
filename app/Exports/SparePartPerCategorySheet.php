@@ -32,12 +32,29 @@ class SparePartPerCategorySheet implements FromView, WithTitle, ShouldAutoSize
     public function view(): View
     {
         // Jika category ada, filter berdasarkan ID. Jika null, cari yang category_id nya NULL
+        // if ($this->category) {
+        //     $spareparts = ListSparePartModel::where('category_id', $this->category->id)->get();
+        //     $categoryName = $this->category->name;
+        // } else {
+        //     $spareparts = ListSparePartModel::whereNull('category_id')->get();
+        //     $categoryName = '-'; // Atau tulis 'KOSONG'
+        // }
+
+        // 1. Tambahkan filter Active di sini
         if ($this->category) {
-            $spareparts = ListSparePartModel::where('category_id', $this->category->id)->get();
+            $spareparts = ListSparePartModel::where('category_id', $this->category->id)
+                ->whereHas('produkstatus', function ($q) {
+                    $q->where('name', 'Active'); // Filter status Active
+                })
+                ->get();
             $categoryName = $this->category->name;
         } else {
-            $spareparts = ListSparePartModel::whereNull('category_id')->get();
-            $categoryName = '-'; // Atau tulis 'KOSONG'
+            $spareparts = ListSparePartModel::whereNull('category_id')
+                ->whereHas('produkstatus', function ($q) {
+                    $q->where('name', 'Active'); // Filter status Active
+                })
+                ->get();
+            $categoryName = '-';
         }
 
         $period = $this->period;

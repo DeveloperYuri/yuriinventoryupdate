@@ -32,8 +32,22 @@ class ListSparePartModel extends Model
 
     static public function getRecord($request)
     {
-        $query = self::with(['category', 'subcategory', 'satuan'])
+        // $query = self::with(['category', 'subcategory', 'satuan'])
+        //     ->orderBy('id', 'desc');
+
+        $query = self::with(['category', 'subcategory', 'satuan', 'produkstatus'])
             ->orderBy('id', 'desc');
+
+        // 1. Logika Filter Status
+        if ($request->filled('produk_status_id')) {
+            // Jika user memilih status tertentu di search, ikuti pilihan user
+            $query->where('spare_parts.produk_status_id', $request->produk_status_id);
+        } else {
+            // DEFAULT: Jika user belum pilih status apa-apa, otomatis filter 'Active'
+            $query->whereHas('produkstatus', function ($q) {
+                $q->where('name', 'Active');
+            });
+        }
 
         // Search Nama
         if ($request->filled('name')) {

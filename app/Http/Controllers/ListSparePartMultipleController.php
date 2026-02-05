@@ -114,8 +114,18 @@ class ListSparePartMultipleController extends Controller
         $results = ListSparePartModel::whereNotNull('name')
             ->where('name', '!=', '')
             ->where('name', 'like', '%' . $q . '%')
+            // Tambahkan filter ini untuk hanya mengambil yang Active
+            ->whereHas('produkstatus', function ($query) {
+                $query->where('name', 'Active');
+            })
             ->limit(20)
             ->get();
+
+        // $results = ListSparePartModel::whereNotNull('name')
+        //     ->where('name', '!=', '')
+        //     ->where('name', 'like', '%' . $q . '%')
+        //     ->limit(20)
+        //     ->get();
 
         $formatted = $results->map(function ($item) {
             return [

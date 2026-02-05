@@ -18,7 +18,10 @@ class SparepartExport implements FromView
 
     public function view(): View
     {
-        $spareparts = ListSparePartModel::all();
+        // $spareparts = ListSparePartModel::all();
+        $spareparts = ListSparePartModel::whereHas('produkstatus', function ($q) {
+            $q->where('name', 'Active');
+        })->get();
 
         if ($this->period) {
             // MODE BULANAN

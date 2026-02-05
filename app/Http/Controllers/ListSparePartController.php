@@ -220,7 +220,11 @@ class ListSparePartController extends Controller
         set_time_limit(50); // Beri waktu 5 menit
 
         $period = $request->period; // boleh null
-        $spareparts = ListSparePartModel::all();
+        // $spareparts = ListSparePartModel::all();
+        $spareparts = ListSparePartModel::whereHas('produkstatus', function ($q) {
+            $q->where('name', 'Active');
+        })->get();
+
 
         if ($period) {
             $start = $period . '-01';

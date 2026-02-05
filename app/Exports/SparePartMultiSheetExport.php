@@ -21,7 +21,10 @@ class SparePartMultiSheetExport implements WithMultipleSheets
 
         // 1. Ambil kategori yang ada di database
         // $categories = CategoryModel::all();
-        $categories = CategoryModel::has('spareparts')->get();
+        // $categories = CategoryModel::has('spareparts')->get();
+        $categories = CategoryModel::whereHas('spareparts.produkstatus', function ($q) {
+            $q->where('name', 'Active');
+        })->get();
 
         foreach ($categories as $category) {
             $sheets[] = new SparePartPerCategorySheet($category, $this->period);
