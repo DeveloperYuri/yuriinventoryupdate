@@ -161,7 +161,8 @@
                                                             <button type="submit"
                                                                 class="btn btn-sm btn-warning">Ajukan</button>
                                                         </form>
-                                                    @elseif ($sp->status == 'onprogress' && (auth()->user()->is_role == 1 || auth()->user()->is_role == 2))
+                                                        {{-- @elseif ($sp->status == 'onprogress' && (auth()->user()->is_role == 1 || auth()->user()->is_role == 2)) --}}
+                                                    @elseif ($sp->status == 'onprogress' && (auth()->user()->is_role == 2 || auth()->user()->name == 'widy'))
                                                         <form action="{{ route('suratpesanan.approve', $sp->id) }}"
                                                             method="POST" class="d-inline">
                                                             @csrf
