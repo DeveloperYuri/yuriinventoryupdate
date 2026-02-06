@@ -33,6 +33,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/jqueryui.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/litepicker.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" />
+    <script src="{{ asset('assets/js/sweetalert.js') }}"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

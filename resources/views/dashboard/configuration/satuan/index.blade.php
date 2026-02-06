@@ -3,11 +3,10 @@
 @section('content')
     <main id="main" class="main">
 
-        @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
-            <div class="pagetitle">
-                <a href="{{ route('create.satuan') }}" class="btn btn-primary">Add Satuan</a>
-            </div><!-- End Page Title -->
-        @endif
+        <div class="pagetitle">
+            <a href="{{ route('create.satuan') }}" class="btn btn-primary">Add Satuan</a>
+        </div><!-- End Page Title -->
+
 
         <div class="mt-4">
             <form method="get">
@@ -65,7 +64,8 @@
 
                                                 @if (Auth::user()->is_role == 2)
                                                     <td class="text-center">
-                                                        <form action="{{ route('delete.satuan', $data->id) }}" method="POST">
+                                                        <form action="{{ route('delete.satuan', $data->id) }}"
+                                                            method="POST">
 
                                                             <a href="{{ route('edit.satuan', $data->id) }}"
                                                                 class="btn btn-sm btn-warning mt-1">EDIT</a>

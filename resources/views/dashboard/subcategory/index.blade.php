@@ -3,11 +3,9 @@
 @section('content')
     <main id="main" class="main">
 
-        @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
-            <div class="pagetitle">
-                <a href="{{ route('createsubcategory')}}" class="btn btn-primary">Create New Sub Category</a>
-            </div><!-- End Page Title -->
-        @endif
+        <div class="pagetitle">
+            <a href="{{ route('createsubcategory') }}" class="btn btn-primary">Create New Sub Category</a>
+        </div><!-- End Page Title -->
 
         <div class="mt-4">
             <form method="get">
