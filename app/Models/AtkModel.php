@@ -19,6 +19,8 @@ class AtkModel extends Model
         'stock',
         'satuan_id',
         'category_id',
+        'status_atk_id'
+
     ];
 
     public function transactions()
@@ -32,17 +34,8 @@ class AtkModel extends Model
 
     static public function getRecord($request)
     {
-        $query = self::with(['category', 'satuan'])
+        $query = self::with(['category', 'satuan', 'produkstatus'])
             ->orderBy('id', 'desc');
-
-        // Default Filter: Tampilkan Active jika user tidak sedang mencari status tertentu
-        // if ($request->filled('produk_status_id')) {
-        //     $query->where('produk_status_id', $request->produk_status_id);
-        // } else {
-        //     $query->whereHas('produkstatus', function ($q) {
-        //         $q->where('name', 'Active');
-        //     });
-        // }
 
         // Search Nama
         if ($request->filled('name')) {
@@ -54,6 +47,18 @@ class AtkModel extends Model
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
         }
+
+        //Filter Status
+        if ($request->filled('status_atk_id')) {
+            // Jika user memilih status tertentu di search, ikuti pilihan user
+            $query->where('atk.status_atk_id', $request->status_atk_id);
+        } else {
+            // DEFAULT: Jika user belum pilih status apa-apa, otomatis filter 'Active'
+            $query->whereHas('produkstatus', function ($q) {
+                $q->where('name', 'Active');
+            });
+        }
+
 
         // Filter Sub Category (Jika tabel ATK ada subcategory)
         // if ($request->filled('subcategory_id')) {
@@ -137,5 +142,42 @@ class AtkModel extends Model
     public function category()
     {
         return $this->belongsTo(CategoryModel::class, 'category_id');
+    }
+
+    public function produkstatus()
+    {
+        return $this->belongsTo(ProdukstatusModel::class, 'status_atk_id');
+    }
+
+    public function getInBefore($date)
+    {
+        return $this->transactions()
+            ->where('type', 'in')
+            ->where('created_at', '<', $date)
+            ->sum('quantity');
+    }
+
+    public function getOutBefore($date)
+    {
+        return $this->transactions()
+            ->where('type', 'out')
+            ->where('created_at', '<', $date)
+            ->sum('quantity');
+    }
+
+    public function getInPeriod($start, $end)
+    {
+        return $this->transactions()
+            ->where('type', 'in')
+            ->whereBetween('created_at', [$start, $end])
+            ->sum('quantity');
+    }
+
+    public function getOutPeriod($start, $end)
+    {
+        return $this->transactions()
+            ->where('type', 'out')
+            ->whereBetween('created_at', [$start, $end])
+            ->sum('quantity');
     }
 }

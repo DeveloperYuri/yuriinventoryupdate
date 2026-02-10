@@ -1,6 +1,28 @@
 @extends('dashboard.layouts.main')
 
 @section('content')
+    <style>
+        /* Sembunyikan kolom secara default saat halaman dimuat (Refresh) */
+        /* Kolom 6: Stok Awal, 7: Masuk, 8: Keluar, dan Kolom Status (sesuaikan index jika ada) */
+        .table th:nth-child(4),
+        .table td:nth-child(4),
+        .table th:nth-child(5),
+        .table td:nth-child(5),
+        .table th:nth-child(6),
+        .table td:nth-child(6),
+        .table th:nth-child(9),
+        .table td:nth-child(9) {
+            display: none;
+        }
+
+        /* .table tbody tr {
+                        height: 400px;
+                        /* Ubah angka ini sesuai keinginan */
+        }
+
+        */
+    </style>
+
     <main id="main" class="main">
 
         <div class="pagetitle d-flex justify-content-between align-items-center">
@@ -34,10 +56,31 @@
                         </select>
                     </div>
 
+                    <div class="col-2">
+                        <small class="text-muted">Status</small>
+                        <select name="status_atk_id" class="form-control">
+                            <option value="">-- Semua Status --</option>
+                            @foreach ($produkstatus as $status)
+                                <option value="{{ $status->id }}"
+                                    {{ request('status_atk_id') == $status->id ? 'selected' : '' }}>
+                                    {{ $status->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-2">
+                        <small class="text-muted">Pilih Periode</small>
+                        <input type="month" name="period" class="form-control" value="{{ request('period') }}">
+                    </div>
+
                     <div class="col-auto">
                         <small class="d-block">&nbsp;</small>
-                        <button type="submit" class="btn btn-dark">Cari</button>
+                        <button type="submit" class="btn btn-primary">Cari</button>
                         <a href="{{ route('atk.index') }}" class="btn btn-secondary">Reset</a>
+
+                        {{-- <button type="submit" class="btn btn-primary">Cari</button>
+                        <a href="{{ route('spare-parts.index') }}" class="btn btn-secondary">Reset</a> --}}
 
                     </div>
                 </div>
@@ -99,6 +142,11 @@
                                         <a href="{{ route('atk.cetakpdf') }}" class="btn btn-success" target="_blank">Print
                                             PDF</a>
                                         <a href="{{ route('atk.export') }}" class="btn btn-success">Export Excel</a>
+
+                                        <a href="{{ route('atk.exportmultiple', ['period' => $period]) }}"
+                                            class="btn btn-success">
+                                            Export Excel by Category
+                                        </a>
                                     </div>
                                 @endif
 
@@ -129,15 +177,56 @@
                                             {{-- @if (Auth::user()->is_role == 2)
                                                 <th class="text-center">Harga</th>
                                             @endif --}}
+                                            <th class="text-center">Stok Awal</th>
                                             <th class="text-center">Masuk</th>
                                             <th class="text-center">Keluar</th>
-                                            <th class="text-center">Stok</th>
+                                            <th class="text-center">Stok Akhir</th>
                                             <th class="text-center">Satuan</th>
-
+                                            <th class="text-center">Status</th>
 
                                             @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 3)
                                                 <th class="text-center">Aksi</th>
                                             @endif
+
+                                            <th class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="javascript:void(0)" id="filterColumn" data-bs-toggle="dropdown"
+                                                        data-bs-auto-close="outside" aria-expanded="false"
+                                                        class="text-dark">
+                                                        <i class="bi bi-filter"></i>
+                                                    </a>
+                                                    <ul class="dropdown-menu shadow-sm p-3" aria-labelledby="filterColumn"
+                                                        style="min-width: 200px; font-size: 14px;">
+                                                        <li>
+                                                            <h6 class="dropdown-header px-0 text-dark">Tampilkan Kolom</h6>
+                                                        </li>
+
+                                                        @php
+                                                            $columns = [
+                                                                ['id' => 4, 'name' => 'Stok Awal'],
+                                                                ['id' => 5, 'name' => 'Masuk'],
+                                                                ['id' => 6, 'name' => 'Keluar'],
+                                                                ['id' => 9, 'name' => 'Status'],
+                                                            ];
+                                                        @endphp
+
+                                                        @foreach ($columns as $col)
+                                                            <li>
+                                                                <div class="form-check mb-1">
+                                                                    <input class="form-check-input toggle-vis"
+                                                                        type="checkbox" value="{{ $col['id'] }}"
+                                                                        id="check{{ $col['id'] }}">
+                                                                    {{-- Tanpa atribut 'checked' --}}
+                                                                    <label class="form-check-label"
+                                                                        for="check{{ $col['id'] }}">
+                                                                        {{ $col['name'] }}
+                                                                    </label>
+                                                                </div>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -160,7 +249,8 @@
                                                             <div class="modal-content bg-transparent border-0 shadow-none">
                                                                 <div class="modal-body text-center p-0">
                                                                     <img src="{{ asset('images/' . ($atk->image ?? 'default.png')) }}"
-                                                                        class="img-fluid rounded" style="max-height: 90vh;">
+                                                                        class="img-fluid rounded"
+                                                                        style="max-height: 90vh;">
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -201,12 +291,25 @@
                                                         {{ number_format($atk->price, 0, ',', '.') }}
                                                     </td>
                                                 @endif --}}
-                                                <td class="text-center">{{ $atk->getTotalIn() }}</td>
+                                                {{-- <td class="text-center">{{ $atk->getTotalIn() }}</td>
                                                 <td class="text-center">{{ $atk->getTotalOut() }}</td>
                                                 <td class="text-center">{{ $atk->stock }}</td>
+                                                <td class="text-center">{{ $atk->stock }}</td> --}}
+                                                <td class="text-center">{{ $atk->stock_awal }}</td>
+                                                <td class="text-center">{{ $atk->masuk }}</td>
+                                                <td class="text-center">{{ $atk->keluar }}</td>
+                                                <td class="text-center">{{ $atk->stock_akhir }}</td>
                                                 <td class="text-center">{{ $atk->satuan->name ?? '-' }}</td>
-
-
+                                                <td class="text-center">
+                                                    @if ($atk->produkstatus)
+                                                        <span
+                                                            class="badge {{ strtolower($atk->produkstatus->name) == 'active' ? 'bg-success' : 'bg-danger' }}">
+                                                            {{ $atk->produkstatus->name }}
+                                                        </span>
+                                                    @else
+                                                        <span class="badge bg-secondary">-</span>
+                                                    @endif
+                                                </td>
                                                 <td class="text-center">
                                                     @if (Auth::user()->is_role == 3 || Auth::user()->is_role == 2)
                                                         <a href="{{ route('atk.edit', $atk->id) }}"
@@ -219,8 +322,8 @@
                                                     @endif
 
                                                     @if (Auth::user()->is_role == 2)
-                                                        <form action="{{ route('atk.destroy', $atk->id) }}" method="POST"
-                                                            style="display:inline;">
+                                                        <form action="{{ route('atk.destroy', $atk->id) }}"
+                                                            method="POST" style="display:inline;">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="button" class="btn btn-sm btn-danger mt-1"
@@ -289,6 +392,24 @@
             $("#searchingtitle").autocomplete({
                 source: "{{ route('atk.autocomplete') }}",
                 minLength: 2, // mulai search setelah 2 karakter
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('.toggle-vis').on('change', function() {
+                // Kita gunakan value langsung sebagai urutan kolom (nth-child)
+                var colIndex = $(this).val();
+
+                var cells = $('table.table').find('th:nth-child(' + colIndex + '), td:nth-child(' +
+                    colIndex + ')');
+
+                if ($(this).is(':checked')) {
+                    cells.show();
+                } else {
+                    cells.hide();
+                }
             });
         });
     </script>

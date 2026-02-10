@@ -91,6 +91,26 @@
                                     </div>
                                 </div>
 
+                                <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">Status<span style="color: red">*</span></label>
+                                    <div class="col-sm-10">
+                                        <select name="status_atk_id"
+                                            class="form-control @error('status_atk_id') is-invalid @enderror">
+                                            <option value="">-- Pilih Status --</option>
+                                            @foreach ($produkstatus as $ps)
+                                                <option value="{{ $ps->id }}"
+                                                    {{ old('status_atk_id', 1) == $ps->id ? 'selected' : '' }}>
+                                                    {{ $ps->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+
+                                        @error('status_atk_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
                                 {{-- <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Satuan</label>
                                     <div class="col-sm-10">

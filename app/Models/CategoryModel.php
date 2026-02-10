@@ -40,4 +40,10 @@ class CategoryModel extends Model
         // Pastikan 'category_id' adalah nama kolom di tabel list_spare_part kamu
         return $this->hasMany(ListSparePartModel::class, 'category_id');
     }
+
+    public function atk()
+    {
+        // Pastikan 'category_id' adalah nama kolom di tabel list_spare_part kamu
+        return $this->hasMany(AtkModel::class, 'category_id');
+    }
 }

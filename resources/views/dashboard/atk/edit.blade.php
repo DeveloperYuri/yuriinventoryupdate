@@ -34,7 +34,8 @@
                                 </div>
 
                                 <div class="row mb-3">
-                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Description<span style="color: red">*</span></label>
+                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Description<span
+                                            style="color: red">*</span></label>
                                     <div class="col-sm-10">
                                         <input type="text" name="name"
                                             class="form-control @error('name') is-invalid @enderror"
@@ -94,25 +95,25 @@
                                     </div>
                                 </div>
 
-
-
-                                {{-- <div class="row mb-3">
-                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Satuan</label>
+                                <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">Status<span style="color: red">*</span></label>
                                     <div class="col-sm-10">
-                                        <select name="satuan" class="form-control" required dusk="atkintoggle"
-                                            value="{{ $atk->satuan }}">
-                                            <option value="Pcs" {{ $atk->satuan == 'Pcs' ? 'selected' : '' }}>Pcs
-                                            </option>
-                                            <option value="Pack" {{ $atk->satuan == 'Pack' ? 'selected' : '' }}>
-                                                Pack
-                                            </option>
-                                            <option value="Meter" {{ $atk->satuan == 'Meter' ? 'selected' : '' }}>
-                                                Meter</option>
-                                            <option value="Set" {{ $atk->satuan == 'Set' ? 'selected' : '' }}>
-                                                Set</option>
+                                        <select name="status_atk_id"
+                                            class="form-control @error('status_atk_id') is-invalid @enderror">
+                                            <option value="">-- Pilih Status --</option>
+                                            @foreach ($produkstatus as $ps)
+                                                <option value="{{ $ps->id }}"
+                                                    {{ old('status_atk_id', $atk->status_atk_id) == $ps->id ? 'selected' : '' }}>
+                                                    {{ $ps->name }}
+                                                </option>
+                                            @endforeach
                                         </select>
+
+                                        @error('status_atk_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
-                                </div> --}}
+                                </div>
 
                                 <div class="col-sm-10">
                                     <button type="submit" class="btn btn-primary">Save</button>

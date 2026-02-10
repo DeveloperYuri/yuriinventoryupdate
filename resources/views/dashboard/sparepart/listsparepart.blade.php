@@ -242,14 +242,6 @@
                                                                 </div>
                                                             </li>
                                                         @endforeach
-
-                                                        {{-- <hr class="dropdown-divider">
-                                                        <li>
-                                                            <a class="dropdown-item d-flex align-items-center px-0 text-primary"
-                                                                href="#">
-                                                                <i class="bi bi-plus-lg me-2"></i> Tambahkan Field Kustom
-                                                            </a>
-                                                        </li> --}}
                                                     </ul>
                                                 </div>
                                             </th>

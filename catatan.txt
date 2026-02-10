@@ -329,6 +329,11 @@ create masuk
     </script>
 @endpush
 
+update status ATK
+UPDATE atk 
+SET status_atk_id = 1
+WHERE status_atk_id is NULL;
+
 
 
 

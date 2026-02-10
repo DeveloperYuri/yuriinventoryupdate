@@ -332,7 +332,7 @@ Route::get('/export-atk', [AtkController::class, 'exportExcel'])->name('atk.expo
 Route::get('/riwayat-atk', [AtkController::class, 'history'])->name('atk.history');
 Route::get('/riwayat-atk/detail/{id}', [AtkController::class, 'viewHistoryPerItem'])->name('atk.detail');
 Route::get('/atk/autocomplete', [AtkController::class, 'autocomplete'])->name('atk.autocomplete');
-
+Route::get('/exportmultiple-atk', [AtkController::class, 'exportmultipleExcel'])->name('atk.exportmultiple');
 
 // ATK Masuk Banyak Item
 Route::get('/atk-masuk', [AtkmasukController::class, 'index'])->name('atkmasuk.index');

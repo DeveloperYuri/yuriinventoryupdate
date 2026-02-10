@@ -2,14 +2,14 @@
 
 namespace App\Exports;
 
-use Maatwebsite\Excel\Concerns\FromCollection;
-use App\Models\ListSparePartModel;
-use Illuminate\Contracts\View\View;
+use App\Models\AtkModel;
 use Maatwebsite\Excel\Concerns\FromView;
-use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithTitle;
+use Illuminate\Contracts\View\View;
 
-class SparePartPerCategorySheet implements FromView, WithTitle, ShouldAutoSize
+
+class AtkPerCategorySheet implements FromView, WithTitle, ShouldAutoSize
 {
     private $category;
     private $period;
@@ -33,14 +33,14 @@ class SparePartPerCategorySheet implements FromView, WithTitle, ShouldAutoSize
     {
         // 1. Tambahkan filter Active di sini
         if ($this->category) {
-            $spareparts = ListSparePartModel::where('category_id', $this->category->id)
+            $atk = AtkModel::where('category_id', $this->category->id)
                 ->whereHas('produkstatus', function ($q) {
                     $q->where('name', 'Active'); // Filter status Active
                 })
                 ->get();
             $categoryName = $this->category->name;
         } else {
-            $spareparts = ListSparePartModel::whereNull('category_id')
+            $atk = AtkModel::whereNull('category_id')
                 ->whereHas('produkstatus', function ($q) {
                     $q->where('name', 'Active'); // Filter status Active
                 })
@@ -56,7 +56,7 @@ class SparePartPerCategorySheet implements FromView, WithTitle, ShouldAutoSize
             $end   = \Carbon\Carbon::parse($start)->endOfMonth()->toDateTimeString();
             $prevMonthEnd = \Carbon\Carbon::parse($start)->subSecond()->toDateTimeString();
 
-            foreach ($spareparts as $part) {
+            foreach ($atk as $part) {
                 // Hitung Saldo awal sebelum periode yang dipilih
                 $stockAwal = $part->transactions()
                     ->where('created_at', '<=', $prevMonthEnd)
@@ -70,7 +70,7 @@ class SparePartPerCategorySheet implements FromView, WithTitle, ShouldAutoSize
             }
         } else {
             // Jika tidak ada periode (Global)
-            foreach ($spareparts as $part) {
+            foreach ($atk as $part) {
                 $part->stock_awal = 0;
                 $part->masuk      = $part->getTotalIn();
                 $part->keluar     = $part->getTotalOut();
@@ -78,8 +78,8 @@ class SparePartPerCategorySheet implements FromView, WithTitle, ShouldAutoSize
             }
         }
 
-        return view('sparepartexcel.multipleexcel', [
-            'getRecord' => $spareparts,
+        return view('dashboard.atk.laporanatkexcelmultiple', [
+            'getRecord' => $atk,
             'period'    => $period,
             'categoryName' => $categoryName // Kirim nama kategori manual ke blade
         ]);

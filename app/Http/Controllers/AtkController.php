@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Exports\AtkExport;
 use App\Exports\AtkHistoryExport;
+use App\Exports\AtkMultiSheetExport;
 use App\Models\AtkModel;
 use App\Models\AtktransactionModel;
 use App\Models\CategoryModel;
+use App\Models\ProdukstatusModel;
 use App\Models\SatuanModel;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -27,10 +29,47 @@ class AtkController extends Controller
     {
         // Langsung masukkan ke variabel sendiri
         $getRecord = AtkModel::getRecord($request);
+
+        $period = $request->period;
+
+        if ($period) {
+            $start = $period . '-01';
+            $end   = \Carbon\Carbon::parse($start)->endOfMonth()->toDateTimeString(); // Sampai 23:59:59
+
+            // AMBIL SAMPAI DETIK TERAKHIR BULAN LALU
+            $prevMonthEnd = \Carbon\Carbon::parse($start)->subSecond()->toDateTimeString();
+        }
+
+        foreach ($getRecord as $part) {
+
+            if ($period) {
+                $stockAwal = $part->transactions()
+                    ->where('created_at', '<=', $prevMonthEnd)
+                    ->selectRaw("SUM(CASE WHEN type='in' THEN quantity ELSE -quantity END) as balance")
+                    ->value('balance') ?? 0;
+
+                $masuk  = $part->getInPeriod($start, $end);
+                $keluar = $part->getOutPeriod($start, $end);
+            } else {
+                // Mode normal (tanpa periode)
+                $stockAwal = 0;
+                $masuk     = $part->getTotalIn();
+                $keluar    = $part->getTotalOut();
+            }
+
+            $part->stock_awal  = $stockAwal;
+            $part->masuk       = $masuk;
+            $part->keluar      = $keluar;
+            $part->stock_akhir = $stockAwal + $masuk - $keluar;
+        }
+
         $categories = CategoryModel::all();
+        $produkstatus = ProdukstatusModel::all();
+
+        // dd($getRecord->first()->produkstatus);
 
         // Kirimkan variabel secara terpisah
-        return view('dashboard.atk.listatk', compact('getRecord', 'categories'));
+        return view('dashboard.atk.listatk', compact('getRecord', 'categories', 'produkstatus', 'period'));
     }
 
     public function cardindex(Request $request)
@@ -43,13 +82,14 @@ class AtkController extends Controller
     {
         $satuan = SatuanModel::all();
         $categories = CategoryModel::all();
+        $produkstatus = ProdukstatusModel::all();
 
-        return view('dashboard.atk.create', compact('satuan', 'categories'));
+
+        return view('dashboard.atk.create', compact('satuan', 'categories', 'produkstatus'));
     }
 
     public function store(Request $request)
     {
-
         // dd($request->all());
 
         $request->validate([
@@ -72,7 +112,7 @@ class AtkController extends Controller
             'image.max'     => 'Ukuran file maksimal 10MB',
         ]);
 
-        $data = $request->only('name', 'price', 'satuan_id', 'stock', 'category_id');
+        $data = $request->only('name', 'price', 'satuan_id', 'stock', 'category_id', 'status_atk_id');
 
         if ($request->hasFile('image')) {
             $imageName = time() . '.' . $request->image->extension();
@@ -88,10 +128,12 @@ class AtkController extends Controller
     public function edit($id)
     {
         $atk = AtkModel::findOrFail($id);
+
         $satuans = SatuanModel::all();
         $categories = CategoryModel::all();
+        $produkstatus = ProdukstatusModel::all();
 
-        return view('dashboard.atk.edit', compact('atk', 'satuans', 'categories'));
+        return view('dashboard.atk.edit', compact('atk', 'satuans', 'categories', 'produkstatus'));
     }
 
     public function update(Request $request, $id)
@@ -119,6 +161,7 @@ class AtkController extends Controller
         $atk->price = $request->price;
         $atk->satuan_id = $request->satuan_id;
         $atk->category_id = $request->category_id;
+        $atk->status_atk_id = $request->status_atk_id;
 
         if ($request->hasFile('image')) {
             if ($atk->image && file_exists(public_path('images/' . $atk->image))) {
@@ -314,6 +357,21 @@ class AtkController extends Controller
     public function exportExcel()
     {
         return Excel::download(new AtkExport, 'laporan_atk.xlsx');
+    }
+
+    public function exportmultipleExcel(Request $request)
+    {
+        // 1. Ambil periode dari request (misal: 2026-02)
+        $period = $request->period;
+
+        // 2. Tentukan nama file
+        // Jika ada periode, nama file: Laporan_Sparepart_2026-02.xlsx
+        // Jika tidak ada, nama file: Laporan_Sparepart_Global.xlsx
+        $filename = 'Laporan_Atk_' . ($period ?: 'Global') . '.xlsx';
+
+        // 3. Eksekusi Download
+        // Kita kirim variabel $period ke dalam constructor SparePartMultiSheetExport
+        return Excel::download(new AtkMultiSheetExport($period), $filename);
     }
 
     public function autocomplete(Request $request)
