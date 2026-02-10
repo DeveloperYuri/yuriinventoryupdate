@@ -16,8 +16,8 @@
         }
 
         /* .table tbody tr {
-                        height: 400px;
-                        /* Ubah angka ini sesuai keinginan */
+                                            height: 400px;
+                                            /* Ubah angka ini sesuai keinginan */
         }
 
         */
@@ -77,7 +77,7 @@
                     <div class="col-auto">
                         <small class="d-block">&nbsp;</small>
                         <button type="submit" class="btn btn-primary">Cari</button>
-                        <a href="{{ route('atk.index') }}" class="btn btn-secondary">Reset</a>
+                        <a href="{{ route('atk.index') }}" id="btnReset" class="btn btn-secondary">Reset</a>
 
                         {{-- <button type="submit" class="btn btn-primary">Cari</button>
                         <a href="{{ route('spare-parts.index') }}" class="btn btn-secondary">Reset</a> --}}
@@ -216,7 +216,6 @@
                                                                     <input class="form-check-input toggle-vis"
                                                                         type="checkbox" value="{{ $col['id'] }}"
                                                                         id="check{{ $col['id'] }}">
-                                                                    {{-- Tanpa atribut 'checked' --}}
                                                                     <label class="form-check-label"
                                                                         for="check{{ $col['id'] }}">
                                                                         {{ $col['name'] }}
@@ -224,6 +223,20 @@
                                                                 </div>
                                                             </li>
                                                         @endforeach
+
+                                                        {{-- @foreach ($columns as $col)
+                                                            <li>
+                                                                <div class="form-check mb-1">
+                                                                    <input class="form-check-input toggle-vis"
+                                                                        type="checkbox" value="{{ $col['id'] }}"
+                                                                        id="check{{ $col['id'] }}">
+                                                                    <label class="form-check-label"
+                                                                        for="check{{ $col['id'] }}">
+                                                                        {{ $col['name'] }}
+                                                                    </label>
+                                                                </div>
+                                                            </li>
+                                                        @endforeach --}}
                                                     </ul>
                                                 </div>
                                             </th>
@@ -376,6 +389,52 @@
 
 @push('scripts')
     <script>
+        $(document).ready(function() {
+            // 1. Fungsi Utama (Tanpa +1)
+            function setColumnVisibility(colIndex, isVisible) {
+                // colIndex adalah 4, 5, 6, atau 9 sesuai value di checkbox
+                var cells = $('table.table').find('th:nth-child(' + colIndex + '), td:nth-child(' + colIndex + ')');
+
+                if (isVisible) {
+                    cells.show();
+                } else {
+                    cells.hide();
+                }
+            }
+
+            // 2. Jalankan saat halaman baru dimuat (Restore dari Storage)
+            $('.toggle-vis').each(function() {
+                var colId = $(this).val();
+                // Ambil data dari storage
+                var isChecked = localStorage.getItem('col_vis_atk_' + colId) === 'true';
+
+                // Terapkan ke checkbox
+                $(this).prop('checked', isChecked);
+
+                // Terapkan ke tabel
+                setColumnVisibility(colId, isChecked);
+            });
+
+            // 3. Simpan ke Storage saat diklik
+            $('.toggle-vis').on('change', function() {
+                var colId = $(this).val();
+                var isChecked = $(this).is(':checked');
+
+                localStorage.setItem('col_vis_atk_' + colId, isChecked);
+                setColumnVisibility(colId, isChecked);
+            });
+
+            // 4. Tombol Reset
+            $('#btnReset').on('click', function() {
+                $('.toggle-vis').each(function() {
+                    var colId = $(this).val();
+                    localStorage.removeItem('col_vis_atk_' + colId);
+                });
+            });
+        });
+    </script>
+
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
             const importForm = document.querySelector('#importModal form');
             const btnImport = document.getElementById('btnImport');
@@ -398,6 +457,27 @@
 
     <script>
         $(document).ready(function() {
+            // ... kode toggle-vis yang sebelumnya ...
+
+            // Fungsi untuk tombol Reset
+            $('#btnReset').on('click', function(e) {
+                // 1. Hapus semua data kolom yang tersimpan di browser
+                $('.toggle-vis').each(function() {
+                    var colId = $(this).val();
+                    localStorage.removeItem('col_vis_' + colId);
+                });
+
+                // 2. Uncheck semua checkbox secara visual
+                $('.toggle-vis').prop('checked', false);
+
+                // Catatan: Karena tombol ini adalah link (<a>), 
+                // halaman akan otomatis reload ke index dan kolom akan kembali tersembunyi (default CSS).
+            });
+        });
+    </script>
+
+    {{-- <script>
+        $(document).ready(function() {
             $('.toggle-vis').on('change', function() {
                 // Kita gunakan value langsung sebagai urutan kolom (nth-child)
                 var colIndex = $(this).val();
@@ -412,7 +492,7 @@
                 }
             });
         });
-    </script>
+    </script> --}}
 @endpush
 
 @if ($errors->any())

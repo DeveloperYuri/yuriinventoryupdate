@@ -16,9 +16,11 @@
         }
 
         /* .table tbody tr {
-            height: 400px;
-            /* Ubah angka ini sesuai keinginan */
-        } */
+                            height: 400px;
+                            /* Ubah angka ini sesuai keinginan */
+        }
+
+        */
     </style>
 
     <main id="main" class="main">
@@ -85,7 +87,7 @@
                     <div class="col-auto">
                         <small class="d-block">&nbsp;</small>
                         <button type="submit" class="btn btn-primary">Cari</button>
-                        <a href="{{ route('spare-parts.index') }}" class="btn btn-secondary">Reset</a>
+                        <a href="{{ route('spare-parts.index') }}" id="btnReset" class="btn btn-secondary">Reset</a>
                     </div>
                 </div>
             </form>
@@ -233,8 +235,9 @@
                                                                 <div class="form-check mb-1">
                                                                     <input class="form-check-input toggle-vis"
                                                                         type="checkbox" value="{{ $col['id'] }}"
-                                                                        id="check{{ $col['id'] }}">
-                                                                    {{-- Tanpa atribut 'checked' --}}
+                                                                        id="check{{ $col['id'] }}"
+                                                                        data-column="{{ $col['id'] }}">
+                                                                    {{-- Tambahkan ini --}}
                                                                     <label class="form-check-label"
                                                                         for="check{{ $col['id'] }}">
                                                                         {{ $col['name'] }}
@@ -242,6 +245,21 @@
                                                                 </div>
                                                             </li>
                                                         @endforeach
+
+                                                        {{-- @foreach ($columns as $col)
+                                                            <li>
+                                                                <div class="form-check mb-1">
+                                                                    <input class="form-check-input toggle-vis"
+                                                                        type="checkbox" value="{{ $col['id'] }}"
+                                                                        id="check{{ $col['id'] }}">
+                                                                   
+                                                                    <label class="form-check-label"
+                                                                        for="check{{ $col['id'] }}">
+                                                                        {{ $col['name'] }}
+                                                                    </label>
+                                                                </div>
+                                                            </li>
+                                                        @endforeach --}}
                                                     </ul>
                                                 </div>
                                             </th>
@@ -380,6 +398,45 @@
 
 @push('scripts')
     <script>
+        $(document).ready(function() {
+            // 1. Fungsi untuk mengatur visibilitas kolom
+            function setColumnVisibility(colIndex, isVisible) {
+                var realIndex = parseInt(colIndex) + 1; // Menyesuaikan index kolom HTML
+                var cells = $('table.table').find('th:nth-child(' + realIndex + '), td:nth-child(' + realIndex +
+                    ')');
+
+                if (isVisible) {
+                    cells.show();
+                } else {
+                    cells.hide();
+                }
+            }
+
+            // 2. Load status dari LocalStorage saat halaman dimuat
+            $('.toggle-vis').each(function() {
+                var colId = $(this).val();
+                // Ambil status tersimpan, defaultnya 'false' (sembunyi) sesuai CSS Anda
+                var isChecked = localStorage.getItem('sparepart_vis' + colId) === 'true';
+
+                $(this).prop('checked', isChecked);
+                setColumnVisibility(colId, isChecked);
+            });
+
+            // 3. Simpan status ke LocalStorage saat checkbox diubah
+            $('.toggle-vis').on('change', function() {
+                var colId = $(this).val();
+                var isChecked = $(this).is(':checked');
+
+                // Simpan status ke localStorage
+                localStorage.setItem('sparepart_vis' + colId, isChecked);
+
+                // Jalankan fungsi sembunyi/tampil
+                setColumnVisibility(colId, isChecked);
+            });
+        });
+    </script>
+
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
             const importForm = document.querySelector('#importModal form');
             const btnImport = document.getElementById('btnImport');
@@ -438,6 +495,27 @@
 
     <script>
         $(document).ready(function() {
+            // ... kode toggle-vis yang sebelumnya ...
+
+            // Fungsi untuk tombol Reset
+            $('#btnReset').on('click', function(e) {
+                // 1. Hapus semua data kolom yang tersimpan di browser
+                $('.toggle-vis').each(function() {
+                    var colId = $(this).val();
+                    localStorage.removeItem('sparepart_vis' + colId);
+                });
+
+                // 2. Uncheck semua checkbox secara visual
+                $('.toggle-vis').prop('checked', false);
+
+                // Catatan: Karena tombol ini adalah link (<a>), 
+                // halaman akan otomatis reload ke index dan kolom akan kembali tersembunyi (default CSS).
+            });
+        });
+    </script>
+
+    {{-- <script>
+        $(document).ready(function() {
             $('.toggle-vis').on('change', function() {
                 var colIndex = parseInt($(this).val()) + 1;
                 // Gunakan selector yang lebih spesifik ke tabel sparepart
@@ -451,7 +529,7 @@
                 }
             });
         });
-    </script>
+    </script> --}}
 @endpush
 
 @if ($errors->any())
