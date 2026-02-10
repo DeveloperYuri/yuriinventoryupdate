@@ -28,7 +28,9 @@ class AssetitController extends Controller
             'INFRASTRUKTUR JARINGAN' => 'IFJINV',
             'PC SERVER'              => 'SVINV',
             'INFRASTRUKTUR TELPON'   => 'IFTINV',
-            'INFRASTRUKTUR CCTV'    => 'IFCINV',
+            'INFRASTRUKTUR CCTV'     => 'IFCINV',
+            'PONSEL'                 => 'PONINV',
+            'LAINNYA'                => 'LININV',
         ];
 
         $nama = $request->nama;
@@ -99,8 +101,11 @@ class AssetitController extends Controller
     {
         $assetit = AssetitModel::findOrFail($id);
         $locations = LocationsModel::all();
+        $categories = AssetitModel::orderBy('nama', 'asc')
+        ->pluck('nama')
+        ->unique();
 
-        return view('dashboard.assetit.edit', compact('assetit', 'locations'));
+        return view('dashboard.assetit.edit', compact('assetit', 'locations', 'categories'));
     }
 
     public function update(Request $request, $id)

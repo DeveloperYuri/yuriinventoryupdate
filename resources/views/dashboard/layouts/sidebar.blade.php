@@ -56,6 +56,15 @@
                          </a>
                      </li>
 
+                     @if (Auth::user()->is_role == 2)
+                         <li>
+                             <a href="{{ route('sparepartinmultiple.index') }}"
+                                 class="{{ request()->routeIs('sparepartinmultiple.*') ? 'active' : '' }}">
+                                 <i class="bi bi-circle"></i><span>Spare Part Masuk Baru</span>
+                             </a>
+                         </li>
+                     @endif
+
                      <li>
                          <a href="{{ route('sparepartoutmultiple.index') }}"
                              class="{{ request()->routeIs('sparepartoutmultiple.*') ? 'active' : '' }}">
@@ -84,6 +93,15 @@
                              <a href="{{ route('suratpesanan.index') }}"
                                  class="{{ request()->routeIs('suratpesanan.index') ? 'active' : '' }}">
                                  <i class="bi bi-circle"></i><span>Surat Pesanan</span>
+                             </a>
+                         </li>
+                     @endif
+
+                     @if (Auth::user()->is_role == 2)
+                         <li>
+                             <a href="{{ route('suratpesanan.index') }}"
+                                 class="{{ request()->routeIs('suratpesanan.index') ? 'active' : '' }}">
+                                 <i class="bi bi-circle"></i><span>Surat Pesanan Spare Part Baru</span>
                              </a>
                          </li>
                      @endif

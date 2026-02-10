@@ -60,6 +60,8 @@
                                                     'PC SERVER',
                                                     'INFRASTRUKTUR TELPON',
                                                     'INFRASTRUKTUR CCTV',
+                                                    'PONSEL',
+                                                    'LAINNYA',
                                                 ];
 
                                                 $selectedNama = old('nama', $perbaikan->nama ?? '');

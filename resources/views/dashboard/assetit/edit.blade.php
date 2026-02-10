@@ -17,6 +17,20 @@
                                 {{ csrf_field() }}
 
                                 <div class="row mb-3">
+                                    <label for="nomer_asset" class="col-sm-2 col-form-label">Nomer Asset</label>
+                                    <div class="col-sm-10">
+                                        <input type="text"
+                                            class="form-control @error('nomer_asset') is-invalid @enderror" id="nomer_asset"
+                                            {{-- GANTI ID DISINI --}} name="nomer_asset" value="{{ $assetit->nomer_asset }}"
+                                            readonly> {{-- Tambahkan readonly agar aman --}}
+
+                                        @error('nomer_asset')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                {{-- <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Nomer Asset</label>
                                     <div class="col-sm-10">
                                         <input type="text"
@@ -26,7 +40,7 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 {{-- generate otomatis numer asset IT --}}
                                 {{-- <div class="row mb-3">
@@ -65,8 +79,61 @@
                                     </div>
                                 </div>
 
-
                                 <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">
+                                        Category Asset <span style="color:red">*</span>
+                                    </label>
+
+                                    <div class="col-sm-10">
+                                        <select name="nama" id="category_asset"
+                                            class="form-control @error('nama') is-invalid @enderror">
+
+                                            <option value="">-- Pilih Category --</option>
+
+                                            @php
+                                                // 1. List manual yang kamu inginkan
+                                                $manualList = [
+                                                    'KOMPUTER',
+                                                    'PRINTER',
+                                                    'LAPTOP',
+                                                    'PROYEKTOR',
+                                                    'INFRASTRUKTUR JARINGAN',
+                                                    'PC SERVER',
+                                                    'INFRASTRUKTUR TELPON',
+                                                    'INFRASTRUKTUR CCTV',
+                                                    'PONSEL',
+                                                    'LAINNYA',
+                                                ];
+
+                                                // 2. Ambil data unik dari database (kolom nama)
+                                                $dbList = \App\Models\AssetitModel::pluck('nama')->toArray();
+
+                                                // 3. Gabungkan keduanya, hapus duplikat, dan bersihkan nilai kosong
+                                                $listNama = collect($manualList)
+                                                    ->merge($dbList)
+                                                    ->unique()
+                                                    ->filter()
+                                                    ->values();
+
+                                                // Pastikan variabel record (assetit) terdeteksi untuk edit
+                                                $selectedNama = old('nama', $assetit->nama ?? '');
+                                            @endphp
+
+                                            @foreach ($listNama as $nama)
+                                                <option value="{{ $nama }}"
+                                                    {{ $selectedNama == $nama ? 'selected' : '' }}>
+                                                    {{ $nama }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+
+                                        @error('nama')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                {{-- <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Nama<span
                                             style="color: red">*</span></label>
                                     <div class="col-sm-10">
@@ -76,7 +143,7 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <div class="row mb-3">
                                     <label for="inputEmail3" class="col-sm-2 col-form-label">Digunakan oleh</label>
@@ -163,3 +230,31 @@
 
     </main><!-- End #main -->
 @endsection
+
+@push('scripts')
+    <script>
+        // Gunakan 'change' event agar setiap kali kategori diganti, nomor ikut berubah
+        document.getElementById('category_asset').addEventListener('change', function() {
+            const nama = this.value;
+            const inputNomor = document.getElementById('nomer_asset');
+
+            // Jika user memilih opsi kosong, kosongkan nomor asset
+            if (!nama) {
+                inputNomor.value = '';
+                return;
+            }
+
+            // Ambil nomor baru dari server (Logic Fetch)
+            fetch(`{{ route('assetit.generate-number') }}?nama=${encodeURIComponent(nama)}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Isi input nomer_asset dengan hasil dari Controller
+                    inputNomor.value = data.number ?? '';
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    inputNomor.value = '';
+                });
+        });
+    </script>
+@endpush
