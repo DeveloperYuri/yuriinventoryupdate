@@ -28,8 +28,7 @@ class ListSparePartModel extends Model
             'id'             // primary key di spare_parts
         );
     }
-
-
+    
     static public function getRecord($request)
     {
         // $query = self::with(['category', 'subcategory', 'satuan'])
@@ -105,10 +104,58 @@ class ListSparePartModel extends Model
         return $this->belongsTo(ProdukstatusModel::class, 'produk_status_id');
     }
 
+    // public function getTotalIn()
+    // {
+    //     return $this->transactions()
+    //         ->where('type', 'in')
+    //         ->sum('quantity');
+    // }
+
+    // public function getTotalOut()
+    // {
+    //     return $this->transactions()
+    //         ->where('type', 'out')
+    //         ->sum('quantity');
+    // }
+
+    // public function getInBefore($date)
+    // {
+    //     return $this->transactions()
+    //         ->where('type', 'in')
+    //         ->where('created_at', '<', $date)
+    //         ->sum('quantity');
+    // }
+
+    // public function getOutBefore($date)
+    // {
+    //     return $this->transactions()
+    //         ->where('type', 'out')
+    //         ->where('created_at', '<', $date)
+    //         ->sum('quantity');
+    // }
+
+    // public function getInPeriod($start, $end)
+    // {
+    //     return $this->transactions()
+    //         ->where('type', 'in')
+    //         ->whereBetween('created_at', [$start, $end])
+    //         ->sum('quantity');
+    // }
+
+    // public function getOutPeriod($start, $end)
+    // {
+    //     return $this->transactions()
+    //         ->where('type', 'out')
+    //         ->whereBetween('created_at', [$start, $end])
+    //         ->sum('quantity');
+    // }
+
+    // BARU V2
     public function getTotalIn()
     {
         return $this->transactions()
             ->where('type', 'in')
+            ->where('status', 'sukses')
             ->sum('quantity');
     }
 
@@ -116,6 +163,7 @@ class ListSparePartModel extends Model
     {
         return $this->transactions()
             ->where('type', 'out')
+            ->where('status', 'sukses')
             ->sum('quantity');
     }
 
@@ -123,6 +171,7 @@ class ListSparePartModel extends Model
     {
         return $this->transactions()
             ->where('type', 'in')
+            ->where('status', 'sukses')
             ->where('created_at', '<', $date)
             ->sum('quantity');
     }
@@ -131,6 +180,7 @@ class ListSparePartModel extends Model
     {
         return $this->transactions()
             ->where('type', 'out')
+            ->where('status', 'sukses')
             ->where('created_at', '<', $date)
             ->sum('quantity');
     }
@@ -139,6 +189,7 @@ class ListSparePartModel extends Model
     {
         return $this->transactions()
             ->where('type', 'in')
+            ->where('status', 'sukses')
             ->whereBetween('created_at', [$start, $end])
             ->sum('quantity');
     }
@@ -147,6 +198,7 @@ class ListSparePartModel extends Model
     {
         return $this->transactions()
             ->where('type', 'out')
+            ->where('status', 'sukses')
             ->whereBetween('created_at', [$start, $end])
             ->sum('quantity');
     }

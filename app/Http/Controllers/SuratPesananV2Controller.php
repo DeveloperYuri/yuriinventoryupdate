@@ -5,20 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\CategoryModel;
 use App\Models\ListSparePartModel;
 use App\Models\LocationsModel;
+use App\Models\StockInHeader;
+use App\Models\StockTransactionModel;
 use App\Models\SubCategoryModel;
 use App\Models\SuratPesananDetailModel;
 use App\Models\SuratPesananHeaderModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
-class SuratpesananController extends Controller
+class SuratPesananV2Controller extends Controller
 {
     public function index(Request $request)
     {
         $data['getRecord'] = SuratPesananHeaderModel::getRecord($request);
 
-        return view('dashboard.suratpesanan.index', $data);
+        return view('dashboard.suratpesananv2.index', $data);
     }
 
     public function create()
@@ -68,59 +71,144 @@ class SuratpesananController extends Controller
         $categories = CategoryModel::all();
         $subcategories = SubCategoryModel::all();
 
-        return view('dashboard.suratpesanan.create', compact('noDokumen', 'locations', 'categories'));
+        return view('dashboard.suratpesananv2.create', compact('noDokumen', 'locations', 'categories'));
     }
 
     public function store(Request $request)
     {
-        // Validasi input dasar
+        // 1. Validasi tetap sama
         $request->validate([
             'name'          => 'required|string|max:100',
             'locations_id'  => 'required|integer|exists:locations,id',
             'category_id'   => 'required|integer|exists:category,id',
-            // 'subcategory_id' => 'required|integer|exists:subcategory,id',
         ], [
             'name.required'          => 'Form ini harus diisi',
             'locations_id.required'  => 'Lokasi wajib dipilih',
             'category_id.required'   => 'Kategori wajib dipilih',
-            // 'subcategory_id.required' => 'Subkategori wajib dipilih',
         ]);
 
-
-        // dd($request->all());
-
-        // Simpan semua dalam transaksi
         return DB::transaction(function () use ($request) {
 
-            // Simpan header surat pesanan
-            $header = SuratPesananHeaderModel::create([
+            // 2. Simpan header SURAT PESANAN (Tanpa bikin Surat Masuk)
+            $headerPesanan = SuratPesananHeaderModel::create([
                 'no_surat_pesanan' => $request->no_surat_pesanan,
                 'name'             => $request->name,
                 'locations_id'     => $request->locations_id,
                 'category_id'      => $request->category_id,
                 'subcategory_id'   => $request->subcategory_id,
-                'tanggal'   => $request->tanggal,
+                'tanggal'          => $request->tanggal,
+                'status'           => 'pending', // Status awal pesanan
             ]);
 
-            // Loop semua spare part untuk simpan detail
+            // 3. Loop spare part HANYA untuk detail pesanan
             foreach ($request->product as $i => $spare_part_id) {
-                // Ambil nama sparepart dari master (optional)
-                $sparePart = \App\Models\ListSparePartModel::find($spare_part_id);
-
                 SuratPesananDetailModel::create([
-                    'surat_pesanan_header_id' => $header->id,   // wajib ada
+                    'surat_pesanan_header_id' => $headerPesanan->id,
                     'spare_part_id'           => $spare_part_id,
                     'qty'                     => $request->demand[$i] ?? 0,
-                    'stock'                   => $request->stock[$i] ?? 0,  // ambil dari form
+                    'stock'                   => $request->stock[$i] ?? 0,
                     'qty_kurang'              => $request->qty_kurang[$i] ?? 0,
                     'keterangan'              => $request->keterangan[$i] ?? null,
                 ]);
             }
 
-            return redirect()->route('suratpesanan.index')
-                ->with('success', 'Surat pesanan berhasil dicatat.');
+            return redirect()->route('v2suratpesanan.index')
+                ->with('success', 'Surat pesanan berhasil disimpan dan menunggu persetujuan.');
         });
     }
+
+    // public function store(Request $request)
+    // {
+    //     // 1. Validasi tetap di paling atas
+    //     $request->validate([
+    //         'name'          => 'required|string|max:100',
+    //         'locations_id'  => 'required|integer|exists:locations,id',
+    //         'category_id'   => 'required|integer|exists:category,id',
+    //     ], [
+    //         'name.required'          => 'Form ini harus diisi',
+    //         'locations_id.required'  => 'Lokasi wajib dipilih',
+    //         'category_id.required'   => 'Kategori wajib dipilih',
+    //     ]);
+
+    //     return DB::transaction(function () use ($request) {
+
+    //         // --- TARO LOGIKA NOMOR DOKUMEN DI SINI ---
+    //         $tahun = now()->format('Y');
+
+    //         // Gunakan count + loop check untuk menghindari Duplicate Entry
+    //         $count = StockInHeader::whereYear('tanggal', $tahun)->count();
+    //         do {
+    //             $count++;
+    //             $nextNumber = str_pad($count, 3, '0', STR_PAD_LEFT);
+    //             $noDokumenMasuk = "WH/IN/{$tahun}/{$nextNumber}";
+    //         } while (StockInHeader::where('no_dokumen', $noDokumenMasuk)->exists());
+
+    //         // Ambil record terakhir tahun ini untuk Surat Masuk
+    //         // $last = StockInHeader::whereYear('tanggal', $tahun)
+    //         //     ->orderBy('id', 'desc')
+    //         //     ->first();
+
+    //         // $lastNumber = 0;
+    //         // if ($last && preg_match('/(\d{3})$/', $last->no_dokumen, $matches)) {
+    //         //     $lastNumber = (int) $matches[1];
+    //         // }
+
+    //         // $nextNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
+    //         // $noDokumenMasuk = "WH/IN/{$tahun}/{$nextNumber}";
+    //         // -----------------------------------------
+
+    //         // 2. Simpan header SURAT PESANAN
+    //         $headerPesanan = SuratPesananHeaderModel::create([
+    //             'no_surat_pesanan' => $request->no_surat_pesanan,
+    //             'name'             => $request->name,
+    //             'locations_id'     => $request->locations_id,
+    //             'category_id'      => $request->category_id,
+    //             'subcategory_id'   => $request->subcategory_id,
+    //             'tanggal'          => $request->tanggal,
+    //         ]);
+
+    //         // 3. Simpan header SURAT MASUK (Otomatis)
+    //         $headerMasuk = StockInHeader::create([
+    //             'no_dokumen'       => $noDokumenMasuk, // <--- Ganti jadi variabel hasil generate tadi
+    //             'surat_pesanan_id' => $headerPesanan->id,
+    //             'locations_id'     => $request->locations_id,
+    //             'tanggal'          => $request->tanggal,
+    //             'status'           => 'Draft',
+    //             'diterima_dari'    => $request->name,
+    //             'diterima_oleh'    => Auth::user()->name ?? 'System',
+    //             'referensi'       => 'Surat Pesanan: ' . $request->no_surat_pesanan,
+    //         ]);
+
+    //         // 4. Loop spare part
+    //         $userName = Auth::user()->name ?? 'System';
+
+    //         foreach ($request->product as $i => $spare_part_id) {
+    //             $qty = $request->demand[$i] ?? 0;
+
+    //             // Simpan Detail Pesanan
+    //             SuratPesananDetailModel::create([
+    //                 'surat_pesanan_header_id' => $headerPesanan->id,
+    //                 'spare_part_id'           => $spare_part_id,
+    //                 'qty'                     => $qty,
+    //                 'stock'                   => $request->stock[$i] ?? 0,
+    //                 'qty_kurang'              => $request->qty_kurang[$i] ?? 0,
+    //                 'keterangan'              => $request->keterangan[$i] ?? null,
+    //             ]);
+
+    //             // Simpan Detail Surat Masuk
+    //             StockTransactionModel::create([
+    //                 'stock_in_header_id' => $headerMasuk->id,
+    //                 'spare_part_id'      => $spare_part_id,
+    //                 'quantity'           => $qty,
+    //                 'user'               => $userName,
+    //                 'keterangan'         => $request->keterangan[$i] ?? null,
+    //             ]);
+    //         }
+
+    //         return redirect()->route('v2suratpesanan.index')
+    //             ->with('success', 'Surat pesanan dan draf surat masuk berhasil dibuat.');
+    //     });
+    // }
 
     public function edit($id)
     {
@@ -259,14 +347,80 @@ class SuratpesananController extends Controller
         return back()->with('success', 'Surat pesanan diajukan untuk approval.');
     }
 
+    // public function approve($id)
+    // {
+    //     $header = SuratPesananHeaderModel::with('details')->findOrFail($id);
+
+    //     // Debug 1: Cek apakah relasi details ada isinya?
+    //     dd($header->details->toArray());
+    // }
+
     public function approve($id)
     {
-        $header = SuratPesananHeaderModel::findOrFail($id);
-        $header->status = 'approved';
-        $header->save();
+        return DB::transaction(function () use ($id) {
+            // 1. Ambil data pesanan beserta detail barangnya
+            // Pastikan di Model SuratPesananHeaderModel sudah ada relasi public function details()
+            $header = SuratPesananHeaderModel::with('details')->findOrFail($id);
 
-        return back()->with('success', 'Surat pesanan disetujui.');
+            // Proteksi: Jika sudah approved, jangan diproses lagi supaya tidak double create
+            if ($header->status === 'approved') {
+                return back()->with('error', 'Surat pesanan ini sudah pernah disetujui.');
+            }
+
+            // Cek apakah ada detailnya? Kalau kosong, jangan lanjut.
+            if ($header->details->isEmpty()) {
+                return back()->with('error', 'Gagal: Surat pesanan tidak memiliki item/barang.');
+            }
+
+            // 2. Update status surat pesanan
+            $header->status = 'approved';
+            $header->save();
+
+            // 3. Logika Generate Nomor Surat Masuk (Contoh: WH/IN/2026/001)
+            $tahun = now()->format('Y');
+            $count = StockInHeader::whereYear('tanggal', $tahun)->count();
+            do {
+                $count++;
+                $nextNumber = str_pad($count, 3, '0', STR_PAD_LEFT);
+                $noDokumenMasuk = "WH/IN/{$tahun}/{$nextNumber}";
+            } while (StockInHeader::where('no_dokumen', $noDokumenMasuk)->exists());
+
+            // 4. Buat Header Surat Masuk (Status: Draft)
+            $headerMasuk = StockInHeader::create([
+                'no_dokumen'       => $noDokumenMasuk,
+                'surat_pesanan_id' => $header->id,
+                'locations_id'     => $header->locations_id,
+                'tanggal'          => now(),
+                'status'           => 'Draft',
+                // 'diterima_dari'    => $header->name,
+                'diterima_oleh'    => Auth::user()->name ?? 'System',
+                'referensi'       => 'Nomer: ' . $header->no_surat_pesanan,
+            ]);
+
+            // 5. Loop: Ambil data dari Detail Pesanan, masukkan ke Detail Surat Masuk
+            foreach ($header->details as $detail) {
+                StockTransactionModel::create([
+                    'stock_in_header_id' => $headerMasuk->id,
+                    'spare_part_id'      => $detail->spare_part_id,
+                    'quantity'           => $detail->qty_kurang, // Ambil qty dari pesanan
+                    'user'               => Auth::user()->name ?? 'System',
+                    'keterangan'         => $detail->keterangan,
+                    'status'             => 'draft',
+                ]);
+            }
+
+            return back()->with('success', 'Surat pesanan disetujui dan draf surat masuk berhasil dibuat.');
+        });
     }
+
+    // public function approve($id)
+    // {
+    //     $header = SuratPesananHeaderModel::findOrFail($id);
+    //     $header->status = 'approved';
+    //     $header->save();
+
+    //     return back()->with('success', 'Surat pesanan disetujui.');
+    // }
 
     public function reject($id)
     {
@@ -299,23 +453,4 @@ class SuratpesananController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
-    public function generateRekapPDF(Request $request)
-    {
-        $ids = explode(',', $request->ids); // ID Header yang dari checklist
-
-        // Ambil semua detail yang punya header_id di dalam list $ids
-        $details = \App\Models\SuratPesananDetailModel::with(['sparePart'])
-            ->whereIn('surat_pesanan_header_id', $ids)
-            ->get();
-
-        // Pastikan variabel yang dikirim ke view adalah $details (seluruh koleksi)
-        $pdf = Pdf::loadView('dashboard.suratpesanan.pdf_rekap', [
-            'data_barang' => $details, // Kirim seluruh koleksi
-            'tanggal' => date('d-m-Y')
-        ]);
-
-        return $pdf->stream('Rekap_Sparepart.pdf');
-    }
-
 }

@@ -38,17 +38,35 @@ class StockTransactionModel extends Model
         return $this->belongsTo(StockInHeader::class, 'stock_in_header_id');
     }
 
+    // Baru V2
     protected static function booted()
     {
         static::created(function ($transaction) {
-            $sparePart = $transaction->sparePart;
-            if ($transaction->type == 'in') {
-                $sparePart->increment('stock', $transaction->quantity);
-            } else {
-                $sparePart->decrement('stock', $transaction->quantity);
+            // HANYA tambah/kurang stok jika statusnya 'sukses'
+            if ($transaction->status === 'sukses') {
+                $sparePart = $transaction->sparePart;
+                if ($transaction->type == 'in') {
+                    $sparePart->increment('stock', $transaction->quantity);
+                } else {
+                    $sparePart->decrement('stock', $transaction->quantity);
+                }
             }
+            // Jika statusnya 'Draft', kode di atas akan dilewati (Stok Aman!)
         });
     }
+
+    // Yang lama Masih Jalan jgn diapa2in
+    // protected static function booted()
+    // {
+    //     static::created(function ($transaction) {
+    //         $sparePart = $transaction->sparePart;
+    //         if ($transaction->type == 'in') {
+    //             $sparePart->increment('stock', $transaction->quantity);
+    //         } else {
+    //             $sparePart->decrement('stock', $transaction->quantity);
+    //         }
+    //     });
+    // }
 
     public function scopeEffective($query)
     {

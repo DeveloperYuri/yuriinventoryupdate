@@ -145,7 +145,9 @@ class StockController extends Controller
 
     public function history(Request $request)
     {
-        $query = StockTransactionModel::with('sparePart')->orderByDesc('created_at');
+        $query = StockTransactionModel::with('sparePart')
+            // ->where('status', 'sukses') // yang buat filter status sukses
+            ->orderByDesc('created_at');
 
         if ($request->start_date) {
             $query->whereDate('created_at', '>=', $request->start_date);
@@ -222,6 +224,7 @@ class StockController extends Controller
             'stockOutHeader.subcategory'
         ])
             ->where('spare_part_id', $id)
+            // ->where('status', 'sukses')
             ->when(
                 $request->start_date,
                 fn($q) => $q->whereDate('created_at', '>=', $request->start_date)

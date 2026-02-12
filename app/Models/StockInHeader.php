@@ -20,7 +20,8 @@ class StockInHeader extends Model
         'supplier_id',
         'po_numbers',
         'status',
-        'keterangan'
+        'keterangan',
+        'referensi',
     ];
 
     public function user()

@@ -5,15 +5,8 @@
 
         <div class="pagetitle d-flex justify-content-between align-items-center">
             @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 0 || Auth::user()->is_role == 1)
-                <a href="{{ route('suratpesanan.create') }}" class="btn btn-primary" dusk="addsparepart">Buat Surat
-                    Pesanan</a>
-
-                <button id="btnRekapPdf" class="btn btn-danger d-none" onclick="generateBatchPDF()">
-                    <i class="bi bi-file-pdf"></i> Rekap Jadi PDF
-                </button>
-                <button class="btn btn-outline-secondary btn-sm d-none" id="btnClear" onclick="clearSelections()">
-                    Batal Pilih Semua
-                </button>
+                <a href="{{ route('v2suratpesanan.create') }}" class="btn btn-primary" dusk="addsparepart">Buat Surat
+                    Pesanan Baru V2</a>
             @endif
 
         </div>
@@ -40,7 +33,7 @@
                         <div class="card-body">
 
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="card-title mb-0">Daftar Surat Pesanan</h5>
+                                <h5 class="card-title mb-0">Daftar Surat Pesanan Baru V2</h5>
 
                                 @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
                                     <div class="d-flex gap-2">
@@ -106,9 +99,6 @@
                                     <thead>
                                         <tr>
                                             {{-- <th class="text-center">No</th> --}}
-                                            <th class="text-center">
-                                                <input type="checkbox" id="selectAll" class="form-check-input">
-                                            </th>
                                             <th class="text-center">No. SP</th>
                                             <th class="text-center">Di Buat Oleh</th>
                                             <th class="text-center">Lokasi</th>
@@ -127,12 +117,6 @@
                                         @foreach ($getRecord as $index => $sp)
                                             <tr onclick="window.location='{{ route('suratpesanan.show', $sp->id) }}'"
                                                 style="cursor:pointer;">
-                                                <td class="text-center" onclick="event.stopPropagation();">
-                                                    <input type="checkbox" value="{{ $sp->id }}"
-                                                        class="form-check-input item-checkbox"
-                                                        onclick="handleSingleCheck(this)">
-                                                </td>
-
                                                 <td class="text-center">
                                                     {{ !empty($sp->no_surat_pesanan) ? $sp->no_surat_pesanan : '000-000-000' }}
                                                 </td>
@@ -171,7 +155,7 @@
                                                             </button>
                                                         </form>
 
-                                                        <form action="{{ route('suratpesanan.submit', $sp->id) }}"
+                                                        <form action="{{ route('v2suratpesanan.submit', $sp->id) }}"
                                                             method="POST" class="d-inline">
                                                             @csrf
                                                             <button type="submit"
@@ -179,14 +163,14 @@
                                                         </form>
                                                         {{-- @elseif ($sp->status == 'onprogress' && (auth()->user()->is_role == 1 || auth()->user()->is_role == 2)) --}}
                                                     @elseif ($sp->status == 'onprogress' && (auth()->user()->is_role == 2 || auth()->user()->name == 'widy'))
-                                                        <form action="{{ route('suratpesanan.approve', $sp->id) }}"
+                                                        <form action="{{ route('v2suratpesanan.approve', $sp->id) }}"
                                                             method="POST" class="d-inline">
                                                             @csrf
                                                             <button type="submit"
                                                                 class="btn btn-sm btn-success">Approve</button>
                                                         </form>
 
-                                                        <form action="{{ route('suratpesanan.reject', $sp->id) }}"
+                                                        <form action="{{ route('v2suratpesanan.reject', $sp->id) }}"
                                                             method="POST" class="d-inline">
                                                             @csrf
                                                             <button type="submit"
@@ -256,97 +240,6 @@
                 minLength: 2, // mulai search setelah 2 karakter
             });
         });
-    </script>
-
-    <script>
-        // Nama kunci penyimpanan di browser
-        const STORAGE_KEY = 'selected_surat_pesanan';
-
-        document.addEventListener('DOMContentLoaded', function() {
-            renderCheckboxesFromStorage();
-            toggleBatchButton();
-
-            // Event Select All (Hanya berlaku untuk halaman yang aktif)
-            document.getElementById('selectAll').addEventListener('change', function() {
-                const checkboxes = document.querySelectorAll('.item-checkbox');
-                let selectedIds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-
-                checkboxes.forEach(cb => {
-                    cb.checked = this.checked;
-                    if (this.checked) {
-                        if (!selectedIds.includes(cb.value)) selectedIds.push(cb.value);
-                    } else {
-                        selectedIds = selectedIds.filter(id => id !== cb.value);
-                    }
-                });
-
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedIds));
-                toggleBatchButton();
-            });
-        });
-
-        // Fungsi saat checkbox satuan diklik
-        function handleSingleCheck(element) {
-            let selectedIds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            const id = element.value;
-
-            if (element.checked) {
-                if (!selectedIds.includes(id)) selectedIds.push(id);
-            } else {
-                selectedIds = selectedIds.filter(item => item !== id);
-                document.getElementById('selectAll').checked = false; // Uncheck select all
-            }
-
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedIds));
-            toggleBatchButton();
-        }
-
-        // Fungsi untuk mencentang ulang checkbox saat pindah halaman
-        function renderCheckboxesFromStorage() {
-            const selectedIds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            const checkboxes = document.querySelectorAll('.item-checkbox');
-
-            checkboxes.forEach(cb => {
-                if (selectedIds.includes(cb.value)) {
-                    cb.checked = true;
-                }
-            });
-        }
-
-        // Fungsi kontrol tampilan tombol Rekap
-        function toggleBatchButton() {
-            const selectedIds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            const btnRekapPdf = document.getElementById('btnRekapPdf');
-
-            if (selectedIds.length > 0) {
-                btnRekapPdf.classList.remove('d-none');
-                btnRekapPdf.innerHTML = `<i class="bi bi-file-pdf"></i> Rekap ${selectedIds.length} Surat ke PDF`;
-            } else {
-                btnRekapPdf.classList.add('d-none');
-            }
-        }
-
-        // Fungsi Kirim ke PDF
-        function generateBatchPDF() {
-            const selectedIds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-
-            if (selectedIds.length > 0) {
-                // Gabungkan ID jadi string: 1,2,3
-                const idsString = selectedIds.join(',');
-
-                // Arahkan ke route cetak (Ganti dengan route PDF-mu) window.location.href = "{{ url('suratpesanan/rekap-pdf') }}?ids=" + idsString;
-                
-                window.open("{{ url('suratpesanan/rekap-pdf') }}?ids=" + idsString, '_blank');
-
-                // OPSIONAL: Bersihkan storage setelah cetak
-                // localStorage.removeItem(STORAGE_KEY);
-            }
-        }
-
-        function clearSelections() {
-            localStorage.removeItem(STORAGE_KEY);
-            location.reload(); // Refresh halaman untuk uncheck semua
-        }
     </script>
 @endpush
 

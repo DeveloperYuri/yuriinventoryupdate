@@ -22,6 +22,8 @@
                      request()->routeIs('sparepartoutmultiple.*') ||
                      request()->routeIs('suratpermintaansparepart.*') ||
                      request()->routeIs('suratpesanan.*') ||
+                     request()->routeIs('v2suratpesanan.*') ||
+                     request()->routeIs('v2sparepartinmultiple.*') ||
                      request()->routeIs('sparepart.history');
              @endphp
 
@@ -58,9 +60,9 @@
 
                      @if (Auth::user()->is_role == 2)
                          <li>
-                             <a href="{{ route('sparepartinmultiple.index') }}"
-                                 class="{{ request()->routeIs('sparepartinmultiple.*') ? 'active' : '' }}">
-                                 <i class="bi bi-circle"></i><span>Spare Part Masuk Baru</span>
+                             <a href="{{ route('v2sparepartinmultiple.index') }}"
+                                 class="{{ request()->routeIs('v2sparepartinmultiple.*') ? 'active' : '' }}">
+                                 <i class="bi bi-circle"></i><span>Spare Part Masuk Baru V2</span>
                              </a>
                          </li>
                      @endif
@@ -99,9 +101,9 @@
 
                      @if (Auth::user()->is_role == 2)
                          <li>
-                             <a href="{{ route('suratpesanan.index') }}"
-                                 class="{{ request()->routeIs('suratpesanan.index') ? 'active' : '' }}">
-                                 <i class="bi bi-circle"></i><span>Surat Pesanan Spare Part Baru</span>
+                             <a href="{{ route('v2suratpesanan.index') }}"
+                                 class="{{ request()->routeIs('v2suratpesanan.index') ? 'active' : '' }}">
+                                 <i class="bi bi-circle"></i><span>Surat Pesanan Spare Part Baru V2</span>
                              </a>
                          </li>
                      @endif

@@ -27,10 +27,12 @@ use App\Http\Controllers\StockAssetController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\SuratMasukV2Controller;
 use App\Http\Controllers\SuratPermintaanSparePartController;
 use App\Http\Controllers\SuratpesananatkController;
 use App\Http\Controllers\SuratPesananBaruController;
 use App\Http\Controllers\SuratpesananController;
+use App\Http\Controllers\SuratPesananV2Controller;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\WarehouseController;
 use Illuminate\Support\Facades\Route;
@@ -300,6 +302,8 @@ Route::prefix('suratpesanan')->name('suratpesanan.')->group(function () {
     Route::post('{id}/reject', [SuratPesananController::class, 'reject'])->name('reject');
 });
 
+Route::get('/suratpesanan/rekap-pdf', [SuratPesananController::class, 'generateRekapPDF'])->name('suratpesanan.rekap-pdf');
+
 // Surat Pesanan Baru
 Route::get('/suratpesananbaru', [SuratPesananBaruController::class, 'index'])->name('suratpesananbaru.index');
 Route::get('/create/suratpesananbaru', [SuratPesananBaruController::class, 'create'])->name('suratpesananbaru.create');
@@ -474,3 +478,34 @@ Route::post('/create/produkstatus/post', [ProdukstatusController::class, 'store'
 Route::get('/edit/produkstatus/{id}', [ProdukstatusController::class, 'edit'])->name('produkstatus.edit');
 Route::put('/create/produkstatus/{id}', [ProdukstatusController::class, 'update'])->name('produkstatus.update');
 Route::delete('/delete/produkstatus/{id}', [ProdukstatusController::class, 'destroy'])->name('produkstatus.delete');
+
+// Spare Part In Multiple V2
+Route::get('/v2/sparepart/in/multiple', [SuratMasukV2Controller::class, 'index'])->name('v2sparepartinmultiple.index');
+Route::get('/v2/listsparepart/in/multiple/create', [SuratMasukV2Controller::class, 'create'])->name('v2sparepartinmultiple.create');
+Route::post('/v2/listsparepart/in/multiple/post', [SuratMasukV2Controller::class, 'storein'])->name('v2sparepartinmultiple.store');
+Route::get('/v2/stockinmultiple/{id}', [SuratMasukV2Controller::class, 'show'])->name('v2sparepartinmultiple.show');
+
+Route::post('/v2/sparepartin/{id}/batal', [SuratMasukV2Controller::class, 'batalmasuk'])
+    ->name('spartpartmasuk.batal');
+
+Route::get('/v2/surat-pesanan/search', [SuratMasukV2Controller::class, 'searchsp'])
+    ->name('suratpesanan.search');
+
+// Surat Pesanan V2
+Route::get('/v2/suratpesanan', [SuratPesananV2Controller::class, 'index'])->name('v2suratpesanan.index');
+Route::get('/v2/create/suratpesanan', [SuratPesananV2Controller::class, 'create'])->name('v2suratpesanan.create');
+Route::post('/v2/create/suratpesanan/post', [SuratPesananV2Controller::class, 'store'])->name('v2suratpesanan.store');
+Route::get('/v2/create/suratpesanan/{id}', [SuratPesananV2Controller::class, 'edit'])->name('v2suratpesanan.edit');
+Route::put('/v2/create/suratpesanan/{id}', [SuratPesananV2Controller::class, 'update'])->name('v2suratpesanan.update');
+Route::delete('/v2/delete/suratpesanan/{id}', [SuratPesananV2Controller::class, 'destroy'])->name('v2suratpesanan.delete');
+Route::get('/v2/show/suratpesanan/{id}', [SuratPesananV2Controller::class, 'show'])->name('v2suratpesanan.show');
+
+Route::get('/v2suratpesanan/{id}/pdf', [SuratPesananV2Controller::class, 'printPdf'])->name('v2suratpesanan.pdf');
+Route::get('/v2/spareparts/{id}/stock', [SuratPesananV2Controller::class, 'getStock']);
+Route::get('/v2/surat-pesanan/{id}/items', [SuratPesananV2Controller::class, 'items']);
+
+Route::prefix('v2suratpesanan')->name('v2suratpesanan.')->group(function () {
+    Route::post('{id}/submit', [SuratPesananV2Controller::class, 'submit'])->name('submit');
+    Route::post('{id}/approve', [SuratPesananV2Controller::class, 'approve'])->name('approve');
+    Route::post('{id}/reject', [SuratPesananV2Controller::class, 'reject'])->name('reject');
+});
