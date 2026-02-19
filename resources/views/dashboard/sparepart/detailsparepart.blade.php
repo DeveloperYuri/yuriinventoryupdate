@@ -160,8 +160,14 @@
                                                 <td class="text-center">
                                                     @php
                                                         $badgeClass = 'bg-secondary'; // Default Abu-abu (Draft)
+
                                                         if ($item->status === 'sukses') {
                                                             $badgeClass = 'bg-success'; // Hijau
+                                                        } elseif (
+                                                            $item->status === 'proses' ||
+                                                            $item->status === 'pending'
+                                                        ) {
+                                                            $badgeClass = 'bg-warning text-dark'; // Kuning (tambah text-dark supaya tulisan jelas)
                                                         } elseif (
                                                             $item->status === 'batal' ||
                                                             $item->status === 'canceled'

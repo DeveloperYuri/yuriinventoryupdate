@@ -51,21 +51,21 @@
                          </a>
                      </li>
 
-                     <li>
+                     {{-- <li>
                          <a href="{{ route('sparepartinmultiple.index') }}"
                              class="{{ request()->routeIs('sparepartinmultiple.*') ? 'active' : '' }}">
-                             <i class="bi bi-circle"></i><span>Spare Part Masuk</span>
+                             <i class="bi bi-circle"></i><span>Spare Part Masuk V1</span>
                          </a>
-                     </li>
+                     </li> --}}
 
-                     @if (Auth::user()->is_role == 2)
+                     {{-- @if (Auth::user()->is_role == 2) --}}
                          <li>
                              <a href="{{ route('v2sparepartinmultiple.index') }}"
                                  class="{{ request()->routeIs('v2sparepartinmultiple.*') ? 'active' : '' }}">
-                                 <i class="bi bi-circle"></i><span>Spare Part Masuk Baru V2</span>
+                                 <i class="bi bi-circle"></i><span>Spare Part Masuk</span>
                              </a>
                          </li>
-                     @endif
+                     {{-- @endif --}}
 
                      <li>
                          <a href="{{ route('sparepartoutmultiple.index') }}"
@@ -90,20 +90,21 @@
                          </li>
                      @endif
 
-                     @if (Auth::user()->is_role == 0 || Auth::user()->is_role == 1 || Auth::user()->is_role == 2)
+                     {{-- @if (Auth::user()->is_role == 0 || Auth::user()->is_role == 1 || Auth::user()->is_role == 2)
                          <li>
                              <a href="{{ route('suratpesanan.index') }}"
                                  class="{{ request()->routeIs('suratpesanan.index') ? 'active' : '' }}">
-                                 <i class="bi bi-circle"></i><span>Surat Pesanan</span>
+                                 <i class="bi bi-circle"></i><span>Surat Pesanan V1</span>
                              </a>
                          </li>
-                     @endif
+                     @endif --}}
 
-                     @if (Auth::user()->is_role == 2)
+                     {{-- @if (Auth::user()->is_role == 2) --}}
+                     @if (Auth::user()->is_role == 0 || Auth::user()->is_role == 1 || Auth::user()->is_role == 2)
                          <li>
                              <a href="{{ route('v2suratpesanan.index') }}"
                                  class="{{ request()->routeIs('v2suratpesanan.index') ? 'active' : '' }}">
-                                 <i class="bi bi-circle"></i><span>Surat Pesanan Spare Part Baru V2</span>
+                                 <i class="bi bi-circle"></i><span>Surat Pesanan</span>
                              </a>
                          </li>
                      @endif

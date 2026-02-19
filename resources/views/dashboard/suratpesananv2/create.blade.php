@@ -10,7 +10,7 @@
                     <div class="card">
                         <div class="card-body">
 
-                            <h2 class="mt-4">Form Pemesanan Barang Baru V2</h2>
+                            <h2 class="mt-4">Form Pemesanan Barang Baru</h2>
 
                             <form id="myForm" class="mt-4" action="{{ route('v2suratpesanan.store') }}" method="POST">
                                 @csrf
@@ -111,8 +111,8 @@
                                             </div>
                                         </div>
                                         <div class="row mb-3">
-                                            <label class="col-sm-4 col-form-label">Sub Category</label>
-                                            <div class="col-sm-8">
+                                            <label class="col-sm-2 col-form-label">Sub Category</label>
+                                            <div class="col-sm-10">
                                                 <select id="subcategory_id" name="subcategory_id"
                                                     class="form-control @error('subcategory_id') is-invalid @enderror">
                                                     <option value="">-- Pilih Sub Category --</option>

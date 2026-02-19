@@ -128,6 +128,7 @@
                                                     class="badge 
         @if ($item->status === 'sukses') bg-success
         @elseif ($item->status === 'batal') bg-danger
+        @elseif ($item->status === 'proses') bg-warning text-dark
         @else bg-secondary @endif
     ">
                                                     {{ ucfirst($item->status) }}

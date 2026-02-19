@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Laporan Daftar Sparepart</title>
+    <title>Surat Pesanan Sparepart</title>
     <style>
         body {
             font-family: Arial, sans-serif;

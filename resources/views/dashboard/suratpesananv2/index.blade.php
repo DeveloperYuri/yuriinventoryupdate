@@ -6,7 +6,7 @@
         <div class="pagetitle d-flex justify-content-between align-items-center">
             @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 0 || Auth::user()->is_role == 1)
                 <a href="{{ route('v2suratpesanan.create') }}" class="btn btn-primary" dusk="addsparepart">Buat Surat
-                    Pesanan V2</a>
+                    Pesanan</a>
 
                 <div class="d-flex gap-2 align-items-center">
                     @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 0 || Auth::user()->is_role == 1)

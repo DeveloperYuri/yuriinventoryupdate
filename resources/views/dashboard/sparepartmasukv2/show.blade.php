@@ -12,7 +12,7 @@
                             <div class="d-flex justify-content-between align-items-center mt-3 mb-4">
                                 <h2 class="m-0">Detail Penerimaan Barang</h2>
                                 <div class="d-flex align-items-center">
-                                    @if ($transaction->status === 'Draft')
+                                    @if ($transaction->status === 'Proses')
                                         <div class="alert alert-secondary py-2 px-3 mb-0">
                                             <i class="bi bi-info-circle me-1"></i> Status Dokumen:
                                             {{ ucfirst($transaction->status) }}
@@ -54,6 +54,44 @@
                                             <div class="col-sm-8">
                                                 <input type="text"
                                                     class="form-control @error('diterima_dari') is-invalid @enderror"
+                                                    name="diterima_dari" {{-- Mengambil data lama jika ada, jika tidak ambil dari database --}}
+                                                    value="{{ old('diterima_dari', $transaction->diterima_dari) }}"
+                                                    {{-- Kunci input jika status sukses --}}
+                                                    {{ $transaction->status === 'sukses' ? 'readonly' : '' }} required>
+                                                @error('diterima_dari')
+                                                    <div class="text-danger small">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-4 col-form-label">Supplier</label>
+                                            <div class="col-sm-8">
+                                                {{-- Kunci dropdown jika status sukses --}}
+                                                <select name="supplier_id" class="form-control"
+                                                    {{ $transaction->status === 'sukses' ? 'disabled' : '' }}>
+                                                    <option value="">-- Pilih Supplier --</option>
+                                                    @foreach ($suppliers as $supplier)
+                                                        <option value="{{ $supplier->id }}" {{-- Cek old data atau data dari database --}}
+                                                            {{ old('supplier_id', $transaction->supplier_id) == $supplier->id ? 'selected' : '' }}>
+                                                            {{ $supplier->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+
+                                                {{-- Trick: Jika select disabled, datanya tidak akan terkirim saat submit. 
+             Tambahkan hidden input agar datanya tetap aman jika status sukses --}}
+                                                @if ($transaction->status === 'sukses')
+                                                    <input type="hidden" name="supplier_id"
+                                                        value="{{ $transaction->supplier_id }}">
+                                                @endif
+                                            </div>
+                                        </div>
+                                        {{-- <div class="row mb-3">
+                                            <label class="col-sm-4 col-form-label">Di terima dari</label>
+                                            <div class="col-sm-8">
+                                                <input type="text"
+                                                    class="form-control @error('diterima_dari') is-invalid @enderror"
                                                     name="diterima_dari"
                                                     value="{{ old('diterima_dari', $transaction->diterima_dari) }}"
                                                     required>
@@ -65,10 +103,18 @@
                                         <div class="row mb-3">
                                             <label class="col-sm-4 col-form-label">Supplier</label>
                                             <div class="col-sm-8">
-                                                <input type="text" class="form-control"
-                                                    value="{{ $transaction->supplier->name ?? '-' }}" readonly>
+                                                <select name="supplier_id" class="form-control">
+                                                    <option value="">-- Pilih Supplier --</option>
+                                                    @foreach ($suppliers as $supplier)
+                                                        <option value="{{ $supplier->id }}"
+                                                            {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>
+                                                            {{ $supplier->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
                                             </div>
-                                        </div>
+                                        </div> --}}
+                                        
                                     </div>
 
                                     <div class="col-md-6">
@@ -167,11 +213,11 @@
                                                                     class="form-control text-center border-primary qty-input"
                                                                     value="{{ $qtyAwal }}" min="0"
                                                                     oninput="validateQty(this, {{ $qtyAwal }})"
-                                                                    {{ $transaction->status !== 'Draft' ? 'readonly' : '' }}
+                                                                    {{ $transaction->status !== 'Proses' ? 'readonly' : '' }}
                                                                     required>
                                                             </div>
                                                             {{-- Label kecil untuk info sisa (gantung) secara visual --}}
-                                                            @if ($transaction->status == 'Draft')
+                                                            @if ($transaction->status == 'Proses')
                                                                 <small class="text-muted">Sisa gantung: <span
                                                                         class="sisa-gantung">0</span></small>
                                                             @endif
@@ -227,7 +273,7 @@
 
                             {{-- BAGIAN ACTION BUTTONS --}}
                             <div class="mt-4 d-flex gap-2">
-                                @if ($transaction->status === 'Draft')
+                                @if ($transaction->status === 'Proses')
                                     {{-- Tombol untuk submit Form Approve di atas --}}
                                     {{-- <button type="submit" form="approveForm" class="btn btn-success">
                                         <i class="bi bi-check-lg"></i> Terima

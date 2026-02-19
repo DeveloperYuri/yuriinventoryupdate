@@ -96,6 +96,31 @@
                                                     value="{{ $transaction->category->name ?? '-' }}" readonly>
                                             </div>
                                         </div>
+                                        <div class="row mb-3">
+                                            <label class="col-sm-4 col-form-label">Ditujukan kepada</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control" disabled>
+                                                    <option value="JF"
+                                                        {{ $transaction->ditujukan_kepada == 'JF' ? 'selected' : '' }}>Ko Jefri
+                                                    </option>
+                                                    <option value="WD"
+                                                        {{ $transaction->ditujukan_kepada == 'WD' ? 'selected' : '' }}>Bu Widy
+                                                    </option>
+                                                    <option value="NR"
+                                                        {{ $transaction->ditujukan_kepada == 'NR' ? 'selected' : '' }}>Bu Nur
+                                                    </option>
+                                                    <option value="SA"
+                                                        {{ $transaction->ditujukan_kepada == 'SA' ? 'selected' : '' }}>Sumber Alam
+                                                    </option>
+                                                    <option value="LN"
+                                                        {{ $transaction->ditujukan_kepada == 'LN' ? 'selected' : '' }}>Lainnya
+                                                    </option>
+                                                </select>
+                                                @error('ditujukan_kepada')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
                                     </div>
                                     <!-- Kanan -->
                                     <div class="col-md-6">

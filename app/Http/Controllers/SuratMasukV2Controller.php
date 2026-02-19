@@ -116,7 +116,7 @@ class SuratMasukV2Controller extends Controller
         ]);
 
         $header = StockInHeader::findOrFail($id);
-        if ($header->status !== 'Draft') return back();
+        if ($header->status !== 'Proses') return back();
 
         DB::beginTransaction();
         try {
@@ -125,7 +125,7 @@ class SuratMasukV2Controller extends Controller
             $backorderItems = [];
             $pos = strpos($header->no_dokumen, '-BO');
             $baseDoc = ($pos !== false) ? substr($header->no_dokumen, 0, $pos) : $header->no_dokumen;
-            
+
             foreach ($request->product as $i => $spare_part_id) {
                 $qtyDatang = (int)$request->qty_datang[$i];
                 $qtySeharusnya = (int)$request->demand[$i];
@@ -165,7 +165,7 @@ class SuratMasukV2Controller extends Controller
             // PROSES PEMBUATAN DOKUMEN BACKORDER (Jika diperlukan)
             if ($backorderNeeded && $action === 'backorder' && count($backorderItems) > 0) {
 
-                 // 1. Ambil No Dokumen Asli (bersihkan teks -BO jika ada)
+                // 1. Ambil No Dokumen Asli (bersihkan teks -BO jika ada)
                 // Jika dokumen saat ini adalah WH/.../160-BO1, maka $baseDoc menjadi WH/.../160
                 // $baseDoc = explode('-BO', $header->no_dokumen)[0];
 
@@ -180,7 +180,7 @@ class SuratMasukV2Controller extends Controller
                     'tanggal'       => now(),
                     'diterima_dari' => $header->diterima_dari,
                     'diterima_oleh' => $request->diterima_oleh,
-                    'status'        => 'Draft',
+                    'status'        => 'Proses',
                     'keterangan'    => 'Backorder dari ' . $header->no_dokumen,
                     'category_id'   => $header->category_id,
                     'location_id'   => $header->location_id,
@@ -193,7 +193,7 @@ class SuratMasukV2Controller extends Controller
                         'type'               => 'in',
                         'quantity'           => $item['quantity'],
                         'price'              => $item['price'],
-                        'status'             => 'Draft',
+                        'status'             => 'Proses',
                         'user'               => $request->diterima_oleh,
                     ]);
                 }
@@ -208,7 +208,13 @@ class SuratMasukV2Controller extends Controller
                     ->update(['status_penerimaan' => $statusPO]);
             }
 
-            $header->update(['status' => 'sukses']);
+            // $header->update(['status' => 'sukses']);
+            $header->update([
+                'status'        => 'sukses',
+                'diterima_dari' => $request->diterima_dari,
+                // 'diterima_oleh' => $request->diterima_oleh,
+                'supplier_id'   => $request->supplier_id, // Tambahkan ini jika supplier boleh diubah saat approve
+            ]);
 
             DB::commit();
             return redirect()->route('v2sparepartinmultiple.index')->with('success', 'Penerimaan Berhasil!');
@@ -348,9 +354,9 @@ class SuratMasukV2Controller extends Controller
 
             $header = StockInHeader::findOrFail($id);
 
-            if ($header->status !== 'Draft') {
+            if ($header->status !== 'Proses') {
                 return redirect()->route('v2sparepartinmultiple.index')
-                    ->with('error', 'Hanya dokumen berstatus Draft yang bisa dibatalkan langsung!');
+                    ->with('error', 'Hanya dokumen berstatus Proses yang bisa dibatalkan langsung!');
             }
 
             // 1. Deteksi apakah ini dokumen Backorder
@@ -498,8 +504,9 @@ class SuratMasukV2Controller extends Controller
     public function show($id)
     {
         $transaction = StockInHeader::with('stockTransactions.sparePart')->findOrFail($id);
+        $suppliers = SupplierModel::all();
 
-        return view('dashboard.sparepartmasukv2.show', compact('transaction'));
+        return view('dashboard.sparepartmasukv2.show', compact('transaction', 'suppliers'));
     }
 
     // Spare Part Out

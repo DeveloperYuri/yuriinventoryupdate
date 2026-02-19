@@ -6,7 +6,7 @@
         @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
             <div class="pagetitle">
                 <a href="{{ route('sparepartinmultiple.create') }}" class="btn btn-primary" dusk="createsparepartin">Create New
-                    Spare Part In V2</a>
+                    Spare Part In</a>
             </div><!-- End Page Title -->
         @endif
 
@@ -22,7 +22,7 @@
                 </div>
                 <div>
                     <button type="submit" class="btn btn-primary">Filter</button>
-                    <a href="{{ route('sparepartinmultiple.index') }}" class="btn btn-secondary">Reset</a>
+                    <a href="{{ route('v2sparepartinmultiple.index') }}" class="btn btn-secondary">Reset</a>
                 </div>
             </form>
         </div>
@@ -83,6 +83,8 @@
                                                         <span class="badge bg-secondary">Draft</span>
                                                     @elseif ($in->status === 'batal')
                                                         <span class="badge bg-danger">Batal</span>
+                                                    @elseif ($in->status === 'Proses')
+                                                        <span class="badge bg-warning text-dark">Proses</span>
                                                     @endif
                                                 </td>
                                                 <td class="text-center">{{ $in->keterangan ?? '-' }}</td>
