@@ -287,7 +287,7 @@ Route::prefix('suratpermintaansparepart')->name('suratpermintaansparepart.')->gr
 Route::get('/suratpesanan', [SuratpesananController::class, 'index'])->name('suratpesanan.index');
 Route::get('/create/suratpesanan', [SuratpesananController::class, 'create'])->name('suratpesanan.create');
 Route::post('/create/suratpesanan/post', [SuratpesananController::class, 'store'])->name('suratpesanan.store');
-Route::get('/create/suratpesanan/{id}', [SuratpesananController::class, 'edit'])->name('suratpesanan.edit');
+Route::get('/edit/suratpesanan/{id}', [SuratpesananController::class, 'edit'])->name('suratpesanan.edit');
 Route::put('/create/suratpesanan/{id}', [SuratpesananController::class, 'update'])->name('suratpesanan.update');
 Route::delete('/delete/suratpesanan/{id}', [SuratpesananController::class, 'destroy'])->name('suratpesanan.delete');
 Route::get('/show/suratpesanan/{id}', [SuratpesananController::class, 'show'])->name('suratpesanan.show');
@@ -303,6 +303,7 @@ Route::prefix('suratpesanan')->name('suratpesanan.')->group(function () {
 });
 
 Route::get('/suratpesanan/rekap-pdf', [SuratPesananController::class, 'generateRekapPDF'])->name('suratpesanan.rekap-pdf');
+Route::get('/get-next-sp-number/{inisial}', [SuratPesananController::class, 'getNextNumber']);
 
 // Surat Pesanan Baru
 Route::get('/suratpesananbaru', [SuratPesananBaruController::class, 'index'])->name('suratpesananbaru.index');
@@ -491,18 +492,21 @@ Route::post('/v2/sparepartin/{id}/batal', [SuratMasukV2Controller::class, 'batal
 Route::get('/v2/surat-pesanan/search', [SuratMasukV2Controller::class, 'searchsp'])
     ->name('suratpesanan.search');
 
+Route::post('/v2sparepartin/approve/{id}', [SuratMasukV2Controller::class, 'approve'])->name('v2sparepartinmultiple.approve');
+Route::post('/v2sparepartin/cancel/{id}', [SuratMasukV2Controller::class, 'cancel'])->name('v2sparepartinmultiple.cancel');
+
 // Surat Pesanan V2
 Route::get('/v2/suratpesanan', [SuratPesananV2Controller::class, 'index'])->name('v2suratpesanan.index');
 Route::get('/v2/create/suratpesanan', [SuratPesananV2Controller::class, 'create'])->name('v2suratpesanan.create');
 Route::post('/v2/create/suratpesanan/post', [SuratPesananV2Controller::class, 'store'])->name('v2suratpesanan.store');
-Route::get('/v2/create/suratpesanan/{id}', [SuratPesananV2Controller::class, 'edit'])->name('v2suratpesanan.edit');
+Route::get('/v2/edit/suratpesanan/{id}', [SuratPesananV2Controller::class, 'edit'])->name('v2suratpesanan.edit');
 Route::put('/v2/create/suratpesanan/{id}', [SuratPesananV2Controller::class, 'update'])->name('v2suratpesanan.update');
 Route::delete('/v2/delete/suratpesanan/{id}', [SuratPesananV2Controller::class, 'destroy'])->name('v2suratpesanan.delete');
 Route::get('/v2/show/suratpesanan/{id}', [SuratPesananV2Controller::class, 'show'])->name('v2suratpesanan.show');
 
 Route::get('/v2suratpesanan/{id}/pdf', [SuratPesananV2Controller::class, 'printPdf'])->name('v2suratpesanan.pdf');
-Route::get('/v2/spareparts/{id}/stock', [SuratPesananV2Controller::class, 'getStock']);
-Route::get('/v2/surat-pesanan/{id}/items', [SuratPesananV2Controller::class, 'items']);
+// Route::get('/v2/spareparts/{id}/stock', [SuratPesananV2Controller::class, 'getStock']);
+// Route::get('/v2/surat-pesanan/{id}/items', [SuratPesananV2Controller::class, 'items']);
 
 Route::prefix('v2suratpesanan')->name('v2suratpesanan.')->group(function () {
     Route::post('{id}/submit', [SuratPesananV2Controller::class, 'submit'])->name('submit');

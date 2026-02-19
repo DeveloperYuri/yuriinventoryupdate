@@ -86,10 +86,10 @@
                                             <thead>
                                                 <tr>
                                                     <th>Nama Spare Part</th>
-                                                    <th>Qty_Minta</th>
-                                                    <th>Stock</th>
-                                                    <th>Qty_Kurang</th>
-                                                    <th>Keterangan</th>
+                                                    <th class="text-center">Qty_Minta</th>
+                                                    <th class="text-center">Stock</th>
+                                                    <th class="text-center">Qty Yang Harus Dibeli</th>
+                                                    <th class="text-center">Keterangan</th>
                                                     <th></th>
                                                 </tr>
                                             </thead>
@@ -97,10 +97,10 @@
                                                 @foreach ($transaction->details as $item)
                                                     <tr>
                                                         <td>{{ $item->sparePart->name ?? '-' }}</td>
-                                                        <td>{{ $item->qty }}</td>
-                                                        <td>{{ $item->stock }}</td>
-                                                        <td>{{ $item->qty_kurang }}</td>
-                                                        <td>{{ $item->keterangan }}</td>
+                                                        <td class="text-center">{{ $item->qty }}</td>
+                                                        <td class="text-center">{{ $item->stock }}</td>
+                                                        <td class="text-center">{{ $item->qty_kurang }}</td>
+                                                        <td class="text-center">{{ $item->keterangan }}</td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
@@ -115,7 +115,9 @@
                                 </div>
                             </form>
 
-                            <a href="{{ route('suratpesanan.index') }}" class="btn btn-success mt-2">Back</a>
+                            <a href="{{ url()->previous() }}" class="btn btn-success">Kembali</a>
+
+                            {{-- <a href="{{ route('suratpesanan.index') }}" class="btn btn-success mt-2">Back</a> --}}
 
                         </div>
                     </div>

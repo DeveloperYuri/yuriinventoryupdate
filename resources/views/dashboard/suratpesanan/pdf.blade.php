@@ -147,9 +147,9 @@
         <thead>
             <tr>
                 <th>Nama Spare Part</th>
-                <th>Qty_Minta</th>
+                <th>Qty Minta</th>
                 <th>Stock</th>
-                <th>Qty_Kurang</th>
+                <th>Qty Yang Harus Dibeli</th>
                 <th>Keterangan</th>
             </tr>
         </thead>

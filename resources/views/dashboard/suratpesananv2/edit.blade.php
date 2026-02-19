@@ -15,7 +15,7 @@
                                 </div>
                             </div>
 
-                            <form class="mt-4" action="{{ route('suratpesanan.update', $transaction->id) }}"
+                            <form class="mt-4" action="{{ route('v2suratpesanan.update', $transaction->id) }}"
                                 method="POST">
                                 @csrf
                                 @method('PUT')
@@ -124,7 +124,7 @@
                                                 <input type="hidden" name="details[{{ $index }}][id]"
                                                     value="{{ $item->id }}">
 
-                                                <td>
+                                                {{-- <td>
                                                     <select name="details[{{ $index }}][spare_part_id]"
                                                         class="form-control">
                                                         @foreach ($spareparts as $sp)
@@ -134,14 +134,25 @@
                                                             </option>
                                                         @endforeach
                                                     </select>
+                                                </td> --}}
+
+                                                <td>
+                                                    <input type="hidden"
+                                                        name="details[{{ $index }}][spare_part_id]"
+                                                        value="{{ $item->spare_part_id }}">
+
+                                                    <input type="text" class="form-control"
+                                                        value="{{ $item->sparePart->name ?? '-' }}">
                                                 </td>
+
+
                                                 <td>
                                                     <input type="number" name="details[{{ $index }}][qty]"
                                                         class="form-control qty-minta" value="{{ $item->qty }}">
                                                 </td>
                                                 <td>
-                                                    <input type="number" class="form-control stok" value="{{ $item->stock }}"
-                                                        readonly>
+                                                    <input type="number" class="form-control stok"
+                                                        value="{{ $item->stock }}" readonly>
                                                 </td>
                                                 <td>
                                                     <input type="number" name="details[{{ $index }}][qty_kurang]"
@@ -171,7 +182,7 @@
                                 </table>
 
                                 <button type="submit" class="btn btn-primary mt-2">Update</button>
-                                <a href="{{ route('suratpesanan.index') }}" class="btn btn-success mt-2">Back</a>
+                                <a href="{{ route('v2suratpesanan.index') }}" class="btn btn-success mt-2">Back</a>
                             </form>
 
                         </div>

@@ -24,9 +24,7 @@ class SuratpesananController extends Controller
     public function create()
     {
         $tahun = now()->format('Y');
-        $bulanAngka  = now()->format('m');
-
-        // Konversi bulan ke angka Romawi
+        $bulanAngka = now()->format('m');
         $romawi = [
             '01' => 'I',
             '02' => 'II',
@@ -41,35 +39,116 @@ class SuratpesananController extends Controller
             '11' => 'XI',
             '12' => 'XII',
         ];
-
         $bulan = $romawi[$bulanAngka];
 
-        // Ambil record terakhir tahun ini
-        // $last = SuratPesananHeaderModel::whereYear('created_at', $tahun)
-        //     ->whereMonth('created_at', $bulanAngka)
-        //     ->orderBy('id', 'desc')
-        //     ->first();
-
-        $last = SuratPesananHeaderModel::whereYear('created_at', $tahun)
+        // --- BAGIAN YANG DIPERBAIKI (Mencari 082 agar jadi 083) ---
+        $lastRecord = SuratPesananHeaderModel::whereYear('created_at', $tahun)
             ->orderBy('id', 'desc')
             ->first();
 
-        // Ambil nomor urut terakhir
         $lastNumber = 0;
-        if ($last && preg_match('/(\d{3})$/', $last->no_surat_pesanan, $matches)) {
-            $lastNumber = (int) $matches[1];
+        if ($lastRecord) {
+            // Kita pecah SP/II/2026/082/JF-01 berdasarkan "/"
+            $parts = explode('/', $lastRecord->no_surat_pesanan);
+
+            // Ambil indeks ke-3 (yaitu 082)
+            if (isset($parts[3])) {
+                $lastNumber = (int) $parts[3];
+            }
         }
 
-        // Generate nomor baru
         $nextNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
         $noDokumen = "SP/{$bulan}/{$tahun}/{$nextNumber}";
+        // Sekarang $noDokumen akan berisi SP/II/2026/083
+        // -------------------------------------------------------
+
+        // Ambil nomor terakhir per inisial (JF, WD, dll) untuk ekornya
+        // Ambil semua data tahun ini
+        $lastNumbers = SuratPesananHeaderModel::whereYear('created_at', $tahun)
+            ->get() // Ambil semua data tahun ini dulu
+            ->groupBy('ditujukan_kepada')
+            ->map(function ($items) {
+                return $items->map(function ($item) {
+                    $noSurat = $item->no_surat_pesanan;
+                    // Cari posisi tanda minus terakhir
+                    $lastDash = strrpos($noSurat, '-');
+
+                    if ($lastDash !== false) {
+                        // Ambil angka setelah tanda minus (misal JF-01 -> ambil 01)
+                        return (int) substr($noSurat, $lastDash + 1);
+                    }
+                    return 0;
+                })->max(); // Ambil angka paling tinggi
+            });
 
         $locations = LocationsModel::all();
         $categories = CategoryModel::all();
-        $subcategories = SubCategoryModel::all();
 
-        return view('dashboard.suratpesanan.create', compact('noDokumen', 'locations', 'categories'));
+        return view('dashboard.suratpesanan.create', compact('noDokumen', 'lastNumbers', 'locations', 'categories'));
     }
+
+    // public function create()
+    // {
+    //     $tahun = now()->format('Y');
+    //     $bulanAngka  = now()->format('m');
+
+    //     // Konversi bulan ke angka Romawi
+    //     $romawi = [
+    //         '01' => 'I',
+    //         '02' => 'II',
+    //         '03' => 'III',
+    //         '04' => 'IV',
+    //         '05' => 'V',
+    //         '06' => 'VI',
+    //         '07' => 'VII',
+    //         '08' => 'VIII',
+    //         '09' => 'IX',
+    //         '10' => 'X',
+    //         '11' => 'XI',
+    //         '12' => 'XII',
+    //     ];
+
+    //     $bulan = $romawi[$bulanAngka];
+
+    //     // Ambil record terakhir tahun ini
+    //     // $last = SuratPesananHeaderModel::whereYear('created_at', $tahun)
+    //     //     ->whereMonth('created_at', $bulanAngka)
+    //     //     ->orderBy('id', 'desc')
+    //     //     ->first();
+
+    //     $last = SuratPesananHeaderModel::whereYear('created_at', $tahun)
+    //         ->orderBy('id', 'desc')
+    //         ->first();
+
+    //     // Ambil nomor urut terakhir
+    //     $lastNumber = 0;
+    //     if ($last && preg_match('/(\d{3})$/', $last->no_surat_pesanan, $matches)) {
+    //         $lastNumber = (int) $matches[1];
+    //     }
+
+    //     // Generate nomor baru
+    //     $nextNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
+    //     $noDokumen = "SP/{$bulan}/{$tahun}/{$nextNumber}";
+
+    //     // Mengambil nomor urut terakhir per inisial (JF, WD, dll)
+    //     $lastNumbers = SuratPesananHeaderModel::whereYear('created_at', $tahun)
+    //         ->whereNotNull('ditujukan_kepada')
+    //         ->get()
+    //         ->groupBy('ditujukan_kepada')
+    //         ->map(function ($items) {
+    //             return $items->map(function ($item) {
+    //                 // Ambil angka setelah tanda "-" paling akhir
+    //                 $parts = explode('-', $item->no_surat_pesanan);
+    //                 return count($parts) > 1 ? (int)end($parts) : 0;
+    //             })->max();
+    //         });
+
+    //     $locations = LocationsModel::all();
+    //     $categories = CategoryModel::all();
+    //     $subcategories = SubCategoryModel::all();
+
+    //     return view('dashboard.suratpesanan.create', compact('noDokumen', 'locations', 'categories', 'lastNumbers'));
+    // }
 
     public function store(Request $request)
     {
@@ -78,16 +157,39 @@ class SuratpesananController extends Controller
             'name'          => 'required|string|max:100',
             'locations_id'  => 'required|integer|exists:locations,id',
             'category_id'   => 'required|integer|exists:category,id',
+            'ditujukan_kepada' => 'required|string',
             // 'subcategory_id' => 'required|integer|exists:subcategory,id',
         ], [
             'name.required'          => 'Form ini harus diisi',
             'locations_id.required'  => 'Lokasi wajib dipilih',
             'category_id.required'   => 'Kategori wajib dipilih',
+            'ditujukan_kepada.required' => 'Ditujukan Kepada wajib dipilih',
             // 'subcategory_id.required' => 'Subkategori wajib dipilih',
         ]);
 
 
         // dd($request->all());
+
+        $barangMasihAdaStok = [];
+
+        foreach ($request->product as $i => $spare_part_id) {
+            $qtyKurang = $request->qty_kurang[$i] ?? 0;
+
+            // Jika qty_kurang <= 0, berarti stok gudang >= permintaan
+            if ($qtyKurang <= 0) {
+                $namaBarang = $request->product_name[$i] ?? 'Barang pada baris ' . ($i + 1);
+                $barangMasihAdaStok[] = $namaBarang;
+            }
+        }
+
+        // Jika ditemukan barang yang stoknya masih ada, hentikan proses dan kirim alert
+        if (!empty($barangMasihAdaStok)) {
+            $listBarang = implode(', ', $barangMasihAdaStok);
+            return redirect()->back()
+                ->withInput() // Agar data form tidak hilang
+                ->with('error', "Pemesanan Ditolak: Barang ($listBarang) masih tersedia di gudang. Silakan hapus dari list atau sesuaikan Qty Minta.");
+        }
+
 
         // Simpan semua dalam transaksi
         return DB::transaction(function () use ($request) {
@@ -99,7 +201,9 @@ class SuratpesananController extends Controller
                 'locations_id'     => $request->locations_id,
                 'category_id'      => $request->category_id,
                 'subcategory_id'   => $request->subcategory_id,
-                'tanggal'   => $request->tanggal,
+                'tanggal'          => $request->tanggal,
+                'ditujukan_kepada' => $request->ditujukan_kepada,
+
             ]);
 
             // Loop semua spare part untuk simpan detail
@@ -318,4 +422,35 @@ class SuratpesananController extends Controller
         return $pdf->stream('Rekap_Sparepart.pdf');
     }
 
+    private function getRomawi($month)
+    {
+        $romans = ['01' => 'I', '02' => 'II', '03' => 'III', '04' => 'IV', '05' => 'V', '06' => 'VI', '07' => 'VII', '08' => 'VIII', '09' => 'IX', '10' => 'X', '11' => 'XI', '12' => 'XII'];
+        return $romans[$month] ?? 'I';
+    }
+
+    public function getNextNumber($inisial)
+    {
+        $tahun = date('Y');
+        $bulanRomawi = $this->getRomawi(date('n')); // Pastikan Anda punya fungsi konversi romawi
+
+        // Cari surat terakhir di tahun ini yang ditujukan kepada inisial tsb
+        $lastRecord = SuratPesananHeaderModel::where('ditujukan_kepada', $inisial)
+            ->whereYear('created_at', $tahun)
+            ->latest()
+            ->first();
+
+        if ($lastRecord) {
+            // Ambil 3 digit terakhir dari no_surat_pesanan dan tambah 1
+            // Contoh format: SP/II/2026/JF/001 -> ambil 001
+            $lastNumber = (int) substr($lastRecord->no_surat_pesanan, -3);
+            $nextNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
+        } else {
+            // Jika belum ada surat untuk inisial ini di tahun ini, mulai dari 001
+            $nextNumber = '001';
+        }
+
+        return response()->json([
+            'next_number' => "SP/{$bulanRomawi}/{$tahun}/{$inisial}/{$nextNumber}"
+        ]);
+    }
 }

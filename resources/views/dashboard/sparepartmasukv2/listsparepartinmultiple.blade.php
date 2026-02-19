@@ -58,12 +58,12 @@
                                             <th class="text-center">No Dokumen</th>
                                             <th class="text-center">Penerima Barang</th>
                                             <th class="text-center">Tanggal</th>
+                                            <th class="text-center">Referensi No. SP</th>
                                             <th class="text-center">Status</th>
-                                            <th class="text-center">Referensi</th>
                                             <th class="text-center">Keterangan</th>
-                                            @if (Auth::user()->is_role == 2)
+                                            {{-- @if (Auth::user()->is_role == 2)
                                                 <th class="text-center">Aksi</th>
-                                            @endif
+                                            @endif --}}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -74,6 +74,8 @@
                                                 <td class="text-center">{{ $in->diterima_oleh ?? '-' }}</td>
                                                 <td class="text-center">
                                                     {{ \Carbon\Carbon::parse($in->tanggal)->format('d-m-Y') }}</td>
+                                                <td class="text-center">{{ $in->referensi ?? '-' }}</td>
+
                                                 <td class="text-center">
                                                     @if ($in->status === 'sukses')
                                                         <span class="badge bg-success">sukses</span>
@@ -83,10 +85,9 @@
                                                         <span class="badge bg-danger">Batal</span>
                                                     @endif
                                                 </td>
-                                                <td class="text-center">{{ $in->referensi ?? '-' }}</td>
                                                 <td class="text-center">{{ $in->keterangan ?? '-' }}</td>
 
-                                                <td class="text-center" onclick="event.stopPropagation();">
+                                                {{-- <td class="text-center" onclick="event.stopPropagation();">
                                                     @if (Auth::user()->is_role == 2 && $in->status === 'sukses')
                                                         <button type="button" class="btn btn-sm btn-danger"
                                                             data-bs-toggle="modal"
@@ -94,7 +95,7 @@
                                                             Batal
                                                         </button>
                                                     @endif
-                                                </td>
+                                                </td> --}}
 
                                             </tr>
 

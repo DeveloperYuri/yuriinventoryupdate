@@ -8,12 +8,24 @@
                 <a href="{{ route('suratpesanan.create') }}" class="btn btn-primary" dusk="addsparepart">Buat Surat
                     Pesanan</a>
 
-                <button id="btnRekapPdf" class="btn btn-danger d-none" onclick="generateBatchPDF()">
+                <div class="d-flex gap-2 align-items-center">
+                    @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 0 || Auth::user()->is_role == 1)
+                        <button id="btnRekapPdf" class="btn btn-danger d-none" onclick="generateBatchPDF()">
+                            <i class="bi bi-file-pdf"></i> Rekap Jadi PDF
+                        </button>
+
+                        <button class="btn btn-outline-secondary d-none" id="btnClear" onclick="clearSelections()">
+                            Batal Pilih Semua
+                        </button>
+                    @endif
+                </div>
+
+                {{-- <button id="btnRekapPdf" class="btn btn-danger d-none" onclick="generateBatchPDF()">
                     <i class="bi bi-file-pdf"></i> Rekap Jadi PDF
                 </button>
                 <button class="btn btn-outline-secondary btn-sm d-none" id="btnClear" onclick="clearSelections()">
                     Batal Pilih Semua
-                </button>
+                </button> --}}
             @endif
 
         </div>
@@ -22,12 +34,35 @@
             <form method="get">
                 <div class="row g-2 align-items-center">
                     <div class="col">
-                        <input id="searchingtitle" type="text" class="form-control" value="{{ Request()->name }}"
-                            placeholder="Cari Surat Pesanan" name="name">
+                        <input id="searchingtitle" type="text" class="form-control"
+                            value="{{ Request()->no_surat_pesanan }}" placeholder="Cari Nomer Surat Pesanan"
+                            name="no_surat_pesanan">
                     </div>
+
+                    <div class="col-md-4">
+                        <select name="ditujukan_kepada" class="form-control">
+                            <option value="">-- Di Tujukan Kepada --</option>
+                            <option value="JF" {{ request('ditujukan_kepada') == 'JF' ? 'selected' : '' }}>Ko Jefri (JF)
+                            </option>
+                            <option value="WD" {{ request('ditujukan_kepada') == 'WD' ? 'selected' : '' }}>Bu Widy (WD)
+                            </option>
+                            <option value="NR" {{ request('ditujukan_kepada') == 'NR' ? 'selected' : '' }}>Bu Nur (NR)
+                            </option>
+                            <option value="SA" {{ request('ditujukan_kepada') == 'SA' ? 'selected' : '' }}>Sumber Alam
+                                (SA)</option>
+                            <option value="LN" {{ request('ditujukan_kepada') == 'LN' ? 'selected' : '' }}>Lainnya (LN)
+                            </option>
+                        </select>
+                    </div>
+
                     <div class="col-auto">
                         <button type="submit" class="btn btn-dark">Cari</button>
+                        <a href="{{ route('suratpesanan.index') }}" class="btn btn-secondary">Reset</a>
                     </div>
+
+                    {{-- <div class="col-auto">
+                        <button type="submit" class="btn btn-dark">Cari</button>
+                    </div> --}}
                 </div>
             </form>
         </div>
@@ -313,16 +348,23 @@
             });
         }
 
-        // Fungsi kontrol tampilan tombol Rekap
+        // Fungsi kontrol tampilan tombol Rekap & Batal Pilih
         function toggleBatchButton() {
             const selectedIds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
             const btnRekapPdf = document.getElementById('btnRekapPdf');
+            const btnClear = document.getElementById('btnClear'); // Ambil element tombol Batal
 
             if (selectedIds.length > 0) {
+                // Tampilkan tombol Rekap
                 btnRekapPdf.classList.remove('d-none');
                 btnRekapPdf.innerHTML = `<i class="bi bi-file-pdf"></i> Rekap ${selectedIds.length} Surat ke PDF`;
+
+                // Tampilkan tombol Batal Pilih
+                btnClear.classList.remove('d-none');
             } else {
+                // Sembunyikan kedua tombol jika tidak ada yang dipilih
                 btnRekapPdf.classList.add('d-none');
+                btnClear.classList.add('d-none');
             }
         }
 
@@ -335,7 +377,7 @@
                 const idsString = selectedIds.join(',');
 
                 // Arahkan ke route cetak (Ganti dengan route PDF-mu) window.location.href = "{{ url('suratpesanan/rekap-pdf') }}?ids=" + idsString;
-                
+
                 window.open("{{ url('suratpesanan/rekap-pdf') }}?ids=" + idsString, '_blank');
 
                 // OPSIONAL: Bersihkan storage setelah cetak

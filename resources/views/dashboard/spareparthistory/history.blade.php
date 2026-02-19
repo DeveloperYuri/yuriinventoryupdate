@@ -104,9 +104,9 @@
                                         <th class="text-center">Tipe</th>
                                         <th class="text-center">Status</th>
                                         <th class="text-center">Keterangan</th>
-                                        @if (Auth::user()->is_role == 2)
+                                        {{-- @if (Auth::user()->is_role == 2)
                                             <th class="text-center">Aksi</th>
-                                        @endif
+                                        @endif --}}
                                     </tr>
                                     @foreach ($transactions as $index => $item)
                                         <tr>
@@ -137,7 +137,7 @@
                                             {{-- <td class="text-center">{{ $item->status }}</td> --}}
                                             <td class="text-center">{{ $item->keterangan ?? '-' }}</td>
 
-                                            <td class="text-center" onclick="event.stopPropagation();">
+                                            {{-- <td class="text-center" onclick="event.stopPropagation();">
                                                 @if (Auth::user()->is_role == 2 && $item->status === 'sukses')
                                                     <button type="button" class="btn btn-sm btn-danger"
                                                         data-bs-toggle="modal"
@@ -145,7 +145,7 @@
                                                         Batal
                                                     </button>
                                                 @endif
-                                            </td>
+                                            </td> --}}
 
                                         </tr>
 

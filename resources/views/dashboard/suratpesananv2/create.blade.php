@@ -20,8 +20,8 @@
                                         <div class="row mb-3">
                                             <label class="col-sm-4 col-form-label">No SP</label>
                                             <div class="col-sm-8">
-                                                <input type="text" class="form-control" name="no_surat_pesanan"
-                                                    value="{{ $noDokumen }}" readonly>
+                                                <input type="text" class="form-control" id="no_surat_pesanan"
+                                                    name="no_surat_pesanan" value="{{ old('no_surat_pesanan', $noDokumen) }}" readonly>
                                             </div>
                                         </div>
                                         <div class="row mb-3">
@@ -49,6 +49,34 @@
                                                     @endforeach
                                                 </select>
                                                 @error('category_id')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-4 col-form-label">Ditujukan kepada</label>
+                                            <div class="col-sm-8">
+                                                <select id="ditujukan_kepada" name="ditujukan_kepada"
+                                                    class="form-control @error('ditujukan_kepada') is-invalid @enderror">
+                                                    <option value="">-- Silahkan Pilih --</option>
+                                                    <option value="JF"
+                                                        {{ old('ditujukan_kepada') == 'JF' ? 'selected' : '' }}>Ko Jefri
+                                                    </option>
+                                                    <option value="WD"
+                                                        {{ old('ditujukan_kepada') == 'WD' ? 'selected' : '' }}>Bu Widy
+                                                    </option>
+                                                    <option value="NR"
+                                                        {{ old('ditujukan_kepada') == 'NR' ? 'selected' : '' }}>Bu Nur
+                                                    </option>
+                                                    <option value="SA"
+                                                        {{ old('ditujukan_kepada') == 'SA' ? 'selected' : '' }}>Sumber Alam
+                                                    </option>
+                                                    <option value="LN"
+                                                        {{ old('ditujukan_kepada') == 'LN' ? 'selected' : '' }}>Lainnya
+                                                    </option>
+                                                </select>
+                                                @error('ditujukan_kepada')
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
                                             </div>
@@ -100,6 +128,15 @@
                                     </div>
                                 </div>
 
+                                <div id="validationAlert" class="alert alert-danger alert-dismissible fade d-none"
+                                    role="alert">
+                                    <i class="bi bi-exclamation-octagon me-1"></i>
+                                    <strong>Pemesanan Ditolak!</strong>
+                                    <div id="alertMessage" class="mt-2" style="white-space: pre-line;"></div>
+                                    <button type="button" class="btn-close"
+                                        onclick="$(this).closest('.alert').addClass('d-none').removeClass('show')"></button>
+                                </div>
+
                                 <!-- Tab -->
                                 <div class="tab-content" id="myTabContent">
                                     <div class="tab-pane fade show active" id="operations" role="tabpanel">
@@ -140,16 +177,35 @@
                                                             </td>
                                                             <td>
                                                                 <input type="number" name="stock[]"
+                                                                    class="form-control stok" readonly
+                                                                    value="{{ old('stock')[$i] ?? 0 }}">
+                                                            </td>
+
+                                                            <td>
+                                                                <input type="number" name="qty_kurang[]"
+                                                                    class="form-control qty-kurang" readonly
+                                                                    value="{{ old('qty_kurang')[$i] ?? 0 }}">
+                                                            </td>
+
+                                                            <td>
+                                                                <input type="text" name="keterangan[]"
+                                                                    class="form-control keterangan"
+                                                                    value="{{ old('keterangan')[$i] ?? '' }}">
+                                                            </td>
+                                                            {{-- <td>
+                                                                <input type="number" name="stock[]"
                                                                     class="form-control stok" readonly value="0">
                                                             </td>
                                                             <td>
                                                                 <input type="number" name="qty_kurang[]"
-                                                                    class="form-control qty-kurang" readonly value="0">
+                                                                    class="form-control qty-kurang" readonly
+                                                                    value="0">
                                                             </td>
                                                             <td>
                                                                 <input type="text" name="keterangan[]"
-                                                                    class="form-control keterangan" readonly value="">
-                                                            </td>
+                                                                    class="form-control keterangan" readonly
+                                                                    value="">
+                                                            </td> --}}
 
                                                             <td>
                                                                 <button type="button"
@@ -336,17 +392,72 @@
         });
     </script>
 
-
-
-
     <script>
+        document.getElementById('saveBtn').addEventListener('click', function(e) {
+            // Mencegah form submit otomatis
+            e.preventDefault();
+
+            let adaStokTersedia = false;
+            let daftarBarang = [];
+            const alertBox = $('#validationAlert');
+            const alertMessage = $('#alertMessage');
+
+            // Sembunyikan alert jika sebelumnya sudah muncul
+            alertBox.addClass('d-none').removeClass('show');
+
+            // Looping setiap baris di tabel produk
+            $('#productTableBody tr').each(function(index, row) {
+                const productId = $(row).find('input[name="product[]"]').val();
+
+                // Hanya cek baris yang sudah diisi produknya
+                if (productId) {
+                    const qtyKurang = parseInt($(row).find('.qty-kurang').val()) || 0;
+                    const namaBarang = $(row).find('input[name="product_name[]"]').val() ||
+                        "Barang baris " + (index + 1);
+
+                    if (qtyKurang === 0) {
+                        adaStokTersedia = true;
+                        daftarBarang.push("- " + namaBarang);
+                    }
+                }
+            });
+
+            if (adaStokTersedia) {
+                // Tampilkan Alert Bootstrap dengan kata-kata yang sama seperti tadi
+                alertMessage.html(
+                    "Barang berikut masih memiliki stok yang cukup di gudang:<br>" +
+                    daftarBarang.join('<br>') +
+                    "<br><br>Silakan hapus barang tersebut atau sesuaikan jumlah permintaan."
+                );
+
+                alertBox.removeClass('d-none').addClass('show');
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+
+                // Pastikan tombol tetap aktif agar bisa diklik lagi setelah user memperbaiki data
+                $(this).prop('disabled', false);
+                document.getElementById('btnText').innerHTML = 'Save';
+            } else {
+                // Jika validasi lolos, jalankan proses saving
+                $(this).prop('disabled', true);
+                document.getElementById('btnText').innerHTML =
+                    '<span class="spinner-border spinner-border-sm"></span> Saving...';
+                this.form.submit();
+            }
+        });
+    </script>
+
+    {{-- Save btn lama jalan --}}
+    {{-- <script>
         document.getElementById('saveBtn').addEventListener('click', function() {
             this.disabled = true;
             document.getElementById('btnText').innerHTML =
                 '<span class="spinner-border spinner-border-sm"></span> Saving...';
             this.form.submit();
         });
-    </script>
+    </script> --}}
 
     <script>
         $(document).ready(function() {
@@ -387,6 +498,37 @@
             if (event.key === "Enter" && event.target.tagName !== "TEXTAREA") {
                 event.preventDefault();
             }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // Data ini berisi angka terakhir, contoh: { "JF": 1, "WD": 5 }
+            const lastNumbers = @json($lastNumbers);
+
+            console.log('masuk ngga');
+            console.log("Data dari Laravel:", lastNumbers);
+            const noSPInput = $('#no_surat_pesanan');
+            const baseNo = "{{ $noDokumen }}"; // Contoh: SP/II/2026/083
+
+            $('#ditujukan_kepada').on('change', function() {
+                let inisial = $(this).val();
+
+                if (inisial) {
+                    // Ambil angka terakhir dari database untuk inisial ini
+                    // Jika JF sudah ada 1 di DB, maka lastNo = 1
+                    let lastNo = (lastNumbers && lastNumbers[inisial]) ? parseInt(lastNumbers[inisial]) : 0;
+
+                    // Tambah 1 agar menjadi urutan berikutnya
+                    let nextNo = lastNo + 1;
+                    let formattedSuffix = nextNo.toString().padStart(2, '0');
+
+                    // Set hasil: SP/II/2026/083/JF-02
+                    noSPInput.val(baseNo + '/' + inisial + '-' + formattedSuffix);
+                } else {
+                    noSPInput.val(baseNo);
+                }
+            });
         });
     </script>
 @endpush

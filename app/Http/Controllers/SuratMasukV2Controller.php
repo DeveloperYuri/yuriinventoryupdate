@@ -61,6 +61,13 @@ class SuratMasukV2Controller extends Controller
     public function storein(Request $request)
     {
 
+        dd([
+            'Tujuan_Action' => $request->action_type,
+            'ID_Produk' => $request->product,
+            'Sisa_Yang_Harus_Ada' => $request->demand,
+            'Kenyataan_Datang' => $request->qty_datang,
+            'PO_Number' => $request->po_numbers
+        ]);
         // Validasi input
         $validated = $request->validate([
             'diterima_dari'  => 'required|string|max:100',
@@ -100,6 +107,357 @@ class SuratMasukV2Controller extends Controller
             return redirect()->route('sparepartinmultiple.index')->with('success', 'Stok masuk berhasil dicatat.');
         });
     }
+
+    public function approve(Request $request, $id)
+    {
+        $request->validate([
+            'diterima_oleh' => 'required|string|max:255',
+            'diterima_dari' => 'required|string|max:255',
+        ]);
+
+        $header = StockInHeader::findOrFail($id);
+        if ($header->status !== 'Draft') return back();
+
+        DB::beginTransaction();
+        try {
+            $action = $request->input('action_type');
+            $backorderNeeded = false;
+            $backorderItems = [];
+            $pos = strpos($header->no_dokumen, '-BO');
+            $baseDoc = ($pos !== false) ? substr($header->no_dokumen, 0, $pos) : $header->no_dokumen;
+            
+            foreach ($request->product as $i => $spare_part_id) {
+                $qtyDatang = (int)$request->qty_datang[$i];
+                $qtySeharusnya = (int)$request->demand[$i];
+
+                $detail = StockTransactionModel::where('stock_in_header_id', $header->id)
+                    ->where('spare_part_id', $spare_part_id)
+                    ->first();
+
+                if ($detail) {
+                    // Selisih untuk backorder (hanya variabel lokal, tidak dikirim ke DB PO)
+                    $sisaGantung = $qtySeharusnya - $qtyDatang;
+
+                    // LOGIC BACKORDER (Hanya menampung ke array untuk dokumen StockIn baru)
+                    if ($qtyDatang < $qtySeharusnya && $action === 'backorder' && $sisaGantung > 0) {
+                        $backorderNeeded = true;
+                        $backorderItems[] = [
+                            'spare_part_id' => $spare_part_id,
+                            'quantity'      => $sisaGantung,
+                            'price'         => $detail->price,
+                        ];
+                    }
+
+                    // Update detail Stock In yang sedang diproses
+                    $detail->update([
+                        'quantity' => $qtyDatang,
+                        'status'   => 'sukses',
+                        'user'     => $request->diterima_oleh
+                    ]);
+
+                    // Increment Stok Sparepart
+                    if ($qtyDatang > 0) {
+                        \App\Models\ListSparePartModel::where('id', $spare_part_id)->increment('stock', $qtyDatang);
+                    }
+                }
+            }
+
+            // PROSES PEMBUATAN DOKUMEN BACKORDER (Jika diperlukan)
+            if ($backorderNeeded && $action === 'backorder' && count($backorderItems) > 0) {
+
+                 // 1. Ambil No Dokumen Asli (bersihkan teks -BO jika ada)
+                // Jika dokumen saat ini adalah WH/.../160-BO1, maka $baseDoc menjadi WH/.../160
+                // $baseDoc = explode('-BO', $header->no_dokumen)[0];
+
+                // 2. Hitung berapa banyak BO yang sudah ada untuk No Dokumen Asli ini
+                $countBO = StockInHeader::where('no_dokumen', 'LIKE', $baseDoc . '-BO%')->count();
+                $nextBO = $countBO + 1;
+
+                $newHeader = StockInHeader::create([
+                    'no_dokumen'    => $header->no_dokumen . '-BO' . $nextBO, // Tambah random biar unik
+                    'supplier_id'   => $header->supplier_id,
+                    'referensi'     => $header->referensi,
+                    'tanggal'       => now(),
+                    'diterima_dari' => $header->diterima_dari,
+                    'diterima_oleh' => $request->diterima_oleh,
+                    'status'        => 'Draft',
+                    'keterangan'    => 'Backorder dari ' . $header->no_dokumen,
+                    'category_id'   => $header->category_id,
+                    'location_id'   => $header->location_id,
+                ]);
+
+                foreach ($backorderItems as $item) {
+                    StockTransactionModel::create([
+                        'stock_in_header_id' => $newHeader->id,
+                        'spare_part_id'      => $item['spare_part_id'],
+                        'type'               => 'in',
+                        'quantity'           => $item['quantity'],
+                        'price'              => $item['price'],
+                        'status'             => 'Draft',
+                        'user'               => $request->diterima_oleh,
+                    ]);
+                }
+                $statusPO = 'terima sebagian';
+            } else {
+                $statusPO = 'closed';
+            }
+
+            // UPDATE STATUS HEADER PO (Bukan Qty Detail PO)
+            if ($header->referensi) {
+                \App\Models\SuratPesananHeaderModel::where('no_surat_pesanan', $header->referensi)
+                    ->update(['status_penerimaan' => $statusPO]);
+            }
+
+            $header->update(['status' => 'sukses']);
+
+            DB::commit();
+            return redirect()->route('v2sparepartinmultiple.index')->with('success', 'Penerimaan Berhasil!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            dd("ERROR: " . $e->getMessage(), "LINE: " . $e->getLine());
+        }
+    }
+
+    // public function approve(Request $request, $id)
+    // {
+
+    //     // dd([
+    //     //     'Tujuan_Action' => $request->action_type,
+    //     //     'ID_Produk' => $request->product,
+    //     //     'Sisa_Yang_Harus_Ada' => $request->demand,
+    //     //     'Kenyataan_Datang' => $request->qty_datang,
+    //     //     'PO_Number' => $request->po_numbers
+    //     // ]);
+
+    //     // 1. TAMBAHKAN VALIDASI DI SINI
+    //     $request->validate([
+    //         'diterima_oleh' => 'required|string|max:255',
+    //         'diterima_dari' => 'required|string|max:255',
+    //     ], [
+    //         'diterima_oleh.required' => 'Nama penerima wajib diisi!',
+    //         'diterima_dari.required' => 'Nama pengirim wajib diisi!',
+    //     ]);
+
+    //     $header = StockInHeader::findOrFail($id);
+    //     if ($header->status !== 'Draft') return back();
+
+    //     DB::beginTransaction();
+    //     try {
+    //         $action = $request->input('action_type');
+    //         $backorderNeeded = false;
+    //         $backorderItems = [];
+
+    //         foreach ($request->product as $i => $spare_part_id) {
+    //             $qtyDatang = (int)$request->qty_datang[$i];
+    //             $qtyPesanAsli = (int)$request->demand[$i]; // Ini angka pesan (misal: 10)
+
+    //             $detail = StockTransactionModel::where('stock_in_header_id', $header->id)
+    //                 ->where('spare_part_id', $spare_part_id)
+    //                 ->first();
+
+    //             if ($detail) {
+    //                 // Cek apakah ada barang yang kurang untuk potensi Backorder
+    //                 if ($qtyDatang < $qtyPesanAsli) {
+    //                     $backorderNeeded = true;
+    //                     $selisih = $qtyPesanAsli - $qtyDatang;
+
+    //                     if ($selisih > 0) {
+    //                         $backorderItems[] = [
+    //                             'spare_part_id' => $spare_part_id,
+    //                             'quantity'      => $selisih,
+    //                             'price'         => $detail->price,
+    //                         ];
+    //                     }
+    //                 }
+
+    //                 // UPDATE: Simpan yang BENAR-BENAR DATANG ke kolom quantity
+    //                 // Qty Pesan asli (10) tidak hilang karena masih ada di tabel Surat Pesanan (PO)
+    //                 $detail->update([
+    //                     'quantity' => $qtyDatang,
+    //                     'status'   => 'sukses',
+    //                     'user'     => $request->diterima_oleh
+    //                 ]);
+
+    //                 // Tambah stok master hanya sesuai yang datang
+    //                 if ($qtyDatang > 0) {
+    //                     $sparePart = \App\Models\ListSparePartModel::find($spare_part_id);
+    //                     $sparePart->increment('stock', $qtyDatang);
+    //                 }
+    //             }
+    //         }
+
+    //         // --- STEP 2: TARUH LOGIKA BACKORDER DI SINI ---
+    //         if ($backorderNeeded && $action === 'backorder' && count($backorderItems) > 0) {
+
+    //             // Buat Header baru
+    //             $newHeader = StockInHeader::create([
+    //                 'no_dokumen'    => $header->no_dokumen . '-BO',
+    //                 'supplier_id'   => $header->supplier_id,
+    //                 'referensi'     => $header->referensi,
+    //                 'tanggal'       => now(),
+    //                 'diterima_dari' => $header->diterima_dari,
+    //                 'diterima_oleh' => $request->diterima_oleh,
+    //                 'status'        => 'Draft',
+    //                 'keterangan'    => 'Backorder dari ' . $header->no_dokumen,
+    //                 'category_id'   => $header->category_id,
+    //                 'location_id'   => $header->location_id,
+    //             ]);
+
+    //             // Buat Detail untuk sisa barang
+    //             foreach ($backorderItems as $item) {
+    //                 StockTransactionModel::create([
+    //                     'stock_in_header_id' => $newHeader->id,
+    //                     'spare_part_id'      => $item['spare_part_id'],
+    //                     'type'               => 'in',
+    //                     'quantity'           => $item['quantity'],
+    //                     'price'              => $item['price'],
+    //                     'status'             => 'Draft',
+    //                     'user'               => $request->diterima_oleh,
+    //                 ]);
+    //             }
+    //             $statusPO = 'terima sebagian';
+    //         } else {
+    //             $statusPO = 'closed';
+    //         }
+
+    //         // Update status di tabel Surat Pesanan (PO)
+    //         if ($header->referensi) {
+    //             \App\Models\SuratPesananHeaderModel::where('no_surat_pesanan', $header->referensi)
+    //                 ->update(['status_penerimaan' => $statusPO]);
+    //         }
+
+    //         $header->update(['status' => 'sukses']);
+
+    //         DB::commit();
+    //         return redirect()->route('v2sparepartinmultiple.index')->with('success', 'Penerimaan Berhasil!');
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         // Munculkan error aslinya biar kita tau kenapa gagal save
+    //         dd($e->getMessage(), $e->getLine(), $e->getFile());
+    //     }
+    // }
+
+    public function cancel(Request $request, $id)
+    {
+        $request->validate([
+            'alasan_batal' => 'required|string|max:255'
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $header = StockInHeader::findOrFail($id);
+
+            if ($header->status !== 'Draft') {
+                return redirect()->route('v2sparepartinmultiple.index')
+                    ->with('error', 'Hanya dokumen berstatus Draft yang bisa dibatalkan langsung!');
+            }
+
+            // 1. Deteksi apakah ini dokumen Backorder
+            $isBackorder = str_contains($header->no_dokumen, '-BO');
+
+            // 2. Update Status Header & Detail menjadi 'batal'
+            $header->update([
+                'status' => 'batal',
+                'keterangan' => $request->alasan_batal
+            ]);
+
+            StockTransactionModel::where('stock_in_header_id', $header->id)
+                ->update([
+                    'status' => 'batal',
+                    'keterangan' => 'Dibatalkan: ' . $request->alasan_batal
+                ]);
+
+            // 3. LOGIKA UPDATE STATUS PO
+            if ($header->referensi) {
+                // Tentukan status dan teks keterangan
+                $statusPenerimaanBaru = $isBackorder ? 'closed' : 'cancel';
+
+                // Modifikasi teks keterangan di sini
+                $teksBatal = $isBackorder ? 'Dibatalkan Sebagian' : 'Dibatalkan';
+
+                \App\Models\SuratPesananHeaderModel::where('no_surat_pesanan', $header->referensi)
+                    ->update([
+                        'status_penerimaan' => $statusPenerimaanBaru,
+                        // Hasilnya jadi: "Dibatalkan Sebagian (WH/IN/001-BO): alasan user"
+                        'keterangan' => $teksBatal . ' (' . $header->no_dokumen . '): ' . $request->alasan_batal
+                    ]);
+            }
+
+            // 3. LOGIKA UPDATE STATUS PO
+            // if ($header->referensi) {
+            //     // Tentukan status penerimaan berdasarkan jenis dokumen
+            //     // Jika Backorder di-cancel -> 'closed'
+            //     // Jika Dokumen Utama di-cancel -> 'cancel'
+            //     $statusPenerimaanBaru = $isBackorder ? 'closed' : 'cancel';
+
+            //     \App\Models\SuratPesananHeaderModel::where('no_surat_pesanan', $header->referensi)
+            //         ->update([
+            //             'status_penerimaan' => $statusPenerimaanBaru,
+            //             'keterangan' => 'Dibatalkan (' . $header->no_dokumen . '): ' . $request->alasan_batal
+            //         ]);
+            // }
+
+            DB::commit();
+
+            $pesan = $isBackorder ? 'Backorder dibatalkan, Pesanan ditutup (Closed).' : 'Dokumen utama berhasil dibatalkan.';
+            return redirect()->route('v2sparepartinmultiple.index')->with('success', $pesan);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal membatalkan: ' . $e->getMessage());
+        }
+    }
+
+    // public function cancel(Request $request, $id)
+    // {
+
+    //     $request->validate([
+    //         'alasan_batal' => 'required|string|max:255'
+    //     ]);
+
+    //     try {
+    //         DB::beginTransaction();
+
+    //         // 1. Cari data Header
+    //         $header = StockInHeader::findOrFail($id);
+
+    //         // PROTEKSI: Jika status sudah 'sukses' atau sudah 'cancel', hentikan.
+    //         // Karena permintaan Anda hanya untuk status draft.
+    //         if ($header->status !== 'Draft') {
+    //             return redirect()->route('v2sparepartinmultiple.index')
+    //                 ->with('error', 'Hanya dokumen berstatus Draft yang bisa dibatalkan langsung!');
+    //         }
+
+    //         // 2. Update Status Header menjadi 'cancel'
+    //         $header->update([
+    //             'status' => 'batal',
+    //             'keterangan' => $request->alasan_batal
+    //         ]);
+
+    //         // 3. Update semua detail transaksi yang terkait dengan header ini menjadi 'cancel'
+    //         // Kita gunakan update massal karena tidak ada manipulasi stok master
+    //         StockTransactionModel::where('stock_in_header_id', $header->id)
+    //             ->update([
+    //                 'status' => 'batal',
+    //                 'keterangan' => 'Dibatalkan: ' . $request->alasan_batal // Opsional: tulis juga di detail
+    //             ]);
+
+    //         if ($header->referensi) {
+    //             \App\Models\SuratPesananHeaderModel::where('no_surat_pesanan', $header->referensi)
+    //                 ->update([
+    //                     'status_penerimaan' => 'cancel',
+    //                     'keterangan' => $request->alasan_batal
+    //                 ]);
+    //         }
+
+    //         DB::commit();
+    //         return redirect()->route('v2sparepartinmultiple.index')
+    //             ->with('success', 'Dokumen draft berhasil dibatalkan.');
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return back()->with('error', 'Gagal membatalkan: ' . $e->getMessage());
+    //     }
+    // }
 
     public function search(Request $request)
     {

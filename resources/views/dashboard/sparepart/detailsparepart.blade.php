@@ -158,11 +158,28 @@
 
                                                 {{-- STATUS --}}
                                                 <td class="text-center">
+                                                    @php
+                                                        $badgeClass = 'bg-secondary'; // Default Abu-abu (Draft)
+                                                        if ($item->status === 'sukses') {
+                                                            $badgeClass = 'bg-success'; // Hijau
+                                                        } elseif (
+                                                            $item->status === 'batal' ||
+                                                            $item->status === 'canceled'
+                                                        ) {
+                                                            $badgeClass = 'bg-danger'; // Merah
+                                                        }
+                                                    @endphp
+
+                                                    <span class="badge {{ $badgeClass }}">
+                                                        {{ ucfirst($item->status) }}
+                                                    </span>
+                                                </td>
+                                                {{-- <td class="text-center">
                                                     <span
                                                         class="badge {{ $item->status === 'batal' ? 'bg-danger' : 'bg-success' }}">
                                                         {{ ucfirst($item->status) }}
                                                     </span>
-                                                </td>
+                                                </td> --}}
 
                                                 {{-- KETERANGAN --}}
                                                 <td class="text-center">
@@ -177,7 +194,7 @@
                                             </tr>
                                         @endforeach
 
-                                         @if ($transactions->currentPage() === $transactions->lastPage())
+                                        @if ($transactions->currentPage() === $transactions->lastPage())
                                             <tr class="table-light">
                                                 <td colspan="2" class="text-end">
                                                     <strong>Jumlah Akhir Stok</strong>

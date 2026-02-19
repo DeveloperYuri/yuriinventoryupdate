@@ -77,4 +77,10 @@ class StockTransactionModel extends Model
     {
         return $this->status === 'sukses';
     }
+
+    public function header()
+    {
+        // Pastikan 'stock_in_header_id' adalah nama kolom foreign key di tabel stock_transactions
+        return $this->belongsTo(StockInHeader::class, 'stock_in_header_id');
+    }
 }

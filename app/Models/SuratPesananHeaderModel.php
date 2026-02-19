@@ -18,7 +18,10 @@ class SuratPesananHeaderModel extends Model
         'locations_id',
         'category_id',
         'subcategory_id',
-        'tanggal'
+        'tanggal',
+        'status_penerimaan',
+        'keterangan',
+        'ditujukan_kepada',
     ];
 
     static public function getRecord($request)
@@ -27,8 +30,13 @@ class SuratPesananHeaderModel extends Model
             //->where('status', '=', 'active')
             ->orderBy('id', 'desc');
 
-        if (!empty(Request::get('name'))) {
-            $return = $return->where('surat_pesanan_header.name', 'like', '%' . Request::get('name') . '%');
+        if (!empty(Request::get('no_surat_pesanan'))) {
+            $return = $return->where('surat_pesanan_header.no_surat_pesanan', 'like', '%' . Request::get('no_surat_pesanan') . '%');
+        }
+
+        // Filter Ditujukan Kepada
+        if (!empty($request->get('ditujukan_kepada'))) {
+            $return = $return->where('ditujukan_kepada', '=', $request->get('ditujukan_kepada'));
         }
 
         $return = $return->paginate(10);
