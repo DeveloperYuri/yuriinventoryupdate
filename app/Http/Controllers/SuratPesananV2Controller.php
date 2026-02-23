@@ -226,11 +226,10 @@ class SuratPesananV2Controller extends Controller
             'name'           => 'required|string|max:100',
             'locations_id'   => 'required|integer|exists:locations,id',
             'category_id'    => 'required|integer|exists:category,id',
-            // 'subcategory_id' => 'required|integer|exists:subcategory,id',
         ]);
 
         return DB::transaction(function () use ($request, $id) {
-            // 🔹 Update header
+            // 1. Update Header
             $header = SuratPesananHeaderModel::findOrFail($id);
             $header->update([
                 'name'           => $request->name,
@@ -239,57 +238,126 @@ class SuratPesananV2Controller extends Controller
                 'subcategory_id' => $request->subcategory_id ?? null,
             ]);
 
-            // 🔹 Ambil semua ID detail yang ada di request
-            $detailIds = collect($request->details)->pluck('id')->filter()->toArray();
+            // 2. Ambil data details (Baris Lama dari Database)
+            // Gunakan (array) atau collect()->toArray() untuk memastikan bukan null
+            $detailsInput = $request->input('details', []);
 
-            // 🔹 Hapus detail yang tidak ada di request
+            // 3. Sinkronisasi Penghapusan
+            // Ambil ID yang masih ada di form untuk dipertahankan
+            $detailIdsToKeep = collect($detailsInput)->pluck('id')->filter()->toArray();
+
             SuratPesananDetailModel::where('surat_pesanan_header_id', $id)
-                ->whereNotIn('id', $detailIds)
+                ->whereNotIn('id', $detailIdsToKeep)
                 ->delete();
 
-            // 🔹 Update atau insert detail lama
-            foreach ($request->details as $detailData) {
+            // 4. Update Baris Lama yang tersisa
+            foreach ($detailsInput as $detailData) {
                 if (!empty($detailData['id'])) {
-                    // Update existing
-                    $detail = SuratPesananDetailModel::findOrFail($detailData['id']);
-                    $detail->update([
-                        'spare_part_id' => $detailData['spare_part_id'],
-                        'qty'           => $detailData['qty'],
-                        'stock'         => $detailData['stock'] ?? $detail->stock,
-                        'qty_kurang'    => $detailData['qty_kurang'],
-                        'keterangan'    => $detailData['keterangan'],
-                    ]);
-                } else {
-                    // Insert baru (kalau ada baris tambahan manual)
-                    SuratPesananDetailModel::create([
-                        'surat_pesanan_header_id' => $id,
-                        'spare_part_id'           => $detailData['spare_part_id'],
-                        'qty'                     => $detailData['qty'],
-                        'stock'                   => $detailData['stock'] ?? 0,
-                        'qty_kurang'              => $detailData['qty_kurang'],
-                        'keterangan'              => $detailData['keterangan'],
-                    ]);
+                    $detail = SuratPesananDetailModel::find($detailData['id']);
+                    if ($detail) {
+                        $detail->update([
+                            'spare_part_id' => $detailData['spare_part_id'],
+                            'qty'           => $detailData['qty'],
+                            'stock'         => $detailData['stock'] ?? $detail->stock,
+                            'qty_kurang'    => $detailData['qty_kurang'],
+                            'keterangan'    => $detailData['keterangan'] ?? null,
+                        ]);
+                    }
                 }
             }
 
-            // 🔹 Insert dari product[] tambahan
-            if ($request->has('product')) {
-                foreach ($request->product as $i => $spare_part_id) {
-                    SuratPesananDetailModel::create([
-                        'surat_pesanan_header_id' => $id,
-                        'spare_part_id'           => $spare_part_id,
-                        'qty'                     => $request->demand[$i] ?? 0,
-                        'stock'                   => $request->stock[$i] ?? 0,
-                        'qty_kurang'              => $request->qty_kurang[$i] ?? 0,
-                        'keterangan'              => $request->keterangan[$i] ?? null,
-                    ]);
-                }
+            // 5. Insert Baris Baru (Baris dari tombol "Add Spare Part")
+            // Gunakan input() dengan default empty array agar tidak error foreach
+            $newProducts = $request->input('product', []);
+
+            foreach ($newProducts as $i => $spare_part_id) {
+                if (empty($spare_part_id)) continue; // Jangan simpan jika id sparepart kosong
+
+                SuratPesananDetailModel::create([
+                    'surat_pesanan_header_id' => $id,
+                    'spare_part_id'           => $spare_part_id,
+                    'qty'                     => $request->demand[$i] ?? 0,
+                    'stock'                   => $request->stock[$i] ?? 0,
+                    'qty_kurang'              => $request->qty_kurang[$i] ?? 0,
+                    'keterangan'              => $request->keterangan[$i] ?? null,
+                ]);
             }
 
             return redirect()->route('v2suratpesanan.index')
                 ->with('success', 'Surat pesanan berhasil diperbarui.');
         });
     }
+
+    // public function update(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'name'           => 'required|string|max:100',
+    //         'locations_id'   => 'required|integer|exists:locations,id',
+    //         'category_id'    => 'required|integer|exists:category,id',
+    //         // 'subcategory_id' => 'required|integer|exists:subcategory,id',
+    //     ]);
+
+    //     return DB::transaction(function () use ($request, $id) {
+    //         // 🔹 Update header
+    //         $header = SuratPesananHeaderModel::findOrFail($id);
+    //         $header->update([
+    //             'name'           => $request->name,
+    //             'locations_id'   => $request->locations_id,
+    //             'category_id'    => $request->category_id,
+    //             'subcategory_id' => $request->subcategory_id ?? null,
+    //         ]);
+
+    //         // 🔹 Ambil semua ID detail yang ada di request
+    //         $detailIds = collect($request->details)->pluck('id')->filter()->toArray();
+
+    //         // 🔹 Hapus detail yang tidak ada di request
+    //         SuratPesananDetailModel::where('surat_pesanan_header_id', $id)
+    //             ->whereNotIn('id', $detailIds)
+    //             ->delete();
+
+    //         // 🔹 Update atau insert detail lama
+    //         foreach ($request->details as $detailData) {
+    //             if (!empty($detailData['id'])) {
+    //                 // Update existing
+    //                 $detail = SuratPesananDetailModel::findOrFail($detailData['id']);
+    //                 $detail->update([
+    //                     'spare_part_id' => $detailData['spare_part_id'],
+    //                     'qty'           => $detailData['qty'],
+    //                     'stock'         => $detailData['stock'] ?? $detail->stock,
+    //                     'qty_kurang'    => $detailData['qty_kurang'],
+    //                     'keterangan'    => $detailData['keterangan'],
+    //                 ]);
+    //             } else {
+    //                 // Insert baru (kalau ada baris tambahan manual)
+    //                 SuratPesananDetailModel::create([
+    //                     'surat_pesanan_header_id' => $id,
+    //                     'spare_part_id'           => $detailData['spare_part_id'],
+    //                     'qty'                     => $detailData['qty'],
+    //                     'stock'                   => $detailData['stock'] ?? 0,
+    //                     'qty_kurang'              => $detailData['qty_kurang'],
+    //                     'keterangan'              => $detailData['keterangan'],
+    //                 ]);
+    //             }
+    //         }
+
+    //         // 🔹 Insert dari product[] tambahan
+    //         if ($request->has('product')) {
+    //             foreach ($request->product as $i => $spare_part_id) {
+    //                 SuratPesananDetailModel::create([
+    //                     'surat_pesanan_header_id' => $id,
+    //                     'spare_part_id'           => $spare_part_id,
+    //                     'qty'                     => $request->demand[$i] ?? 0,
+    //                     'stock'                   => $request->stock[$i] ?? 0,
+    //                     'qty_kurang'              => $request->qty_kurang[$i] ?? 0,
+    //                     'keterangan'              => $request->keterangan[$i] ?? null,
+    //                 ]);
+    //             }
+    //         }
+
+    //         return redirect()->route('v2suratpesanan.index')
+    //             ->with('success', 'Surat pesanan berhasil diperbarui.');
+    //     });
+    // }
 
     public function destroy($id)
     {

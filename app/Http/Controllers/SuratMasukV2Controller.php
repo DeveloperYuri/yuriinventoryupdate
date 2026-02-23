@@ -27,6 +27,10 @@ class SuratMasukV2Controller extends Controller
             $query->whereDate('tanggal', '<=', $request->end_date);
         }
 
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
         $transactions = $query->paginate(15);
 
         return view('dashboard.sparepartmasukv2.listsparepartinmultiple', compact('transactions'));

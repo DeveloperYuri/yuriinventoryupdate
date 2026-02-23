@@ -124,28 +124,15 @@
                                                 <input type="hidden" name="details[{{ $index }}][id]"
                                                     value="{{ $item->id }}">
 
-                                                {{-- <td>
-                                                    <select name="details[{{ $index }}][spare_part_id]"
-                                                        class="form-control">
-                                                        @foreach ($spareparts as $sp)
-                                                            <option value="{{ $sp->id }}"
-                                                                {{ $sp->id == $item->spare_part_id ? 'selected' : '' }}>
-                                                                {{ $sp->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                </td> --}}
-
                                                 <td>
                                                     <input type="hidden"
                                                         name="details[{{ $index }}][spare_part_id]"
-                                                        value="{{ $item->spare_part_id }}">
+                                                        class="spare-part-id" value="{{ $item->spare_part_id }}">
 
-                                                    <input type="text" class="form-control"
-                                                        value="{{ $item->sparePart->name ?? '-' }}">
+                                                    <input type="text" class="form-control autocomplete-sparepart"
+                                                        value="{{ $item->sparePart->name ?? '-' }}"
+                                                        placeholder="Cari Spare Part...">
                                                 </td>
-
-
                                                 <td>
                                                     <input type="number" name="details[{{ $index }}][qty]"
                                                         class="form-control qty-minta" value="{{ $item->qty }}">
@@ -158,13 +145,10 @@
                                                     <input type="number" name="details[{{ $index }}][qty_kurang]"
                                                         class="form-control qty-kurang" readonly
                                                         value="{{ $item->qty_kurang }}">
-
                                                 </td>
                                                 <td>
                                                     <input type="text" name="details[{{ $index }}][keterangan]"
-                                                        class="form-control keterangan" readonly
-                                                        value="{{ $item->keterangan }}">
-
+                                                        class="form-control keterangan" value="{{ $item->keterangan }}">
                                                 </td>
                                                 <td>
                                                     <button type="button"
@@ -195,6 +179,93 @@
 
 @push('scripts')
     <script>
+        // Fungsi Utama Autocomplete
+        function applyAutocomplete(el) {
+            el.autocomplete({
+                source: function(request, response) {
+                    $.getJSON('/spareparts/search', {
+                        q: request.term
+                    }, function(data) {
+                        response(data);
+                    });
+                },
+                minLength: 1,
+                select: function(event, ui) {
+                    const tr = $(this).closest('tr');
+
+                    // Cari input hidden ID (bisa name="product[]" atau details[x][spare_part_id])
+                    // Kita gunakan class 'spare-part-id' agar seragam
+                    tr.find('.spare-part-id').val(ui.item.id);
+                    $(this).val(ui.item.label);
+
+                    const stockInput = tr.find('.stok');
+
+                    // Ambil stok via AJAX
+                    $.getJSON('/spareparts/' + ui.item.id + '/stock', function(data) {
+                        stockInput.val(data.stock);
+                        hitungQtyKurang(tr);
+                    });
+
+                    return false;
+                }
+            });
+        }
+
+        $(function() {
+            const detailTable = $('#detailTable');
+            const addLineBtn = $('#addLineBtn');
+
+            // 1. Jalankan Autocomplete untuk baris yang SUDAH ADA (Data Lama)
+            $('.autocomplete-sparepart').each(function() {
+                applyAutocomplete($(this));
+            });
+
+            // 2. Event Add Spare Part (Data Baru)
+            addLineBtn.on('click', function(event) {
+                event.preventDefault();
+                const newRow = $(`
+                <tr>
+                    <td>
+                        <input type="text" class="form-control autocomplete-sparepart" placeholder="Cari Spare Part...">
+                        <input type="hidden" name="product[]" class="spare-part-id">
+                    </td>
+                    <td>
+                        <input type="number" name="demand[]" class="form-control qty-minta" min="1" value="1">
+                    </td>
+                    <td>
+                        <input type="text" name="stock[]" class="form-control stok" readonly value="0">
+                    </td>
+                    <td>
+                        <input type="number" name="qty_kurang[]" class="form-control qty-kurang" readonly value="0">
+                    </td>
+                    <td>
+                        <input type="text" name="keterangan[]" class="form-control keterangan">
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm remove-row">Remove</button>
+                    </td>
+                </tr>
+            `);
+
+                detailTable.append(newRow); // Masukkan ke dalam tbody
+                applyAutocomplete(newRow.find('.autocomplete-sparepart'));
+            });
+
+            // 3. Hitung Qty Kurang secara realtime
+            $(document).on('keyup change', '.qty-minta', function() {
+                hitungQtyKurang($(this).closest('tr'));
+            });
+
+            function hitungQtyKurang(tr) {
+                let qtyMinta = parseInt(tr.find('.qty-minta').val()) || 0;
+                let stok = parseInt(tr.find('.stok').val()) || 0;
+                let kurang = Math.max(0, qtyMinta - stok);
+                tr.find('.qty-kurang').val(kurang);
+            }
+        });
+    </script>
+    
+    {{-- <script>
         function applyAutocomplete(el) {
             el.autocomplete({
                 source: function(request, response) {
@@ -273,7 +344,7 @@
                 applyAutocomplete(newRow.find('input[name="product_name[]"]'));
             });
         });
-    </script>
+    </script> --}}
 
     <script>
         document.getElementById('saveBtn').addEventListener('click', function() {

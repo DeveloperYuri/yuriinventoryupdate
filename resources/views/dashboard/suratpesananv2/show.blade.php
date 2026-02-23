@@ -192,8 +192,8 @@
                                                             <span class="text-center">
                                                                 {{ $totalDatang }}
                                                             </span>
-                                                        </td class="text-center">
-                                                        <td>{{ $item->keterangan }}</td>
+                                                        </td>
+                                                        <td class="text-center">{{ $item->keterangan }}</td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
@@ -208,7 +208,11 @@
                                 </div>
                             </form>
 
-                            <a href="{{ route('v2suratpesanan.index') }}" class="btn btn-success mt-2">Back</a>
+                            <a href="{{ url()->previous() }}" class="btn btn-success">
+                                    <i class="bi bi-arrow-left"></i> Back
+                                </a>
+
+                            {{-- <a href="{{ route('v2suratpesanan.index') }}" class="btn btn-success mt-2">Back</a> --}}
 
                         </div>
                     </div>

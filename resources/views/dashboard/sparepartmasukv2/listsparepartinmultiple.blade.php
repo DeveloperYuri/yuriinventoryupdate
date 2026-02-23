@@ -11,7 +11,7 @@
         @endif
 
         <div class="d-flex justify-content-end mb-2">
-            <form method="GET" action="{{ route('sparepartinmultiple.index') }}" class="mb-3 d-flex gap-2 align-items-end">
+            <form method="GET" action="{{ route('v2sparepartinmultiple.index') }}" class="mb-3 d-flex gap-2 align-items-end">
                 <div>
                     <label for="start_date">Dari Tanggal</label>
                     <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}">
@@ -21,7 +21,15 @@
                     <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}">
                 </div>
                 <div>
-                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <label for="status">Status</label>
+                    <select name="status" class="form-control">
+                        <option value="">-- Semua Status --</option>
+                        <option value="Proses" {{ request('status') == 'Proses' ? 'selected' : '' }}>Proses</option>
+                        <option value="sukses" {{ request('status') == 'sukses' ? 'selected' : '' }}>Sukses</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary">Cari</button>
                     <a href="{{ route('v2sparepartinmultiple.index') }}" class="btn btn-secondary">Reset</a>
                 </div>
             </form>

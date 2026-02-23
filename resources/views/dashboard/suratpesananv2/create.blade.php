@@ -146,7 +146,7 @@
                                                     <th>Spare Part</th>
                                                     <th>Qty_Minta</th>
                                                     <th>Stok</th> <!-- kolom stok baru -->
-                                                    <th>Qty_Kurang</th>
+                                                    <th>Qty Yang Harus Dibeli</th>
                                                     <th>Keterangan</th>
                                                     <th></th>
                                                 </tr>

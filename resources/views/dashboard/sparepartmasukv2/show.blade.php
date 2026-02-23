@@ -10,7 +10,7 @@
                             {{-- <h2 class="mt-2">Detail Penerimaan Barang</h2> --}}
 
                             <div class="d-flex justify-content-between align-items-center mt-3 mb-4">
-                                <h2 class="m-0">Detail Penerimaan Barang V2</h2>
+                                <h2 class="m-0">Detail Penerimaan Barang</h2>
                                 <div class="d-flex align-items-center">
                                     @if ($transaction->status === 'Proses')
                                         <div class="alert alert-secondary py-2 px-3 mb-0">
@@ -419,9 +419,13 @@
                                     </div>
                                 </div>
 
-                                <a href="{{ route('v2sparepartinmultiple.index') }}" class="btn btn-secondary">
+                                <a href="{{ url()->previous() }}" class="btn btn-secondary">
                                     <i class="bi bi-arrow-left"></i> Back
                                 </a>
+
+                                {{-- <a href="{{ route('v2sparepartinmultiple.index') }}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Back
+                                </a> --}}
                             </div>
 
                         </div>
