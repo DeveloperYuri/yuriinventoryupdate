@@ -375,7 +375,7 @@ class SuratPesananV2Controller extends Controller
                 'no_dokumen'       => $noDokumenMasuk,
                 'surat_pesanan_id' => $header->id,
                 'locations_id'     => $header->locations_id,
-                'tanggal'          => now(),
+                // 'tanggal'          => now(),
                 'status'           => 'Proses',
                 // 'diterima_dari'    => $header->name,
                 // 'diterima_oleh'    => Auth::user()->name ?? 'System',

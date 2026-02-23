@@ -12,7 +12,7 @@ class StockTransactionModel extends Model
 
     protected $table = 'stock_transactions';
 
-    protected $fillable = ['spare_part_id', 'type', 'quantity', 'user', 'stock_in_header_id', 'stock_out_header_id', 'price', 'status', 'keterangan'];
+    protected $fillable = ['spare_part_id', 'type', 'quantity', 'user', 'stock_in_header_id', 'stock_out_header_id', 'price', 'status', 'keterangan', 'created_at'];
 
     // public function sparePart()
     // {

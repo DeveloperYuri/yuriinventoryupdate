@@ -125,7 +125,7 @@
                                                     value="{{ $transaction->tanggal_display }}">
                                             </div>
                                         </div> --}}
-                                        <div class="row mb-3">
+                                        {{-- <div class="row mb-3">
                                             <label class="col-sm-4 col-form-label">Tanggal</label>
                                             <div class="col-sm-8">
                                                 <input id="tanggalMulai" name="tanggal" type="text" class="form-control"
@@ -133,6 +133,18 @@
                                                     value="{{ now()->format('Y-m-d') }}">
                                                 <input type="hidden" name="tanggal" id="tanggalHidden"
                                                     value="{{ now()->format('Y-m-d') }}">
+                                            </div>
+                                        </div> --}}
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-4 col-form-label">Tanggal</label>
+                                            <div class="col-sm-8">
+                                                <input id="tanggalMulai" name="tanggal" type="text" class="form-control"
+                                                    placeholder="Pilih tanggal..." autocomplete="off" {{-- Jika $header->tanggal ada isinya, pakai itu. Jika null, pakai hari ini --}}
+                                                    value="{{ $transaction->tanggal ? \Carbon\Carbon::parse($transaction->tanggal)->format('Y-m-d') : now()->format('Y-m-d') }}">
+
+                                                <input type="hidden" name="tanggal" id="tanggalHidden"
+                                                    value="{{ $transaction->tanggal ? \Carbon\Carbon::parse($transaction->tanggal)->format('Y-m-d') : now()->format('Y-m-d') }}">
                                             </div>
                                         </div>
 

@@ -110,6 +110,8 @@ class SuratMasukV2Controller extends Controller
 
     public function approve(Request $request, $id)
     {
+
+        // dd($request->all());
         $request->validate([
             'diterima_oleh' => 'required|string|max:255',
             'diterima_dari' => 'required|string|max:255',
@@ -152,7 +154,8 @@ class SuratMasukV2Controller extends Controller
                     $detail->update([
                         'quantity' => $qtyDatang,
                         'status'   => 'sukses',
-                        'user'     => $request->diterima_oleh
+                        'user'     => $request->diterima_oleh,
+                        'created_at' => $request->tanggal . ' ' . now()->format('H:i:s'), // Tanggal pilih user + jam sekarang
                     ]);
 
                     // Increment Stok Sparepart
@@ -213,6 +216,7 @@ class SuratMasukV2Controller extends Controller
                 'status'        => 'sukses',
                 'diterima_dari' => $request->diterima_dari,
                 'diterima_oleh' => $request->diterima_oleh,
+                'tanggal' => $request->tanggal,
                 'supplier_id'   => $request->supplier_id, // Tambahkan ini jika supplier boleh diubah saat approve
             ]);
 
