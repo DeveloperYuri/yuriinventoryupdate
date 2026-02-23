@@ -494,6 +494,7 @@ Route::get('/v2/surat-pesanan/search', [SuratMasukV2Controller::class, 'searchsp
 
 Route::post('/v2sparepartin/approve/{id}', [SuratMasukV2Controller::class, 'approve'])->name('v2sparepartinmultiple.approve');
 Route::post('/v2sparepartin/cancel/{id}', [SuratMasukV2Controller::class, 'cancel'])->name('v2sparepartinmultiple.cancel');
+Route::post('/v2sparepartin/retur/{id}', [SuratMasukV2Controller::class, 'retur'])->name('v2sparepartinmultiple.retur');
 
 // Surat Pesanan V2
 Route::get('/v2/suratpesanan', [SuratPesananV2Controller::class, 'index'])->name('v2suratpesanan.index');

@@ -378,7 +378,7 @@ class SuratPesananV2Controller extends Controller
                 'tanggal'          => now(),
                 'status'           => 'Proses',
                 // 'diterima_dari'    => $header->name,
-                'diterima_oleh'    => Auth::user()->name ?? 'System',
+                // 'diterima_oleh'    => Auth::user()->name ?? 'System',
                 'referensi'       => $header->no_surat_pesanan,
             ]);
 
@@ -388,7 +388,7 @@ class SuratPesananV2Controller extends Controller
                     'stock_in_header_id' => $headerMasuk->id,
                     'spare_part_id'      => $detail->spare_part_id,
                     'quantity'           => $detail->qty_kurang, // Ambil qty dari pesanan
-                    'user'               => Auth::user()->name ?? 'System',
+                    // 'user'               => Auth::user()->name ?? 'System',
                     'keterangan'         => $detail->keterangan,
                     'status'             => 'proses',
                 ]);

@@ -329,10 +329,15 @@ create masuk
     </script>
 @endpush
 
-update status ATK
+// update status ATK
 UPDATE atk 
 SET status_atk_id = 1
 WHERE status_atk_id is NULL;
+
+// update status penerimaan
+UPDATE surat_pesanan_header
+SET status_penerimaan = 'closed'
+WHERE status_penerimaan is NULL;
 
 
 

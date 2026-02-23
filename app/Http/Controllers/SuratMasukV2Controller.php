@@ -177,7 +177,7 @@ class SuratMasukV2Controller extends Controller
                     'no_dokumen'    => $header->no_dokumen . '-BO' . $nextBO, // Tambah random biar unik
                     'supplier_id'   => $header->supplier_id,
                     'referensi'     => $header->referensi,
-                    'tanggal'       => now(),
+                    'tanggal'       => $request->tanggal,
                     'diterima_dari' => $header->diterima_dari,
                     'diterima_oleh' => $request->diterima_oleh,
                     'status'        => 'Proses',
@@ -212,7 +212,7 @@ class SuratMasukV2Controller extends Controller
             $header->update([
                 'status'        => 'sukses',
                 'diterima_dari' => $request->diterima_dari,
-                // 'diterima_oleh' => $request->diterima_oleh,
+                'diterima_oleh' => $request->diterima_oleh,
                 'supplier_id'   => $request->supplier_id, // Tambahkan ini jika supplier boleh diubah saat approve
             ]);
 

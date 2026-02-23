@@ -10,7 +10,7 @@
                             {{-- <h2 class="mt-2">Detail Penerimaan Barang</h2> --}}
 
                             <div class="d-flex justify-content-between align-items-center mt-3 mb-4">
-                                <h2 class="m-0">Detail Penerimaan Barang</h2>
+                                <h2 class="m-0">Detail Penerimaan Barang V2</h2>
                                 <div class="d-flex align-items-center">
                                     @if ($transaction->status === 'Proses')
                                         <div class="alert alert-secondary py-2 px-3 mb-0">
@@ -114,24 +114,35 @@
                                                 </select>
                                             </div>
                                         </div> --}}
-                                        
+
                                     </div>
 
                                     <div class="col-md-6">
-                                        <div class="row mb-3">
+                                        {{-- <div class="row mb-3">
                                             <label class="col-sm-4 col-form-label">Tanggal</label>
                                             <div class="col-sm-8">
                                                 <input type="text" class="form-control" name="tanggal"
-                                                    value="{{ $transaction->tanggal_display }}" readonly>
+                                                    value="{{ $transaction->tanggal_display }}">
+                                            </div>
+                                        </div> --}}
+                                        <div class="row mb-3">
+                                            <label class="col-sm-4 col-form-label">Tanggal</label>
+                                            <div class="col-sm-8">
+                                                <input id="tanggalMulai" name="tanggal" type="text" class="form-control"
+                                                    placeholder="Pilih tanggal..." autocomplete="off"
+                                                    value="{{ now()->format('Y-m-d') }}">
+                                                <input type="hidden" name="tanggal" id="tanggalHidden"
+                                                    value="{{ now()->format('Y-m-d') }}">
                                             </div>
                                         </div>
+
                                         <div class="row mb-3">
                                             <label class="col-sm-4 col-form-label">Di terima oleh</label>
                                             <div class="col-sm-8">
                                                 <input type="text"
                                                     class="form-control @error('diterima_oleh') is-invalid @enderror"
                                                     name="diterima_oleh"
-                                                    value="{{ old('diterima_oleh', 'Yuri Developer') }}" required>
+                                                    value="{{ old('diterima_oleh', Auth::user()->name ?? '') }}" required>
                                             </div>
                                         </div>
                                         <div class="row mb-3">
@@ -324,6 +335,78 @@
                                     </div>
                                 @endif
 
+                                @if ($transaction->status === 'sukses')
+                                    <button type="button" class="btn btn-warning text-dark" data-bs-toggle="modal"
+                                        data-bs-target="#returModal">
+                                        <i class="bi bi-arrow-counterclockwise"></i> Retur Barang
+                                    </button>
+
+                                    {{-- Tombol Print (Opsional, biasanya kalau sudah sukses butuh print) --}}
+                                    {{-- <a href="#" class="btn btn-info text-white">
+                                        <i class="bi bi-printer"></i> Print Bukti
+                                    </a> --}}
+                                @endif
+
+                                <div class="modal fade" id="returModal" tabindex="-1" aria-labelledby="returModalLabel"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-warning text-dark">
+                                                <h5 class="modal-title fw-bold" id="returModalLabel">
+                                                    <i class="bi bi-arrow-counterclockwise me-2"></i>Form Retur Barang
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <form action="{{ route('v2sparepartinmultiple.retur', $transaction->id) }}"
+                                                method="POST">
+                                                @csrf
+                                                <div class="modal-body">
+                                                    <p>Pilih barang dan jumlah yang ingin dikembalikan ke supplier.</p>
+
+                                                    <table class="table table-sm">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Sparepart</th>
+                                                                <th>Diterima</th>
+                                                                <th>Jumlah Retur</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach ($transaction->stockTransactions as $item)
+                                                                <tr>
+                                                                    <td>{{ $item->sparePart->name }}</td>
+                                                                    <td>{{ (int) $item->quantity }}</td>
+                                                                    <td>
+                                                                        <input type="hidden" name="sparepart_id[]"
+                                                                            value="{{ $item->spare_part_id }}">
+                                                                        <input type="number" name="qty_retur[]"
+                                                                            class="form-control form-control-sm"
+                                                                            max="{{ (int) $item->quantity }}"
+                                                                            min="0" value="0">
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+
+                                                    <div class="form-group mt-3">
+                                                        <label class="mb-2">Alasan Retur:</label>
+                                                        <textarea name="alasan_retur" class="form-control" rows="3"
+                                                            placeholder="Contoh: Barang cacat/tidak sesuai spesifikasi" required></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Tutup</button>
+                                                    <button type="submit" class="btn btn-warning text-dark">Proses
+                                                        Retur</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <a href="{{ route('v2sparepartinmultiple.index') }}" class="btn btn-secondary">
                                     <i class="bi bi-arrow-left"></i> Back
                                 </a>
@@ -428,5 +511,25 @@
             // Jalankan submit form
             document.getElementById('approveForm').submit();
         }
+    </script>
+
+    <script>
+        new Litepicker({
+            element: document.getElementById('tanggalMulai'),
+            lang: 'id', // Bahasa Indonesia
+            format: 'DD MMMM YYYY', // 29 November 2025
+            dropdowns: {
+                minYear: 2020,
+                maxYear: new Date().getFullYear() + 5,
+                months: true,
+                years: true
+            },
+            setup: (picker) => {
+                picker.on('selected', (date) => {
+                    const mysql = date.format('YYYY-MM-DD');
+                    document.getElementById('tanggalHidden').value = mysql;
+                });
+            }
+        });
     </script>
 @endpush

@@ -79,7 +79,7 @@
                         <div class="card-body">
 
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="card-title mb-0">Daftar Surat Pesanan Baru V2</h5>
+                                <h5 class="card-title mb-0">Daftar Surat Pesanan</h5>
 
                                 @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
                                     <div class="d-flex gap-2">
