@@ -127,7 +127,7 @@
                                     <button type="submit" class="btn btn-primary" id="saveBtn">
                                         <span id="btnText">Save</span>
                                     </button>
-                                    <a href="{{ route('sparepartinmultiple.index') }}"
+                                    <a href="{{ route('v2sparepartinmultiple.index') }}"
                                         class="btn btn-secondary">Cancel</a>
                                 </div>
 

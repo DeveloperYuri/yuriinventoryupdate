@@ -154,7 +154,12 @@
                                                 <input type="text"
                                                     class="form-control @error('diterima_oleh') is-invalid @enderror"
                                                     name="diterima_oleh"
-                                                    value="{{ old('diterima_oleh', Auth::user()->name ?? '') }}" required>
+                                                    value="{{ old('diterima_oleh', $transaction->diterima_oleh ?? Auth::user()->name) }}"
+                                                    required>
+                                                {{-- <input type="text"
+                                                    class="form-control @error('diterima_oleh') is-invalid @enderror"
+                                                    name="diterima_oleh"
+                                                    value="{{ old('diterima_oleh', Auth::user()->name ?? '') }}" required> --}}
                                             </div>
                                         </div>
                                         <div class="row mb-3">

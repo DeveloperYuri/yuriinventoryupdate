@@ -5,7 +5,7 @@
 
         @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
             <div class="pagetitle">
-                <a href="{{ route('sparepartinmultiple.create') }}" class="btn btn-primary" dusk="createsparepartin">Create New
+                <a href="{{ route('v2sparepartinmultiple.create') }}" class="btn btn-primary" dusk="createsparepartin">Create New
                     Spare Part In</a>
             </div><!-- End Page Title -->
         @endif

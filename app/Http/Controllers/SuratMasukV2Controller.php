@@ -36,30 +36,62 @@ class SuratMasukV2Controller extends Controller
         return view('dashboard.sparepartmasukv2.listsparepartinmultiple', compact('transactions'));
     }
 
+    // public function create()
+    // {
+    //     // $noDokumen = 'WH43/IN/' . now()->format('Ymd') . '-' . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT);
+    //     $tahun = now()->format('Y');
+
+    //     // Ambil record terakhir tahun ini
+    //     $last = StockInHeader::whereYear('tanggal', $tahun)
+    //         ->orderBy('id', 'desc')
+    //         ->first();
+
+    //     // Ambil nomor urut terakhir
+    //     $lastNumber = 0;
+    //     if ($last && preg_match('/(\d{3})$/', $last->no_dokumen, $matches)) {
+    //         $lastNumber = (int) $matches[1];
+    //     }
+
+    //     // Generate nomor baru
+    //     $nextNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
+    //     $noDokumen = "WH/IN/{$tahun}/{$nextNumber}";
+
+    //     $suppliers = SupplierModel::all();
+
+
+    //     return view('dashboard.sparepartinmultiple.create', compact('noDokumen', 'suppliers'));
+    // }
+
     public function create()
     {
-        // $noDokumen = 'WH43/IN/' . now()->format('Ymd') . '-' . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT);
         $tahun = now()->format('Y');
+        $prefix = "WH/IN/{$tahun}/";
 
-        // Ambil record terakhir tahun ini
-        $last = StockInHeader::whereYear('tanggal', $tahun)
-            ->orderBy('id', 'desc')
-            ->first();
+        // 1. Ambil SEMUA nomor dokumen tahun ini (untuk menghindari salah urutan di SQL)
+        $allDocuments = StockInHeader::where('no_dokumen', 'LIKE', $prefix . '%')
+            ->pluck('no_dokumen'); // Mengambil array berisi daftar nomor saja
 
-        // Ambil nomor urut terakhir
-        $lastNumber = 0;
-        if ($last && preg_match('/(\d{3})$/', $last->no_dokumen, $matches)) {
-            $lastNumber = (int) $matches[1];
+        $highestNumber = 0;
+
+        foreach ($allDocuments as $noDok) {
+            // Bersihkan jika ada -BO (Contoh: WH/IN/2026/183-BO1 -> WH/IN/2026/183)
+            $cleanNo = explode('-BO', $noDok)[0];
+
+            // Ambil 3 digit terakhir (183)
+            $currentNumber = (int) substr($cleanNo, -3);
+
+            // Cek apakah ini yang paling besar?
+            if ($currentNumber > $highestNumber) {
+                $highestNumber = $currentNumber;
+            }
         }
 
-        // Generate nomor baru
-        $nextNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
-        $noDokumen = "WH/IN/{$tahun}/{$nextNumber}";
+        // 2. Generate nomor baru (Misal: 183 + 1 = 184)
+        $nextNumber = str_pad($highestNumber + 1, 3, '0', STR_PAD_LEFT);
+        $noDokumen = $prefix . $nextNumber;
 
         $suppliers = SupplierModel::all();
-
-
-        return view('dashboard.sparepartinmultiple.create', compact('noDokumen', 'suppliers'));
+        return view('dashboard.sparepartmasukv2.create', compact('noDokumen', 'suppliers'));
     }
 
     public function storein(Request $request)
@@ -719,4 +751,60 @@ class SuratMasukV2Controller extends Controller
                 ];
             });
     }
+
+    // public function retur(Request $request, $id)
+    // {
+    //     // 1. Validasi Input
+    //     $request->validate([
+    //         'sparepart_id' => 'required|array',
+    //         'qty_retur'    => 'required|array',
+    //         'alasan_retur' => 'required|string|max:255',
+    //     ]);
+
+    //     // Ambil data transaksi utama (misal: SuratMasuk)
+    //     $transaction = StockInHeader::findOrFail($id);
+
+    //     try {
+    //         DB::beginTransaction();
+
+    //         $hasRetur = false;
+
+    //         foreach ($request->sparepart_id as $key => $sparepart_id) {
+    //             $qtyRetur = (int) $request->qty_retur[$key];
+
+    //             // Hanya proses jika qty retur lebih dari 0
+    //             if ($qtyRetur > 0) {
+    //                 $hasRetur = true;
+
+    //                 // 2. Update Stok Sparepart (Kurangi stok)
+    //                 $sparepart = ListSparePartModel::findOrFail($sparepart_id);
+    //                 $sparepart->decrement('stock', $qtyRetur);
+
+    //                 // 3. Catat Riwayat Transaksi Keluar (Retur)
+    //                 // Sesuaikan kolom dengan struktur tabel stock_transactions Anda
+    //                 StockTransactionModel::create([
+    //                     'transaction_id' => $transaction->id, // Foreign key ke tabel utama
+    //                     'spare_part_id'  => $sparepart_id,
+    //                     'quantity'       => $qtyRetur,
+    //                     'type'           => 'retur', // Labeli sebagai retur
+    //                     'description'    => 'Retur: ' . $request->alasan_retur,
+    //                     'date'           => now(),
+    //                 ]);
+    //             }
+    //         }
+
+    //         if (!$hasRetur) {
+    //             return redirect()->back()->with('error', 'Minimal satu barang harus memiliki jumlah retur lebih dari 0.');
+    //         }
+
+    //         // 4. (Opsional) Update status transaksi utama jika perlu
+    //         // $transaction->update(['status' => 'retur_sebagian']); 
+
+    //         DB::commit();
+    //         return redirect()->back()->with('success', 'Berhasil memproses retur barang.');
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+    //     }
+    // }
 }
