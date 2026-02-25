@@ -72,7 +72,7 @@
                                         <table class="table" id="productTable">
                                             <thead>
                                                 <tr>
-                                                    <th>Product</th>
+                                                    <th>Spare Part</th>
                                                     <th>Qty</th>
                                                     <th></th>
                                                 </tr>

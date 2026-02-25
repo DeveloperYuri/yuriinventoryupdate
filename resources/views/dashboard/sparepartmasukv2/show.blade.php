@@ -352,19 +352,46 @@
                                     </div>
                                 @endif
 
-                                @if ($transaction->status === 'sukses')
+                                {{-- @if ($transaction->status === 'sukses')
                                     <button type="button" class="btn btn-warning text-dark" data-bs-toggle="modal"
                                         data-bs-target="#returModal">
                                         <i class="bi bi-arrow-counterclockwise"></i> Retur Barang
                                     </button>
+                                @endif --}}
 
-                                    {{-- Tombol Print (Opsional, biasanya kalau sudah sukses butuh print) --}}
-                                    {{-- <a href="#" class="btn btn-info text-white">
-                                        <i class="bi bi-printer"></i> Print Bukti
-                                    </a> --}}
+                                @php
+                                    // 1. Hitung total barang yang DITERIMA di dokumen ini
+                                    $totalDiterima = $transaction->stockTransactions->sum('quantity');
+
+                                    // 2. Hitung total barang yang SUDAH DIRETUR dari dokumen ini
+                                    // Kita cari transaksi 'out' yang merujuk ke nomor dokumen ini
+                                    $totalSudahRetur = \App\Models\StockTransactionModel::where(
+                                        'keterangan',
+                                        'LIKE',
+                                        '%' . $transaction->no_dokumen . '%',
+                                    )
+                                        ->where('type', 'out')
+                                        ->sum('quantity');
+
+                                    // 3. Cek apakah masih ada sisa yang bisa diretur
+                                    $bisaReturLagi = $totalDiterima > $totalSudahRetur;
+                                @endphp
+
+                                {{-- Tombol Retur hanya muncul jika status sukses DAN masih ada sisa barang --}}
+                                @if ($transaction->status === 'sukses' && $bisaReturLagi)
+                                    <button type="button" class="btn btn-warning text-dark" data-bs-toggle="modal"
+                                        data-bs-target="#returModal">
+                                        <i class="bi bi-arrow-counterclockwise"></i> Retur Barang
+                                    </button>
+                                @elseif($transaction->status === 'sukses' && !$bisaReturLagi)
+                                    <button class="btn btn-danger" disabled>
+                                        <i class="bi bi-check-all"></i> Semua Barang Sudah Diretur
+                                    </button>
                                 @endif
 
-                                <div class="modal fade" id="returModal" tabindex="-1" aria-labelledby="returModalLabel"
+
+
+                                {{-- <div class="modal fade" id="returModal" tabindex="-1" aria-labelledby="returModalLabel"
                                     aria-hidden="true">
                                     <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
@@ -422,11 +449,29 @@
                                             </form>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
 
-                                <a href="{{ url()->previous() }}" class="btn btn-secondary">
+                                @if (session('success'))
+                                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                                    <script>
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Berhasil!',
+                                            text: "{{ session('success') }}",
+                                            timer: 3000,
+                                            showConfirmButton: false
+                                        });
+                                    </script>
+                                @endif
+
+                                <a href="{{ url()->previous() }}" class="btn btn-secondary"
+                                    style="position: relative; z-index: 9999;">
                                     <i class="bi bi-arrow-left"></i> Back
                                 </a>
+
+                                {{-- <a href="{{ url()->previous() }}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Back
+                                </a> --}}
 
                                 {{-- <a href="{{ route('v2sparepartinmultiple.index') }}" class="btn btn-secondary">
                                     <i class="bi bi-arrow-left"></i> Back
@@ -472,9 +517,117 @@
     </div>
 
     <input type="hidden" name="action_type" id="action_type" form="approveForm" value="backorder">
+
+    <div class="modal fade" id="returModal" tabindex="-1" aria-labelledby="returModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title fw-bold" id="returModalLabel">
+                        <i class="bi bi-arrow-counterclockwise me-2"></i>Form Retur Barang
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('v2sparepartinmultiple.retur', $transaction->id) }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <p>Pilih barang dan jumlah yang ingin dikembalikan. Sisa barang akan
+                            terhitung otomatis.</p>
+
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Sparepart</th>
+                                    <th>Diterima</th>
+                                    <th>Sudah Retur</th>
+                                    <th>Sisa Bisa Retur</th>
+                                    <th>Jumlah Retur Sekarang</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($transaction->stockTransactions as $item)
+                                    @php
+                                        // Hitung retur spesifik untuk item ini saja
+                                        $itemTeretur = \App\Models\StockTransactionModel::where(
+                                            'spare_part_id',
+                                            $item->spare_part_id,
+                                        )
+                                            ->where('keterangan', 'LIKE', '%' . $transaction->no_dokumen . '%')
+                                            ->where('type', 'out')
+                                            ->sum('quantity');
+
+                                        $sisaItem = (int) $item->quantity - (int) $itemTeretur;
+                                    @endphp
+                                    <tr>
+                                        <td>{{ $item->sparePart->name }}</td>
+                                        <td>{{ (int) $item->quantity }}</td>
+                                        <td><span class="text-danger">{{ (int) $itemTeretur }}</span>
+                                        </td>
+                                        <td><span class="fw-bold">{{ $sisaItem }}</span>
+                                        </td>
+                                        <td>
+                                            <input type="hidden" name="sparepart_id[]"
+                                                value="{{ $item->spare_part_id }}">
+
+                                            @if ($sisaItem > 0)
+                                                <input type="number" name="qty_retur[]"
+                                                    class="form-control form-control-sm" max="{{ $sisaItem }}"
+                                                    min="0" value="0">
+                                            @else
+                                                <span class="badge bg-success text-white">sudah retur semua</span>
+                                                <input type="hidden" name="qty_retur[]" value="0">
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+
+                        <div class="form-group mt-3">
+                            <label class="mb-2">Alasan Retur:</label>
+                            <textarea name="alasan_retur" class="form-control" rows="3"
+                                placeholder="Contoh: Barang cacat/tidak sesuai spesifikasi" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-warning text-dark">Proses
+                            Retur</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fungsi pembersihan
+            function clearModalArtifacts() {
+                // 1. Hapus backdrop hitam transparan
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                backdrops.forEach(b => b.remove());
+
+                // 2. Kembalikan fungsi klik dan scroll pada body
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = 'auto';
+                document.body.style.paddingRight = '0';
+                document.body.removeAttribute('style');
+            }
+
+            // Jalankan pembersihan setiap kali halaman dimuat (setelah redirect)
+            clearModalArtifacts();
+
+            // Jalankan pembersihan jika modal ditutup secara manual
+            const myModal = document.getElementById('returModal');
+            if (myModal) {
+                myModal.addEventListener('hidden.bs.modal', function() {
+                    clearModalArtifacts();
+                });
+            }
+        });
+    </script>
+
     <script>
         function validateQty(input, max) {
             let val = parseInt(input.value) || 0;

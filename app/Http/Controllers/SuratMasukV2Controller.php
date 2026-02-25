@@ -173,10 +173,9 @@ class SuratMasukV2Controller extends Controller
                     ->first();
 
                 if ($detail) {
-                    // Selisih untuk backorder (hanya variabel lokal, tidak dikirim ke DB PO)
                     $sisaGantung = $qtySeharusnya - $qtyDatang;
 
-                    // LOGIC BACKORDER (Hanya menampung ke array untuk dokumen StockIn baru)
+                    // 1. LOGIK BACKORDER (Tetap jalan untuk menampung sisa)
                     if ($qtyDatang < $qtySeharusnya && $action === 'backorder' && $sisaGantung > 0) {
                         $backorderNeeded = true;
                         $backorderItems[] = [
@@ -186,20 +185,62 @@ class SuratMasukV2Controller extends Controller
                         ];
                     }
 
-                    // Update detail Stock In yang sedang diproses
-                    $detail->update([
-                        'quantity' => $qtyDatang,
-                        'status'   => 'sukses',
-                        'user'     => $request->diterima_oleh,
-                        'created_at' => $request->tanggal . ' ' . now()->format('H:i:s'), // Tanggal pilih user + jam sekarang
-                    ]);
-
-                    // Increment Stok Sparepart
+                    // 2. LOGIK APPROVAL SEKARANG (INI PERUBAHANNYA)
                     if ($qtyDatang > 0) {
+                        // Update transaksi hanya jika barangnya memang datang
+                        $detail->update([
+                            'quantity' => $qtyDatang,
+                            'status'   => 'sukses',
+                            'user'     => $request->diterima_oleh,
+                            'created_at' => $request->tanggal . ' ' . now()->format('H:i:s'),
+                        ]);
+
+                        // Tambah stok ke master
                         \App\Models\ListSparePartModel::where('id', $spare_part_id)->increment('stock', $qtyDatang);
+                    } else {
+                        // JIKA QTY DATANG 0: Hapus detail dari header saat ini
+                        // Agar tidak ada record "Sukses" dengan qty 0 di riwayat transaksi.
+                        $detail->delete();
                     }
                 }
             }
+
+            // foreach ($request->product as $i => $spare_part_id) {
+            //     $qtyDatang = (int)$request->qty_datang[$i];
+            //     $qtySeharusnya = (int)$request->demand[$i];
+
+            //     $detail = StockTransactionModel::where('stock_in_header_id', $header->id)
+            //         ->where('spare_part_id', $spare_part_id)
+            //         ->first();
+
+            //     if ($detail) {
+            //         // Selisih untuk backorder (hanya variabel lokal, tidak dikirim ke DB PO)
+            //         $sisaGantung = $qtySeharusnya - $qtyDatang;
+
+            //         // LOGIC BACKORDER (Hanya menampung ke array untuk dokumen StockIn baru)
+            //         if ($qtyDatang < $qtySeharusnya && $action === 'backorder' && $sisaGantung > 0) {
+            //             $backorderNeeded = true;
+            //             $backorderItems[] = [
+            //                 'spare_part_id' => $spare_part_id,
+            //                 'quantity'      => $sisaGantung,
+            //                 'price'         => $detail->price,
+            //             ];
+            //         }
+
+            //         // Update detail Stock In yang sedang diproses
+            //         $detail->update([
+            //             'quantity' => $qtyDatang,
+            //             'status'   => 'sukses',
+            //             'user'     => $request->diterima_oleh,
+            //             'created_at' => $request->tanggal . ' ' . now()->format('H:i:s'), // Tanggal pilih user + jam sekarang
+            //         ]);
+
+            //         // Increment Stok Sparepart
+            //         if ($qtyDatang > 0) {
+            //             \App\Models\ListSparePartModel::where('id', $spare_part_id)->increment('stock', $qtyDatang);
+            //         }
+            //     }
+            // }
 
             // PROSES PEMBUATAN DOKUMEN BACKORDER (Jika diperlukan)
             if ($backorderNeeded && $action === 'backorder' && count($backorderItems) > 0) {
@@ -752,59 +793,125 @@ class SuratMasukV2Controller extends Controller
             });
     }
 
-    // public function retur(Request $request, $id)
-    // {
-    //     // 1. Validasi Input
-    //     $request->validate([
-    //         'sparepart_id' => 'required|array',
-    //         'qty_retur'    => 'required|array',
-    //         'alasan_retur' => 'required|string|max:255',
-    //     ]);
+    public function retur(Request $request, $id)
+    {
+        $request->validate([
+            'sparepart_id' => 'required|array',
+            'qty_retur'    => 'required|array',
+            'alasan_retur' => 'required|string|max:255',
+        ]);
 
-    //     // Ambil data transaksi utama (misal: SuratMasuk)
-    //     $transaction = StockInHeader::findOrFail($id);
+        $stockIn = StockInHeader::findOrFail($id);
 
-    //     try {
-    //         DB::beginTransaction();
+        try {
+            DB::beginTransaction();
 
-    //         $hasRetur = false;
+            // --- 1. GENERATE NOMOR DOKUMEN (Logika Global yang sudah kita buat) ---
+            $tahun = now()->format('Y');
+            $prefix = "WH/OUT/{$tahun}/";
 
-    //         foreach ($request->sparepart_id as $key => $sparepart_id) {
-    //             $qtyRetur = (int) $request->qty_retur[$key];
+            $lastAnyDoc = StockOutHeader::where('no_dokumen', 'LIKE', $prefix . '%')
+                ->orderBy('no_dokumen', 'desc')
+                ->first();
 
-    //             // Hanya proses jika qty retur lebih dari 0
-    //             if ($qtyRetur > 0) {
-    //                 $hasRetur = true;
+            $nextNumber = 1;
+            if ($lastAnyDoc) {
+                $parts = explode('/', $lastAnyDoc->no_dokumen);
+                if (isset($parts[3])) {
+                    $nextNumber = (int) $parts[3] + 1;
+                }
+            }
 
-    //                 // 2. Update Stok Sparepart (Kurangi stok)
-    //                 $sparepart = ListSparePartModel::findOrFail($sparepart_id);
-    //                 $sparepart->decrement('stock', $qtyRetur);
+            $lastReturDoc = StockOutHeader::where('no_dokumen', 'LIKE', '%/RET-%')
+                ->orderBy('no_dokumen', 'desc')
+                ->first();
 
-    //                 // 3. Catat Riwayat Transaksi Keluar (Retur)
-    //                 // Sesuaikan kolom dengan struktur tabel stock_transactions Anda
-    //                 StockTransactionModel::create([
-    //                     'transaction_id' => $transaction->id, // Foreign key ke tabel utama
-    //                     'spare_part_id'  => $sparepart_id,
-    //                     'quantity'       => $qtyRetur,
-    //                     'type'           => 'retur', // Labeli sebagai retur
-    //                     'description'    => 'Retur: ' . $request->alasan_retur,
-    //                     'date'           => now(),
-    //                 ]);
-    //             }
-    //         }
+            $nextReturNumber = 1;
+            if ($lastReturDoc) {
+                $lastRetParts = explode('RET-', $lastReturDoc->no_dokumen);
+                $nextReturNumber = (int) end($lastRetParts) + 1;
+            }
 
-    //         if (!$hasRetur) {
-    //             return redirect()->back()->with('error', 'Minimal satu barang harus memiliki jumlah retur lebih dari 0.');
-    //         }
+            $noDokOut = $prefix . str_pad($nextNumber, 3, '0', STR_PAD_LEFT) . '/RET-' . str_pad($nextReturNumber, 2, '0', STR_PAD_LEFT);
 
-    //         // 4. (Opsional) Update status transaksi utama jika perlu
-    //         // $transaction->update(['status' => 'retur_sebagian']); 
+            // --- 2. VALIDASI SISA BARANG & PROSES FOREACH ---
+            $hasRetur = false;
+            $detailsToCreate = []; // Temporary storage untuk data yang valid
 
-    //         DB::commit();
-    //         return redirect()->back()->with('success', 'Berhasil memproses retur barang.');
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
-    //     }
-    // }
+            foreach ($request->sparepart_id as $key => $sparepart_id) {
+                $qtyInput = (int) $request->qty_retur[$key];
+
+                if ($qtyInput > 0) {
+                    // Cari berapa jumlah awal barang ini di StockIn ini
+                    $qtyAwal = StockTransactionModel::where('stock_in_header_id', $id)
+                        ->where('spare_part_id', $sparepart_id)
+                        ->where('type', 'in')
+                        ->sum('quantity');
+
+                    // Cari berapa yang sudah diretur sebelumnya untuk referensi dokumen ini
+                    $sudahRetur = StockTransactionModel::where('spare_part_id', $sparepart_id)
+                        ->where('keterangan', 'LIKE', '%Ref: ' . $stockIn->no_dokumen . '%')
+                        ->where('type', 'out')
+                        ->sum('quantity');
+
+                    $sisaBisaRetur = $qtyAwal - $sudahRetur;
+
+                    // Cek apakah input melebihi sisa
+                    if ($qtyInput > $sisaBisaRetur) {
+                        throw new \Exception("Jumlah retur untuk salah satu barang melebihi sisa yang ada.");
+                    }
+
+                    $hasRetur = true;
+
+                    // Simpan data untuk diproses setelah header dibuat
+                    $detailsToCreate[] = [
+                        'id' => $sparepart_id,
+                        'qty' => $qtyInput
+                    ];
+                }
+            }
+
+            if (!$hasRetur) {
+                return redirect()->back()->with('error', 'Isi jumlah retur minimal 1 barang.');
+            }
+
+            // --- 3. EKSEKUSI SIMPAN DATA ---
+            $stockOut = StockOutHeader::create([
+                'no_dokumen'     => $noDokOut,
+                'diminta_oleh'   => 'Retur Barang',
+                'tanggal'        => now(),
+                'locations_id'   => $stockIn->location_id,
+                'category_id'    => $stockIn->category_id,
+                'subcategory_id' => $stockIn->subcategory_id,
+                'status'         => 'sukses',
+                'keterangan'     => 'RETUR (Ref: ' . $stockIn->no_dokumen . ') ' . $request->alasan_retur,
+            ]);
+
+            foreach ($detailsToCreate as $detail) {
+                $sparepart = ListSparePartModel::findOrFail($detail['id']);
+                $sparepart->decrement('stock', $detail['qty']);
+
+                StockTransactionModel::create([
+                    'spare_part_id'       => $detail['id'],
+                    'type'                => 'out',
+                    'quantity'            => $detail['qty'],
+                    'user'                => 'Retur Barang',
+                    'stock_in_header_id'  => 0,
+                    'stock_out_header_id' => $stockOut->id,
+                    'price'               => $sparepart->price ?? 0,
+                    'status'              => 'sukses',
+                    'keterangan'          => 'Retur Barang (' . $noDokOut . ') Ref: ' . $stockIn->no_dokumen,
+                ]);
+            }
+
+            DB::commit();
+            return redirect()->route('v2sparepartinmultiple.index',  $stockIn->id)
+                ->with('success', 'Retur berhasil diproses');
+            // return redirect()->back()->with('success', "Retur Berhasil! Dokumen $noDokOut telah dibuat.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal Simpan: ' . $e->getMessage());
+        }
+    }
+    
 }

@@ -166,27 +166,59 @@ class ListSparePartMultipleController extends Controller
     public function createout()
     {
         $tahun = now()->format('Y');
+        $prefix = "WH/OUT/{$tahun}/";
 
-        // Ambil record terakhir tahun ini
-        $last = StockOutHeader::whereYear('tanggal', $tahun)
+        // 1. Ambil record terakhir tahun ini (apapun formatnya, mau RET atau bukan)
+        $last = StockOutHeader::where('no_dokumen', 'LIKE', $prefix . '%')
             ->orderBy('id', 'desc')
             ->first();
 
-        // Ambil nomor urut terakhir
         $lastNumber = 0;
-        if ($last && preg_match('/(\d{3})$/', $last->no_dokumen, $matches)) {
-            $lastNumber = (int) $matches[1];
+
+        if ($last) {
+            // Contoh no_dokumen: "WH/OUT/2026/238/RET-02" atau "WH/OUT/2026/237"
+            $parts = explode('/', $last->no_dokumen);
+
+            // Bagian nomor urut (237 atau 238) selalu ada di indeks ke-3
+            if (isset($parts[3])) {
+                $lastNumber = (int) $parts[3];
+            }
         }
 
-        // Generate nomor baru
+        // 2. Generate nomor baru (Misal: 238 + 1 = 239)
         $nextNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
-        $noDokumen = "WH/OUT/{$tahun}/{$nextNumber}";
+        $noDokumen = $prefix . $nextNumber;
 
         $locations = LocationsModel::all();
         $categories = CategoryModel::all();
 
         return view('dashboard.sparepartoutmultiple.create', compact('noDokumen', 'locations', 'categories'));
     }
+
+    // public function createout()
+    // {
+    //     $tahun = now()->format('Y');
+
+    //     // Ambil record terakhir tahun ini
+    //     $last = StockOutHeader::whereYear('tanggal', $tahun)
+    //         ->orderBy('id', 'desc')
+    //         ->first();
+
+    //     // Ambil nomor urut terakhir
+    //     $lastNumber = 0;
+    //     if ($last && preg_match('/(\d{3})$/', $last->no_dokumen, $matches)) {
+    //         $lastNumber = (int) $matches[1];
+    //     }
+
+    //     // Generate nomor baru
+    //     $nextNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
+    //     $noDokumen = "WH/OUT/{$tahun}/{$nextNumber}";
+
+    //     $locations = LocationsModel::all();
+    //     $categories = CategoryModel::all();
+
+    //     return view('dashboard.sparepartoutmultiple.create', compact('noDokumen', 'locations', 'categories'));
+    // }
 
     public function storeout(Request $request)
     {
