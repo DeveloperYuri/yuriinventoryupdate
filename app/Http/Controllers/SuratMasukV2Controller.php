@@ -273,7 +273,7 @@ class SuratMasukV2Controller extends Controller
                         'type'               => 'in',
                         'quantity'           => $item['quantity'],
                         'price'              => $item['price'],
-                        'status'             => 'Proses',
+                        'status'             => 'proses',
                         'user'               => $request->diterima_oleh,
                     ]);
                 }

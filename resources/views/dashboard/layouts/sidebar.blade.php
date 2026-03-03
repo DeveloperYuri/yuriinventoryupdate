@@ -16,6 +16,7 @@
              @php
                  $isSparePartActive =
                      request()->routeIs('spare-parts.*') ||
+                     request()->routeIs('dashboardsparepart.*') ||
                      request()->routeIs('stock-in.*') ||
                      request()->routeIs('stock-out.*') ||
                      request()->routeIs('sparepartinmultiple.*') ||
@@ -38,7 +39,7 @@
                      @if (Auth::user()->is_role == 2)
                          <li>
                              <a href="{{ route('dashboardsparepart.index') }}"
-                                 class="{{ request()->routeIs('dashboardsparepart.index.*') ? 'active' : '' }}">
+                                 class="{{ request()->routeIs('dashboardsparepart.index') ? 'active' : '' }}">
                                  <i class="bi bi-circle"></i><span>Dashboard Spare Part</span>
                              </a>
                          </li>
