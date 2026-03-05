@@ -170,36 +170,116 @@ class SuratPesananV2Controller extends Controller
                 ->with('error', "Pemesanan Ditolak: Barang ($listBarang) masih tersedia di gudang. Silakan hapus dari list atau sesuaikan Qty Minta.");
         }
 
-        return DB::transaction(function () use ($request) {
+        try {
+            return DB::transaction(function () use ($request) {
 
-            // 2. Simpan header SURAT PESANAN (Tanpa bikin Surat Masuk)
-            $headerPesanan = SuratPesananHeaderModel::create([
-                'no_surat_pesanan' => $request->no_surat_pesanan,
-                'name'             => $request->name,
-                'locations_id'     => $request->locations_id,
-                'category_id'      => $request->category_id,
-                'subcategory_id'   => $request->subcategory_id,
-                'tanggal'          => $request->tanggal,
-                'status'           => 'pending', // Status awal pesanan
-                'status_penerimaan' => 'open',
-                'ditujukan_kepada' => $request->ditujukan_kepada,
-            ]);
+                $inisial = $request->ditujukan_kepada;
+                $tahun = date('Y');
 
-            // 3. Loop spare part HANYA untuk detail pesanan
-            foreach ($request->product as $i => $spare_part_id) {
-                SuratPesananDetailModel::create([
-                    'surat_pesanan_header_id' => $headerPesanan->id,
-                    'spare_part_id'           => $spare_part_id,
-                    'qty'                     => $request->demand[$i] ?? 0,
-                    'stock'                   => $request->stock[$i] ?? 0,
-                    'qty_kurang'              => $request->qty_kurang[$i] ?? 0,
-                    'keterangan'              => $request->keterangan[$i] ?? null,
+                // 1. AMBIL NOMOR GLOBAL TERAKHIR (Si 083 itu)
+                // Kita cari dokumen terbaru di tahun ini tanpa peduli inisialnya apa
+                $lastGlobalOrder = SuratPesananHeaderModel::whereYear('tanggal', $tahun)
+                    ->lockForUpdate() // Kunci biar nggak disalip
+                    ->orderBy('id', 'desc')
+                    ->first();
+                // sleep(5);
+
+                if ($lastGlobalOrder) {
+                    // Pecah string: SP/III/2026/083/JF-01
+                    $parts = explode('/', $lastGlobalOrder->no_surat_pesanan);
+                    // Angka 083 ada di potongan ke-4 (index 3)
+                    $lastBaseNo = isset($parts[3]) ? intval($parts[3]) : 0;
+                } else {
+                    $lastBaseNo = 0;
+                }
+
+                $nextBaseNo = str_pad($lastBaseNo + 1, 3, '0', STR_PAD_LEFT);
+
+                // 2. AMBIL NOMOR URUT PER INISIAL (Si JF-02 itu)
+                // Kita cari dokumen terakhir yang inisialnya sama
+                $lastInisialOrder = SuratPesananHeaderModel::where('no_surat_pesanan', 'LIKE', "%/{$inisial}-%")
+                    ->whereYear('tanggal', $tahun)
+                    ->orderBy('id', 'desc')
+                    ->first();
+
+                if ($lastInisialOrder) {
+                    $partsInisial = explode('-', $lastInisialOrder->no_surat_pesanan);
+                    $lastSuffix = end($partsInisial);
+                    $nextSuffix = intval($lastSuffix) + 1;
+                } else {
+                    $nextSuffix = 1;
+                }
+
+                $formattedSuffix = str_pad($nextSuffix, 2, '0', STR_PAD_LEFT);
+
+                // 3. GENERATE FINAL
+                $romawi = [1 => "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+                $bulan = $romawi[date('n')];
+
+                $generatedNo = "SP/{$bulan}/{$tahun}/{$nextBaseNo}/{$inisial}-{$formattedSuffix}";
+
+                // 2. Simpan header dengan nomor yang baru saja di-generate
+                $headerPesanan = SuratPesananHeaderModel::create([
+                    'no_surat_pesanan' => $generatedNo, // Nomor otomatis, bukan dari request
+                    'name'             => $request->name,
+                    'locations_id'     => $request->locations_id,
+                    'category_id'      => $request->category_id,
+                    'subcategory_id'   => $request->subcategory_id,
+                    'tanggal'          => $request->tanggal,
+                    'status'           => 'pending',
+                    'status_penerimaan' => 'open',
+                    'ditujukan_kepada' => $request->ditujukan_kepada,
                 ]);
-            }
 
-            return redirect()->route('v2suratpesanan.index')
-                ->with('success', 'Surat pesanan berhasil disimpan dan menunggu persetujuan.');
-        });
+                // 3. Simpan detail (Logika tetap sama)
+                foreach ($request->product as $i => $spare_part_id) {
+                    SuratPesananDetailModel::create([
+                        'surat_pesanan_header_id' => $headerPesanan->id,
+                        'spare_part_id'           => $spare_part_id,
+                        'qty'                     => $request->demand[$i] ?? 0,
+                        'stock'                   => $request->stock[$i] ?? 0,
+                        'qty_kurang'              => $request->qty_kurang[$i] ?? 0,
+                        'keterangan'              => $request->keterangan[$i] ?? null,
+                    ]);
+                }
+
+                return redirect()->route('v2suratpesanan.index')
+                    ->with('success', "Surat pesanan $generatedNo berhasil disimpan dan menunggu persetujuan.");
+            });
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+        }
+
+        // return DB::transaction(function () use ($request) {
+
+        //     // 2. Simpan header SURAT PESANAN (Tanpa bikin Surat Masuk)
+        //     $headerPesanan = SuratPesananHeaderModel::create([
+        //         'no_surat_pesanan' => $request->no_surat_pesanan,
+        //         'name'             => $request->name,
+        //         'locations_id'     => $request->locations_id,
+        //         'category_id'      => $request->category_id,
+        //         'subcategory_id'   => $request->subcategory_id,
+        //         'tanggal'          => $request->tanggal,
+        //         'status'           => 'pending', // Status awal pesanan
+        //         'status_penerimaan' => 'open',
+        //         'ditujukan_kepada' => $request->ditujukan_kepada,
+        //     ]);
+
+        //     // 3. Loop spare part HANYA untuk detail pesanan
+        //     foreach ($request->product as $i => $spare_part_id) {
+        //         SuratPesananDetailModel::create([
+        //             'surat_pesanan_header_id' => $headerPesanan->id,
+        //             'spare_part_id'           => $spare_part_id,
+        //             'qty'                     => $request->demand[$i] ?? 0,
+        //             'stock'                   => $request->stock[$i] ?? 0,
+        //             'qty_kurang'              => $request->qty_kurang[$i] ?? 0,
+        //             'keterangan'              => $request->keterangan[$i] ?? null,
+        //         ]);
+        //     }
+
+        //     return redirect()->route('v2suratpesanan.index')
+        //         ->with('success', 'Surat pesanan berhasil disimpan dan menunggu persetujuan.');
+        // });
     }
 
     public function edit($id)
