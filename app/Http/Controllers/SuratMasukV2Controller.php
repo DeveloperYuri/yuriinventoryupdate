@@ -31,7 +31,7 @@ class SuratMasukV2Controller extends Controller
             $query->where('status', $request->status);
         }
 
-        $transactions = $query->paginate(15);
+        $transactions = $query->paginate(15)->withQueryString();
 
         return view('dashboard.sparepartmasukv2.listsparepartinmultiple', compact('transactions'));
     }

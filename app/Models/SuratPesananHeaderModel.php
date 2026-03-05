@@ -49,7 +49,7 @@ class SuratPesananHeaderModel extends Model
             $return->where('status_penerimaan', $request->status_penerimaan);
         }
 
-        $return = $return->paginate(10)->withQueryString();;
+        $return = $return->paginate(10)->withQueryString();
         return $return;
     }
 
