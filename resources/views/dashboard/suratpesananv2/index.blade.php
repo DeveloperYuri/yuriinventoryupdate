@@ -63,6 +63,34 @@
                         </select>
                     </div>
 
+                    <div class="col-md-2">
+                        <select name="status_penerimaan" class="form-control">
+                            <option value="">-- Status Penerimaan --</option>
+                            <option value="open" {{ request('status_penerimaan') == 'open' ? 'selected' : '' }}>Open
+                            </option>
+                            <option value="proses" {{ request('status_penerimaan') == 'proses' ? 'selected' : '' }}>
+                                Proses</option>
+                            <option value="terima sebagian" {{ request('status_penerimaan') == 'terima sebagian' ? 'selected' : '' }}>
+                                Terima Sebagian</option>
+                            <option value="closed" {{ request('status_penerimaan') == 'closed' ? 'selected' : '' }}>Closed
+                            </option>
+                            <option value="cancel" {{ request('status_penerimaan') == 'cancel' ? 'selected' : '' }}>Cancel
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <select name="status" class="form-control">
+                            <option value="">-- Status --</option>
+                            <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+                            <option value="onprogress" {{ request('status') == 'onprogress' ? 'selected' : '' }}>On Progress</option>
+                            <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved
+                            </option>
+                            <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected
+                            </option>
+                        </select>
+                    </div>
+
                     <div class="col-auto">
                         <button type="submit" class="btn btn-dark">Cari</button>
                         <a href="{{ route('v2suratpesanan.index') }}" class="btn btn-secondary">Reset</a>

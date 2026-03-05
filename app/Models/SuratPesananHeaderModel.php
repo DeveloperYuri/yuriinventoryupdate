@@ -39,7 +39,17 @@ class SuratPesananHeaderModel extends Model
             $return = $return->where('ditujukan_kepada', '=', $request->get('ditujukan_kepada'));
         }
 
-        $return = $return->paginate(10);
+        // Filter Status
+        if ($request->filled('status')) {
+            $return->where('status', $request->status);
+        }
+
+        // Filter Status Penerimaan
+        if ($request->filled('status_penerimaan')) {
+            $return->where('status_penerimaan', $request->status_penerimaan);
+        }
+
+        $return = $return->paginate(10)->withQueryString();;
         return $return;
     }
 
