@@ -108,6 +108,7 @@ class AtkkeluarController extends Controller
                 'tanggal'       => $request->tanggal,
                 'diminta_oleh'  => $request->diminta_oleh,
                 'locations_id'  => $request->locations_id,
+                'keterangan'    => $request->keterangan,
                 'status' => 'sukses',
             ]);
 
@@ -121,6 +122,7 @@ class AtkkeluarController extends Controller
                     'type'                 => 'out',
                     'quantity'             => $qty,
                     'user'                 => $request->diminta_oleh,
+                    'keterangan'           => $request->keterangan,
                     'status' => 'sukses',
                 ]);
             }

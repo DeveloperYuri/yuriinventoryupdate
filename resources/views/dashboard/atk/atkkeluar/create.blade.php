@@ -117,6 +117,11 @@
                                 </div>
 
                                 <div class="mt-3">
+                                    <label for="keterangan">Keterangan:</label>
+                                    <textarea class="form-control" name="keterangan" id="keterangan" rows="3" placeholder="Masukkan keterangan"></textarea>
+                                </div>
+
+                                <div class="mt-3">
                                     <button type="button" class="btn btn-primary" id="saveBtn">
                                         <span id="btnText">Simpan</span>
                                     </button>

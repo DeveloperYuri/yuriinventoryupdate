@@ -1,5 +1,15 @@
 @extends('dashboard.layouts.main')
 
+<style>
+    .column-keterangan {
+        max-width: 300px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+    }
+</style>
+
 @section('content')
     <main id="main" class="main">
 
@@ -82,7 +92,7 @@
                                                     @endif
                                                 </td>
                                                 
-                                                <td class="text-center">{{ $in->keterangan ?? '-' }}</td>
+                                                <td class="text-center column-keterangan">{{ $in->keterangan ?? '-' }}</td>
 
                                                 <td class="text-center" onclick="event.stopPropagation();">
                                                     @if (Auth::user()->is_role == 2 && $in->status === 'sukses')

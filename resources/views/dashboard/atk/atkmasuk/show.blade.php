@@ -96,6 +96,11 @@
                                         <textarea class="form-control" rows="4" placeholder="Note"></textarea>
                                     </div>
                                 </div>
+
+                                <div class="mt-3">
+                                    <label for="keterangan">Keterangan:</label>
+                                    <textarea class="form-control" name="keterangan" id="keterangan" rows="3" placeholder="Masukkan keterangan" readonly>{{ $atktransaction->keterangan }}</textarea>
+                                </div>
                             </form>
 
                             <a href="{{ route('atkmasuk.index') }}" class="btn btn-success mt-2">Kembali</a>

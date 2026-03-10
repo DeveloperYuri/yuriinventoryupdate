@@ -1,5 +1,15 @@
 @extends('dashboard.layouts.main')
 
+<style>
+    .column-keterangan {
+        max-width: 400px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+    }
+</style>
+
 @section('content')
     <main id="main" class="main">
 
@@ -126,7 +136,7 @@
                                             </td>
 
                                             {{-- <td class="text-center">{{ $item->status }}</td> --}}
-                                            <td class="text-center">{{ $item->keterangan ?? '-' }}</td>
+                                            <td class="text-center column-keterangan">{{ $item->keterangan ?? '-' }}</td>
 
                                             <td class="text-center" onclick="event.stopPropagation();">
                                                 @if (Auth::user()->is_role == 2 && $item->status === 'sukses')

@@ -1,5 +1,15 @@
 @extends('dashboard.layouts.main')
 
+<style>
+    .column-keterangan {
+        max-width: 300px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+    }
+</style>
+
 @section('content')
     <main id="main" class="main">
 
@@ -85,7 +95,7 @@
                                                     @endif
                                                 </td>
 
-                                                <td class="text-center">{{ $out->keterangan ?? '-' }}</td>
+                                                <td class="text-center column-keterangan">{{ $out->keterangan ?? '-' }}</td>
 
 
                                                 <td class="text-center" onclick="event.stopPropagation();">

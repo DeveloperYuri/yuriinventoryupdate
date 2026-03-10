@@ -73,6 +73,7 @@ class AtkmasukController extends Controller
                 'diterima_oleh' => $request->diterima_oleh,
                 'supplier_id' => $request->supplier_id,
                 'po_numbers' => $request->po_numbers,
+                'keterangan' => $request->keterangan,
                 'status' => 'sukses',
             ]);
 
@@ -85,6 +86,7 @@ class AtkmasukController extends Controller
                     'type'               => 'in',
                     'quantity'           => $request->demand[$i],
                     'user'               => $request->diterima_oleh,
+                    'keterangan' => $request->keterangan,
                     'status' => 'sukses',
                 ]);
             }

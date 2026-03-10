@@ -52,7 +52,7 @@
                                                     <div class="text-danger small">{{ $message }}</div>
                                                 @enderror --}}
                                             </div>
-                                        </div>           
+                                        </div>
                                     </div>
 
                                     <!-- Kanan -->
@@ -119,12 +119,17 @@
                                 </div>
 
                                 <div class="mt-3">
+                                    <label for="keterangan">Keterangan:</label>
+                                    <textarea class="form-control" name="keterangan" id="keterangan" rows="3" placeholder="Masukkan keterangan"></textarea>
+                                </div>
+
+                                <div class="mt-3">
                                     <button type="submit" class="btn btn-primary" id="saveBtn">
                                         <span id="btnText">Simpan</span>
                                     </button>
                                     <a href="{{ route('atkmasuk.index') }}" class="btn btn-secondary">Kembali</a>
                                 </div>
-                                
+
                             </form>
                         </div>
                     </div>
