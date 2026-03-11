@@ -41,31 +41,27 @@
                     <button class="btn btn-primary">Filter</button>
                     <a href="{{ route('atk.history') }}" class="btn btn-secondary">Reset</a>
                 </div>
+
+                @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 3)
+                    <div>
+                        <a href="{{ route('atk.history.pdf', [
+                            'start_date' => request('start_date'),
+                            'end_date' => request('end_date'),
+                            'type' => request('type'),
+                        ]) }}"
+                            class="btn btn-success">
+                            Print PDF ATK
+                        </a>
+                    </div>
+
+                    <div>
+                        <a href="{{ route('atk.history.excel', ['start_date' => request('start_date'), 'end_date' => request('end_date'), 'type' => request('type')]) }}"
+                            class="btn btn-success" target="_blank">
+                            Export XLX
+                        </a>
+                    </div>
+                @endif
             </form>
-
-            @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 3)
-                <div>
-                    <a href="{{ route('atk.history.pdf', [
-                        'start_date' => request('start_date'),
-                        'end_date' => request('end_date'),
-                        'type' => request('type'),
-                    ]) }}"
-                        class="btn btn-success">
-                        Print PDF ATK
-                    </a>
-                </div>
-
-                {{-- <div>
-                    <a href="{{ route('atk.history.pdf', ['start_date' => request('start_date'), 'end_date' => request('end_date')]) }}"
-                        class="btn btn-success">Print PDF ATK</a>
-                </div> --}}
-                <div>
-                    <a href="{{ route('atk.history.excel', ['start_date' => request('start_date'), 'end_date' => request('end_date'), 'type' => request('type')]) }}"
-                        class="btn btn-success" target="_blank">
-                        Export XLX
-                    </a>
-                </div>
-            @endif
         </div>
 
         <section class="section">
@@ -74,8 +70,6 @@
 
                     <div class="card">
                         <div class="card-body">
-
-
 
                             @if (session('success'))
                                 <script>
@@ -112,6 +106,9 @@
                                             <td class="text-center">{{ $item->user }}</td>
                                             <td class="text-center">{{ $item->quantity }}</td>
                                             <td class="text-center">{{ $item->atkKeluar->locations->name ?? '-' }}</td>
+                                            {{-- <td class="text-center">
+                                                {{ $item->tanggal ? $item->tanggal->format('d-m-Y') : '-' }}
+                                            </td> --}}
                                             <td class="text-center">{{ $item->created_at->format('d-m-Y') }}</td>
                                             {{-- <td class="text-center">
                                                 @if ($item->type == 'in')

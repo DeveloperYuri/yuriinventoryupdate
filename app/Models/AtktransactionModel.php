@@ -50,4 +50,20 @@ class AtktransactionModel extends Model
     {
         return $this->status === 'sukses';
     }
+
+    // public function getTanggalAttribute()
+    // {
+    //     if ($this->type == 'in' && $this->atkMasuk) {
+    //         // Bungkus dengan \Carbon\Carbon::parse()
+    //         return \Carbon\Carbon::parse($this->atkMasuk->tanggal);
+    //     }
+
+    //     // Cek jika tipe 'out' dan relasi ada
+    //     if ($this->type == 'out' && $this->atkKeluar) {
+    //         // Bungkus dengan \Carbon\Carbon::parse()
+    //         return \Carbon\Carbon::parse($this->atkKeluar->tanggal);
+    //     }
+
+    //     return $this->created_at; // Fallback jika tidak ditemukan
+    // }
 }
