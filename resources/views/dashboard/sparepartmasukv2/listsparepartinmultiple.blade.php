@@ -5,13 +5,22 @@
 
         @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
             <div class="pagetitle">
-                <a href="{{ route('v2sparepartinmultiple.create') }}" class="btn btn-primary" dusk="createsparepartin">Create New
+                <a href="{{ route('v2sparepartinmultiple.create') }}" class="btn btn-primary" dusk="createsparepartin">Create
+                    New
                     Spare Part In</a>
             </div><!-- End Page Title -->
         @endif
 
-        <div class="d-flex justify-content-end mb-2">
+        {{-- <div class="d-flex justify-content-end mb-2"> --}}
+        <div class="mb-2">
             <form method="GET" action="{{ route('v2sparepartinmultiple.index') }}" class="mb-3 d-flex gap-2 align-items-end">
+
+                <div class="flex-grow-1">
+                    <label for="no_dokumen">No Dokumen</label>
+                    <input type="text" name="no_dokumen" class="form-control" value="{{ request('no_dokumen') }}"
+                        placeholder="Cari No Dokumen...">
+                </div>
+
                 <div>
                     <label for="start_date">Dari Tanggal</label>
                     <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}">

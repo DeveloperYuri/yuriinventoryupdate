@@ -31,6 +31,10 @@ class SuratMasukV2Controller extends Controller
             $query->where('status', $request->status);
         }
 
+        if ($request->filled('no_dokumen')) {
+            $query->where('no_dokumen', 'LIKE', '%' . $request->no_dokumen . '%');
+        }
+
         $transactions = $query->paginate(15)->withQueryString();
 
         return view('dashboard.sparepartmasukv2.listsparepartinmultiple', compact('transactions'));
@@ -913,5 +917,4 @@ class SuratMasukV2Controller extends Controller
             return redirect()->back()->with('error', 'Gagal Simpan: ' . $e->getMessage());
         }
     }
-    
 }
