@@ -31,8 +31,8 @@ class SuratMasukV2Controller extends Controller
             $query->where('status', $request->status);
         }
 
-        if ($request->filled('no_dokumen')) {
-            $query->where('no_dokumen', 'LIKE', '%' . $request->no_dokumen . '%');
+        if ($request->filled('referensi')) {
+            $query->where('referensi', 'LIKE', '%' . $request->referensi . '%');
         }
 
         $transactions = $query->paginate(15)->withQueryString();

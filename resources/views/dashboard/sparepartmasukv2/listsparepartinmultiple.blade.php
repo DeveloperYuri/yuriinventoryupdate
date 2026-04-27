@@ -16,9 +16,9 @@
             <form method="GET" action="{{ route('v2sparepartinmultiple.index') }}" class="mb-3 d-flex gap-2 align-items-end">
 
                 <div class="flex-grow-1">
-                    <label for="no_dokumen">No Dokumen</label>
-                    <input type="text" name="no_dokumen" class="form-control" value="{{ request('no_dokumen') }}"
-                        placeholder="Cari No Dokumen...">
+                    <label for="no_dokumen">No Surat Pesanan</label>
+                    <input type="text" name="referensi" class="form-control" value="{{ request('referensi') }}"
+                        placeholder="Cari No Pesanan">
                 </div>
 
                 <div>
