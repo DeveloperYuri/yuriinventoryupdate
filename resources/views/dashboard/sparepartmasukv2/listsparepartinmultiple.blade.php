@@ -3,7 +3,7 @@
 @section('content')
     <main id="main" class="main">
 
-        @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
+        @if (Auth::user()->is_role == 2)
             <div class="pagetitle">
                 <a href="{{ route('v2sparepartinmultiple.create') }}" class="btn btn-primary" dusk="createsparepartin">Create
                     New

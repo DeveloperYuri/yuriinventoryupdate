@@ -84,8 +84,8 @@
                                             </div>
                                         </div>
                                         <div class="row mb-3">
-                                            <label class="col-sm-4 col-form-label">Sub Category</label>
-                                            <div class="col-sm-8">
+                                            <label class="col-sm-2 col-form-label">Sub Category</label>
+                                            <div class="col-sm-10">
                                                 <select id="subcategory_id" name="subcategory_id"
                                                     class="form-control @error('subcategory_id') is-invalid @enderror">
                                                     <option value="">-- Pilih Sub Category --</option>
@@ -100,6 +100,16 @@
 
                                     </div>
                                 </div>
+
+                                @if ($errors->any())
+                                    <div class="alert alert-danger">
+                                        <ul class="mb-0">
+                                            @foreach ($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
 
                                 <!-- Tab -->
                                 <div class="tab-content" id="myTabContent">
