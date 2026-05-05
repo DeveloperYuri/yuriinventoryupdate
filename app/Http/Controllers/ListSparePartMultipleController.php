@@ -118,7 +118,7 @@ class ListSparePartMultipleController extends Controller
             ->whereHas('produkstatus', function ($query) {
                 $query->where('name', 'Active');
             })
-            ->limit(20)
+            // ->limit(20)
             ->get();
 
         // $results = ListSparePartModel::whereNotNull('name')

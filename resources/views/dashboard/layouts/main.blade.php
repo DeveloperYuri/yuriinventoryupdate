@@ -39,6 +39,13 @@
 
     @stack('styles')
 
+    <style>
+        .ui-autocomplete {
+            max-height: 250px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+    </style>
 
 </head>
 
