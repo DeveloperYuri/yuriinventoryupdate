@@ -188,6 +188,9 @@
                                                         {{-- Kolom 1: Nama Produk --}}
                                                         <td>
                                                             {{ $item->sparePart->name ?? '-' }}
+
+                                                            <input type="hidden" name="detail_id[]"
+                                                                value="{{ $item->id }}">
                                                             <input type="hidden" name="product[]"
                                                                 value="{{ $item->spare_part_id }}">
                                                         </td>

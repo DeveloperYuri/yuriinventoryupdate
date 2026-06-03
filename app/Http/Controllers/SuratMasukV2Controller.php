@@ -168,13 +168,22 @@ class SuratMasukV2Controller extends Controller
             $pos = strpos($header->no_dokumen, '-BO');
             $baseDoc = ($pos !== false) ? substr($header->no_dokumen, 0, $pos) : $header->no_dokumen;
 
-            foreach ($request->product as $i => $spare_part_id) {
+            // foreach ($request->product as $i => $spare_part_id) {
+            foreach ($request->detail_id as $i => $detailId) {
                 $qtyDatang = (int)$request->qty_datang[$i];
                 $qtySeharusnya = (int)$request->demand[$i];
 
-                $detail = StockTransactionModel::where('stock_in_header_id', $header->id)
-                    ->where('spare_part_id', $spare_part_id)
-                    ->first();
+                // $detail = StockTransactionModel::where('stock_in_header_id', $header->id)
+                //     ->where('spare_part_id', $spare_part_id)
+                //     ->first();
+
+                $detail = StockTransactionModel::find($detailId);
+
+                if (!$detail) {
+                    continue;
+                }
+
+                $spare_part_id = $detail->spare_part_id;
 
                 if ($detail) {
                     $sisaGantung = $qtySeharusnya - $qtyDatang;
