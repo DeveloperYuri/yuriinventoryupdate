@@ -22,7 +22,7 @@
                                             <label class="col-sm-4 col-form-label">No Dokumen</label>
                                             <div class="col-sm-8">
                                                 <input type="text" class="form-control" name="no_dokumen"
-                                                    value="{{ $noDokumen }}" readonly>
+                                                    value="{{ $noDokumen }}">
                                             </div>
                                         </div>
                                         <div class="row mb-3">

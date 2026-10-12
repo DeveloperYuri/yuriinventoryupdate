@@ -66,37 +66,86 @@ class SuratMasukV2Controller extends Controller
     //     return view('dashboard.sparepartinmultiple.create', compact('noDokumen', 'suppliers'));
     // }
 
+    // public function create()
+    // {
+    //     $tahun = now()->format('Y');
+    //     $prefix = "WH/IN/{$tahun}/";
+
+    //     // 1. Ambil SEMUA nomor dokumen tahun ini (untuk menghindari salah urutan di SQL)
+    //     $allDocuments = StockInHeader::where('no_dokumen', 'LIKE', $prefix . '%')
+    //         ->pluck('no_dokumen'); // Mengambil array berisi daftar nomor saja
+
+    //     $highestNumber = 0;
+
+    //     foreach ($allDocuments as $noDok) {
+    //         // Bersihkan jika ada -BO (Contoh: WH/IN/2026/183-BO1 -> WH/IN/2026/183)
+    //         $cleanNo = explode('-BO', $noDok)[0];
+
+    //         // Ambil 3 digit terakhir (183)
+    //         $currentNumber = (int) substr($cleanNo, -3);
+
+    //         // Cek apakah ini yang paling besar?
+    //         if ($currentNumber > $highestNumber) {
+    //             $highestNumber = $currentNumber;
+    //         }
+    //     }
+
+    //     // 2. Generate nomor baru (Misal: 183 + 1 = 184)
+    //     $nextNumber = str_pad($highestNumber + 1, 3, '0', STR_PAD_LEFT);
+    //     $noDokumen = $prefix . $nextNumber;
+
+    //     $suppliers = SupplierModel::all();
+    //     return view('dashboard.sparepartmasukv2.create', compact('noDokumen', 'suppliers'));
+    // }
+
     public function create()
     {
         $tahun = now()->format('Y');
         $prefix = "WH/IN/{$tahun}/";
 
-        // 1. Ambil SEMUA nomor dokumen tahun ini (untuk menghindari salah urutan di SQL)
-        $allDocuments = StockInHeader::where('no_dokumen', 'LIKE', $prefix . '%')
-            ->pluck('no_dokumen'); // Mengambil array berisi daftar nomor saja
+        $allDocuments = StockInHeader::where(
+            'no_dokumen',
+            'LIKE',
+            $prefix . '%'
+        )->pluck('no_dokumen');
 
         $highestNumber = 0;
 
         foreach ($allDocuments as $noDok) {
-            // Bersihkan jika ada -BO (Contoh: WH/IN/2026/183-BO1 -> WH/IN/2026/183)
+            // Hapus suffix -BO, misalnya 1634-BO1 menjadi 1634
             $cleanNo = explode('-BO', $noDok)[0];
 
-            // Ambil 3 digit terakhir (183)
-            $currentNumber = (int) substr($cleanNo, -3);
+            // Ambil seluruh nomor setelah prefix WH/IN/YYYY/
+            $numberPart = substr($cleanNo, strlen($prefix));
 
-            // Cek apakah ini yang paling besar?
-            if ($currentNumber > $highestNumber) {
-                $highestNumber = $currentNumber;
+            // Pastikan bagian nomor hanya berisi angka
+            if (ctype_digit($numberPart)) {
+                $currentNumber = (int) $numberPart;
+
+                if ($currentNumber > $highestNumber) {
+                    $highestNumber = $currentNumber;
+                }
             }
         }
 
-        // 2. Generate nomor baru (Misal: 183 + 1 = 184)
-        $nextNumber = str_pad($highestNumber + 1, 3, '0', STR_PAD_LEFT);
+        // Generate nomor berikutnya
+        $nextNumber = str_pad(
+            $highestNumber + 1,
+            3,
+            '0',
+            STR_PAD_LEFT
+        );
+
         $noDokumen = $prefix . $nextNumber;
 
         $suppliers = SupplierModel::all();
-        return view('dashboard.sparepartmasukv2.create', compact('noDokumen', 'suppliers'));
+
+        return view(
+            'dashboard.sparepartmasukv2.create',
+            compact('noDokumen', 'suppliers')
+        );
     }
+
 
     public function storein(Request $request)
     {
