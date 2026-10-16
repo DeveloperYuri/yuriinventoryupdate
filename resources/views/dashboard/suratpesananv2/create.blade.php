@@ -21,7 +21,8 @@
                                             <label class="col-sm-4 col-form-label">No SP</label>
                                             <div class="col-sm-8">
                                                 <input type="text" class="form-control" id="no_surat_pesanan"
-                                                    name="no_surat_pesanan" value="{{ old('no_surat_pesanan', $noDokumen) }}" readonly>
+                                                    name="no_surat_pesanan"
+                                                    value="{{ old('no_surat_pesanan', $noDokumen) }}" readonly>
                                             </div>
                                         </div>
                                         <div class="row mb-3">
@@ -125,6 +126,59 @@
                                             </div>
                                         </div>
 
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Supplier</label>
+                                            <div class="col-sm-10">
+                                                <select id="supplier_id" name="supplier_id" class="form-control">
+                                                    <option value="">-- Pilih Supplier --</option>
+                                                    @foreach ($suppliers as $supplier)
+                                                        <option value="{{ $supplier->id }}"
+                                                            data-alamat="{{ $supplier->address }}"
+                                                            {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>
+                                                            {{ $supplier->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Alamat Supplier</label>
+                                            <div class="col-sm-10">
+                                                <textarea id="alamat_supplier" class="form-control" rows="3" readonly></textarea>
+                                            </div>
+                                        </div>
+
+                                        {{-- <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Supplier</label>
+                                            <div class="col-sm-10">
+                                                <select id="supplier_id" name="supplier_id"
+                                                    class="form-control @error('supplier_id') is-invalid @enderror">
+                                                    <option value="">-- Pilih Supplier --</option>
+                                                    @foreach ($suppliers as $supplier)
+                                                        <option value="{{ $supplier->id }}"
+                                                            {{ old('supplier_id', $suratPesanan->supplier_id ?? '') == $supplier->id ? 'selected' : '' }}>
+                                                            {{ $supplier->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('supplier_id')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Alamat Supplier</label>
+                                            <div class="col-sm-10">
+                                                <textarea id="alamat_supplier" name="alamat_supplier"
+                                                    class="form-control @error('alamat_supplier') is-invalid @enderror" rows="3" readonly>{{ old('alamat_supplier', $suratPesanan->supplier->alamat ?? '') }}</textarea>
+                                                @error('alamat_supplier')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div> --}}
+
                                     </div>
                                 </div>
 
@@ -143,7 +197,7 @@
                                         <table class="table" id="productTable">
                                             <thead>
                                                 <tr>
-                                                    <th>Spare Part</th>
+                                                    <th>Nama Barang</th>
                                                     <th>Qty_Minta</th>
                                                     <th>Stok</th> <!-- kolom stok baru -->
                                                     <th>Qty Yang Harus Dibeli</th>
@@ -217,7 +271,7 @@
 
                                                 <tr>
                                                     <td colspan="4" class="text-left">
-                                                        <a href="#" id="addLineBtn">Add Spare Part</a>
+                                                        <a href="#" id="addLineBtn">Tambah Barang</a>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -529,6 +583,23 @@
                     noSPInput.val(baseNo);
                 }
             });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            function isiAlamatSupplier() {
+                const alamat = $('#supplier_id option:selected').data('alamat') || '';
+                $('#alamat_supplier').val(alamat);
+            }
+
+            // Saat supplier dipilih
+            $('#supplier_id').on('change', function() {
+                isiAlamatSupplier();
+            });
+
+            // Isi alamat jika supplier sudah terpilih saat halaman dibuka
+            isiAlamatSupplier();
         });
     </script>
 @endpush

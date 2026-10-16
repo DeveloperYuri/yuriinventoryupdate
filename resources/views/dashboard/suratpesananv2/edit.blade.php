@@ -23,13 +23,24 @@
                                 <div class="row mb-3">
                                     <!-- Kiri -->
                                     <div class="col-md-6">
-                                        <div class="row mb-3">
+                                        {{-- <div class="row mb-3">
                                             <label class="col-sm-4 col-form-label">No Dokumen</label>
                                             <div class="col-sm-8">
                                                 <input type="text" class="form-control"
                                                     value="{{ $transaction->no_surat_pesanan }}" readonly>
                                             </div>
+                                        </div> --}}
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-4 col-form-label">No Dokumen</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="no_surat_pesanan"
+                                                    name="no_surat_pesanan"
+                                                    value="{{ old('no_surat_pesanan', $transaction->no_surat_pesanan) }}"
+                                                    readonly>
+                                            </div>
                                         </div>
+
                                         <div class="row mb-3">
                                             <label class="col-sm-4 col-form-label">Di buat oleh</label>
                                             <div class="col-sm-8">
@@ -55,20 +66,63 @@
                                                 @enderror
                                             </div>
                                         </div>
+
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-4 col-form-label">Ditujukan kepada</label>
+                                            <div class="col-sm-8">
+                                                <select id="ditujukan_kepada" name="ditujukan_kepada"
+                                                    class="form-control @error('ditujukan_kepada') is-invalid @enderror">
+
+                                                    <option value="">-- Silahkan Pilih --</option>
+
+                                                    <option value="JF"
+                                                        {{ old('ditujukan_kepada', $transaction->ditujukan_kepada) == 'JF' ? 'selected' : '' }}>
+                                                        Ko Jefri
+                                                    </option>
+
+                                                    <option value="WD"
+                                                        {{ old('ditujukan_kepada', $transaction->ditujukan_kepada) == 'WD' ? 'selected' : '' }}>
+                                                        Bu Widy
+                                                    </option>
+
+                                                    <option value="NR"
+                                                        {{ old('ditujukan_kepada', $transaction->ditujukan_kepada) == 'NR' ? 'selected' : '' }}>
+                                                        Bu Nur
+                                                    </option>
+
+                                                    <option value="SA"
+                                                        {{ old('ditujukan_kepada', $transaction->ditujukan_kepada) == 'SA' ? 'selected' : '' }}>
+                                                        Sumber Alam
+                                                    </option>
+
+                                                    <option value="LN"
+                                                        {{ old('ditujukan_kepada', $transaction->ditujukan_kepada) == 'LN' ? 'selected' : '' }}>
+                                                        Lainnya
+                                                    </option>
+
+                                                </select>
+
+                                                @error('ditujukan_kepada')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
                                     </div>
                                     <!-- Kanan -->
                                     <div class="col-md-6">
                                         <div class="row mb-3">
-                                            <label class="col-sm-4 col-form-label">Date</label>
-                                            <div class="col-sm-8">
+                                            <label class="col-sm-2 col-form-label">Date</label>
+                                            <div class="col-sm-10">
                                                 <input type="text" class="form-control"
                                                     value="{{ \Carbon\Carbon::parse($transaction->tanggal)->format('d-m-Y') }}"
                                                     readonly>
                                             </div>
                                         </div>
                                         <div class="row mb-3">
-                                            <label class="col-sm-4 col-form-label">Lokasi</label>
-                                            <div class="col-sm-8">
+                                            <label class="col-sm-2 col-form-label">Lokasi</label>
+                                            <div class="col-sm-10">
                                                 <select name="locations_id"
                                                     class="form-control @error('locations_id') is-invalid @enderror">
                                                     <option value="">-- Pilih Lokasi --</option>
@@ -85,8 +139,8 @@
                                             </div>
                                         </div>
                                         <div class="row mb-3">
-                                            <label class="col-sm-4 col-form-label">Sub Category</label>
-                                            <div class="col-sm-8">
+                                            <label class="col-sm-2 col-form-label">Sub Category</label>
+                                            <div class="col-sm-10">
                                                 <select id="subcategory_id" name="subcategory_id"
                                                     class="form-control @error('subcategory_id') is-invalid @enderror">
                                                     <option value="">-- Pilih Sub Category --</option>
@@ -101,6 +155,35 @@
                                                 @error('subcategory_id')
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Supplier</label>
+                                            <div class="col-sm-10">
+                                                <select id="supplier_id" name="supplier_id"
+                                                    class="form-control @error('supplier_id') is-invalid @enderror">
+                                                    <option value="">-- Pilih Supplier --</option>
+
+                                                    @foreach ($suppliers as $supplier)
+                                                        <option value="{{ $supplier->id }}"
+                                                            data-alamat="{{ $supplier->address }}"
+                                                            {{ old('supplier_id', $transaction->supplier_id) == $supplier->id ? 'selected' : '' }}>
+                                                            {{ $supplier->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+
+                                                @error('supplier_id')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Alamat Supplier</label>
+                                            <div class="col-sm-10">
+                                                <textarea id="alamat_supplier" class="form-control" rows="3" readonly></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -264,7 +347,7 @@
             }
         });
     </script>
-    
+
     {{-- <script>
         function applyAutocomplete(el) {
             el.autocomplete({
@@ -422,6 +505,61 @@
         $(document).on('keyup change', '.qty-minta', function() {
             let tr = $(this).closest('tr');
             hitungQtyKurang(tr);
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            function isiAlamatSupplier() {
+                const alamat = $('#supplier_id option:selected').attr('data-alamat') || '';
+                $('#alamat_supplier').val(alamat);
+            }
+
+            $('#supplier_id').on('change', isiAlamatSupplier);
+
+            // Isi alamat saat halaman edit pertama kali dibuka
+            isiAlamatSupplier();
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            const noSPInput = $('#no_surat_pesanan');
+            const tujuanSelect = $('#ditujukan_kepada');
+
+            const nomorAwal = noSPInput.val();
+            const lastNumbers = @json($lastNumbers);
+
+            tujuanSelect.on('change', function() {
+                const inisial = $(this).val();
+
+                if (!inisial) {
+                    noSPInput.val(nomorAwal);
+                    return;
+                }
+
+                const parts = nomorAwal.split('/');
+
+                // SP/II/2026/083
+                const nomorUtama = parts.slice(0, 4).join('/');
+
+                // Jika tujuan tidak berubah, pertahankan nomor awal
+                const inisialAwal = parts.length > 4 ?
+                    parts[4].split('-')[0] :
+                    '';
+
+                if (inisial === inisialAwal) {
+                    noSPInput.val(nomorAwal);
+                    return;
+                }
+
+                // Ambil nomor terakhir tujuan yang dipilih
+                const lastNo = parseInt(lastNumbers[inisial]) || 0;
+                const nextNo = String(lastNo + 1).padStart(2, '0');
+
+                noSPInput.val(
+                    nomorUtama + '/' + inisial + '-' + nextNo
+                );
+            });
         });
     </script>
 @endpush

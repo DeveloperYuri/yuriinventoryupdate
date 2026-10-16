@@ -86,8 +86,8 @@
         <img src="{{ public_path('assets/img/logobaru.png') }}" alt="Logo Perusahaan"
             style="width:80px; height:auto; display:block; margin:0 auto 10px auto;">
 
-            {{-- buat deploy di rumah web --}}
-            {{-- <img src="{{ asset('assets/img/logobaru.png') }}" alt="Logo Perusahaan"
+        {{-- buat deploy di rumah web --}}
+        {{-- <img src="{{ asset('assets/img/logobaru.png') }}" alt="Logo Perusahaan"
      style="width:80px; height:auto; display:block; margin:0 auto 10px auto;"> --}}
 
         <h1>PT. Joenoes Ikamulya</h1>
@@ -136,6 +136,16 @@
                         <td style="text-align:left; border:0;"><strong>Sub Category</strong></td>
                         <td style="border:0;">:</td>
                         <td style="border:0;">{{ $transaction->subcategory->name ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:left; border:0;"><strong>Supplier</strong></td>
+                        <td style="border:0;">:</td>
+                        <td style="border:0;">{{ $transaction->supplier->nama_supplier ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:left; border:0;"><strong>Alamat Supplier</strong></td>
+                        <td style="border:0;">:</td>
+                        <td style="border:0;">{{ $transaction->supplier->alamat ?? '-' }}</td>
                     </tr>
                 </table>
             </td>

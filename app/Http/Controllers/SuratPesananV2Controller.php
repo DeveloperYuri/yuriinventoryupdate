@@ -8,6 +8,7 @@ use App\Models\LocationsModel;
 use App\Models\StockInHeader;
 use App\Models\StockTransactionModel;
 use App\Models\SubCategoryModel;
+use App\Models\SupplierModel;
 use App\Models\SuratPesananDetailModel;
 use App\Models\SuratPesananHeaderModel;
 use Illuminate\Http\Request;
@@ -86,8 +87,9 @@ class SuratPesananV2Controller extends Controller
 
         $locations = LocationsModel::all();
         $categories = CategoryModel::all();
+        $suppliers = SupplierModel::all();
 
-        return view('dashboard.suratpesananv2.create', compact('noDokumen', 'lastNumbers', 'locations', 'categories'));
+        return view('dashboard.suratpesananv2.create', compact('noDokumen', 'lastNumbers', 'locations', 'categories', 'suppliers'));
     }
 
     // public function create()
@@ -229,6 +231,7 @@ class SuratPesananV2Controller extends Controller
                     'status'           => 'pending',
                     'status_penerimaan' => 'open',
                     'ditujukan_kepada' => $request->ditujukan_kepada,
+                    'supplier_id' => $request->supplier_id
                 ]);
 
                 // 3. Simpan detail (Logika tetap sama)
@@ -294,10 +297,28 @@ class SuratPesananV2Controller extends Controller
         $locations = LocationsModel::all();
         $categories = CategoryModel::all();
         $subcategories = SubCategoryModel::all();
+        $suppliers = SupplierModel::all();
 
         $spareparts = ListSparePartModel::orderBy('name')->get();
 
-        return view('dashboard.suratpesananv2.edit', compact('transaction', 'spareparts', 'locations', 'categories', 'subcategories'));
+        // Tahun berdasarkan tanggal surat pesanan
+        $tahun = \Carbon\Carbon::parse($transaction->tanggal)->format('Y');
+
+        // Hitung nomor suffix terakhir untuk setiap tujuan.
+        // Kecualikan surat yang sedang diedit.
+        $lastNumbers = SuratPesananHeaderModel::whereYear('created_at', $tahun)
+            ->where('id', '!=', $transaction->id)
+            ->get()
+            ->groupBy('ditujukan_kepada')
+            ->map(function ($items) {
+                return $items->map(function ($item) {
+                    preg_match('/-(\d+)$/', $item->no_surat_pesanan, $matches);
+
+                    return isset($matches[1]) ? (int) $matches[1] : 0;
+                })->max();
+            });
+
+        return view('dashboard.suratpesananv2.edit', compact('transaction', 'spareparts', 'locations', 'categories', 'subcategories', 'suppliers', 'lastNumbers'));
     }
 
     public function update(Request $request, $id)
@@ -312,10 +333,13 @@ class SuratPesananV2Controller extends Controller
             // 1. Update Header
             $header = SuratPesananHeaderModel::findOrFail($id);
             $header->update([
+                'no_surat_pesanan' => $request->no_surat_pesanan,
                 'name'           => $request->name,
                 'locations_id'   => $request->locations_id,
                 'category_id'    => $request->category_id,
                 'subcategory_id' => $request->subcategory_id ?? null,
+                'supplier_id' => $request->supplier_id,
+                'ditujukan_kepada' => $request->ditujukan_kepada,
             ]);
 
             // 2. Ambil data details (Baris Lama dari Database)

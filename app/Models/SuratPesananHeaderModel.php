@@ -22,6 +22,7 @@ class SuratPesananHeaderModel extends Model
         'status_penerimaan',
         'keterangan',
         'ditujukan_kepada',
+        'supplier_id',
     ];
 
     static public function getRecord($request)
@@ -77,5 +78,10 @@ class SuratPesananHeaderModel extends Model
     {
         // Gunakan class SuratPesananDetailModel dan foreign key surat_pesanan_header_id
         return $this->hasMany(SuratPesananDetailModel::class, 'surat_pesanan_header_id', 'id');
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(SupplierModel::class, 'supplier_id', 'id');
     }
 }

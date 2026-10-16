@@ -86,8 +86,8 @@
         <img src="{{ public_path('assets/img/logobaru.png') }}" alt="Logo Perusahaan"
             style="width:80px; height:auto; display:block; margin:0 auto 10px auto;">
 
-            {{-- buat deploy di rumah web --}}
-            {{-- <img src="{{ asset('assets/img/logobaru.png') }}" alt="Logo Perusahaan"
+        {{-- buat deploy di rumah web --}}
+        {{-- <img src="{{ asset('assets/img/logobaru.png') }}" alt="Logo Perusahaan"
      style="width:80px; height:auto; display:block; margin:0 auto 10px auto;"> --}}
 
         <h1>PT. Joenoes Ikamulya</h1>
@@ -118,15 +118,16 @@
                         <td style="border:0;">:</td>
                         <td style="border:0;">{{ $transaction->location->name ?? '-' }}</td>
                     </tr>
-                </table>
-            </td>
-            <td style="width:48%; vertical-align: top">
-                <table style="width:100%; border:0; border-collapse: collapse;">
                     <tr>
                         <td style="width:80px; text-align:left; border:0;"><strong>Tanggal</strong></td>
                         <td style="width:5px; border:0;">:</td>
                         <td style="border:0;">{{ \Carbon\Carbon::parse($transaction->tanggal)->format('d-m-Y') }}</td>
                     </tr>
+                </table>
+            </td>
+            <td style="width:48%; vertical-align: top">
+                <table style="width:100%; border:0; border-collapse: collapse;">
+                    
                     <tr>
                         <td style="text-align:left; border:0;"><strong>Category</strong></td>
                         <td style="border:0;">:</td>
@@ -136,6 +137,16 @@
                         <td style="text-align:left; border:0;"><strong>Sub Category</strong></td>
                         <td style="border:0;">:</td>
                         <td style="border:0;">{{ $transaction->subcategory->name ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:left; border:0;"><strong>Supplier</strong></td>
+                        <td style="border:0;">:</td>
+                        <td style="border:0;">{{ $transaction->supplier->name ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:left; border:0;"><strong>Alamat Supplier</strong></td>
+                        <td style="border:0;">:</td>
+                        <td style="border:0;">{{ $transaction->supplier->address ?? '-' }}</td>
                     </tr>
                 </table>
             </td>
@@ -147,7 +158,7 @@
         <thead>
             <tr>
                 <th>Serial Number</th>
-                <th>Nama Spare Part</th>
+                <th>Nama Barang</th>
                 <th>Qty Minta</th>
                 <th>Stock</th>
                 <th>Qty Yang Harus Dibeli</th>

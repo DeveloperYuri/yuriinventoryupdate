@@ -146,6 +146,20 @@
                                                     value="{{ $transaction->subcategory->name ?? '-' }}" readonly>
                                             </div>
                                         </div>
+                                        <div class="row mb-3">
+                                            <label class="col-sm-4 col-form-label">Supplier</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" name="diterima_dari"
+                                                    value="{{ $transaction->supplier->name ?? '-' }}" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <label class="col-sm-4 col-form-label">Alamat Supplier</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" name="diterima_dari"
+                                                    value="{{ $transaction->supplier->address ?? '-' }}" readonly>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -155,7 +169,7 @@
                                         <table class="table" id="productTable">
                                             <thead>
                                                 <tr>
-                                                    <th>Nama Spare Part</th>
+                                                    <th>Nama Barang</th>
                                                     <th class="text-center">Qty Minta</th>
                                                     <th class="text-center">Stock</th>
                                                     <th class="text-center">Qty Yang Harus Dibeli</th>
