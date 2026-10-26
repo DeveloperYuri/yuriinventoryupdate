@@ -3,18 +3,18 @@
 @section('content')
     <main id="main" class="main">
 
-        @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1)
-            <div class="pagetitle">
-                <a href="{{ route('createsupplier') }}" class="btn btn-primary">Create New Supplier</a>
-            </div><!-- End Page Title -->
-        @endif
+        {{-- @if (Auth::user()->is_role == 2 || Auth::user()->is_role == 1) --}}
+        <div class="pagetitle">
+            <a href="{{ route('createsupplier') }}" class="btn btn-primary">Create New Supplier</a>
+        </div><!-- End Page Title -->
+        {{-- @endif --}}
 
         <div class="mt-4">
             <form method="get">
                 <div class="row g-2 align-items-center">
                     <div class="col">
-                        <input id="searchingtitle" type="text" class="form-control"
-                            value="{{ Request()->name }}" placeholder="Searching Supplierr" name="name">
+                        <input id="searchingtitle" type="text" class="form-control" value="{{ Request()->name }}"
+                            placeholder="Searching Supplierr" name="name">
                     </div>
                     <div class="col-auto">
                         <button type="submit" class="btn btn-dark">Search</button>
@@ -71,7 +71,7 @@
                                                 <td class="text-center">{{ $supplier->address }}</td>
                                                 <td class="text-center">{{ $supplier->contact }}</td>
 
-                                                @if (Auth::user()->is_role == 2)
+                                                {{-- @if (Auth::user()->is_role == 2) --}}
                                                     <td class="text-center">
                                                         <form action="{{ route('deletesupplier', $supplier->id) }}"
                                                             method="POST">
@@ -84,7 +84,7 @@
                                                                 onclick="confirmDelete(this.form)">HAPUS</button>
                                                         </form>
                                                     </td>
-                                                @endif
+                                                {{-- @endif --}}
                                             </tr>
                                         @empty
                                             <tr>
